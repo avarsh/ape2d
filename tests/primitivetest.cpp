@@ -33,7 +33,7 @@ int main() {
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ebo);
     glGenVertexArrays(1, &vao);
-
+    
     glBindVertexArray(vao);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);

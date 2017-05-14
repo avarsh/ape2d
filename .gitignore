@@ -2,3 +2,5 @@
 bin/
 gen_ctags.sh
 tags
+.clang
+compile_commands.json
