@@ -14,4 +14,4 @@ done
 
 output_name="$(basename $input_file .cpp)"
 
-g++ --std=c++14 -o bin/$output_name $input_file ./deps/glad/glad.c ./ape/src/graphics/shader.cpp ./ape/src/graphics/graphics.cpp -I./deps/ -I./ape/include/ -lglfw -lm -lGL
+g++ --std=c++14 -o bin/$output_name $input_file ./deps/glad/glad.c ./src/graphics/shader.cpp ./src/graphics/graphics.cpp -I./deps/ -I./include/ -lglfw -lm -lGL
