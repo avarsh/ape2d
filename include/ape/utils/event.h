@@ -9,7 +9,7 @@ namespace ape {
     /**
      * A simple base class for a generic event type.
      * An event supports any number of arguments. Callbacks
-     * can be added to it, which will be executed upon 
+     * can be added to it, which will be executed upon
      * emit
      */
     template <typename... Args>
@@ -33,4 +33,3 @@ namespace ape {
 }
 
 #endif // EVENT_H
-

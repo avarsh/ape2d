@@ -1,69 +1,69 @@
 #include <iostream>
+#include <ape/ecs/world.h>
 #include <ape/graphics/graphics.h>
 
 int main() {
-   
+
     ape::Graphics graphics;
+    ape::World world;
+
     graphics.createWindow(800, 600, "Primitive test");
 
-    ape::Shader polygonShader;
-    polygonShader.loadShaders("./data/shaders/polygon.vert", "./data/shaders/polygon.frag");
+    auto triangle = world.createEntity();
+    auto& triangleMesh = world.addComponent<ape::Mesh>(triangle);
 
-    GLfloat vertices[] = {
-        // The triangle
-        0.1f, -0.5f,    1.0f, 0.0f, 0.0f,
-        -0.8f, -0.5f,   0.0f, 1.0f, 0.0f,
-        -0.3f, 0.0f,    0.0f, 0.0f, 1.0f,
-        // The square
-        0.3f, 0.3f,     0.1f, 0.1f, 0.6f,
-        0.6f, 0.3f,     0.2f, 0.0f, 0.3f,
-        0.6f, 0.6f,     0.0f, 1.0f, 0.5f,
-        0.3f, 0.6f,     0.0f, 0.0f, 1.0f
-    };
+    graphics.addVertex(world, triangle, -0.8f, 1.0f, 0.6f, 0.9f, 0.15f);
+    graphics.addVertex(world, triangle, -0.8f, 0.4f, 1.0f, 0.0f, 0.5f);
+    graphics.addVertex(world, triangle, 0.0f, 0.8f, 0.2f, 0.3f, 0.9f);
 
-    GLushort indices[] = {
-        0, 1, 2, // Triangle 
-        3, 4, 5,
-        3, 5, 6 // Square
-    };
+    auto square = world.createEntity();
+    auto& squareMesh = world.addComponent<ape::Mesh>(square);
 
-    int size = sizeof(indices) / sizeof(GLushort);
+    graphics.addVertex(world, square, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f);
+    graphics.addVertex(world, square, 0.0f, -0.5f, 0.4f, 0.6f, 0.5f);
+    graphics.addVertex(world, square, 0.5f, -0.5f, 0.2f, 0.3f, 0.9f);
+    graphics.addVertex(world, square, 0.5f, 0.0f, 0.6f);
 
-    GLuint vbo, vao, ebo;
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
-    glGenVertexArrays(1, &vao);
-    
-    glBindVertexArray(vao);
+    double start = glfwGetTime();
+    double elapsed = 0;
+    int frameCount = 0;
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-   
-    glBindVertexArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+    int counter = 0;
     while(graphics.windowIsOpen()) {
+        double current = glfwGetTime();
+        elapsed += current - start;
+        start = current;
+
+        if(elapsed > 1.f) {
+            std::cout << frameCount << std::endl;
+            frameCount = 0;
+            elapsed = 0;
+
+            counter += counter != 6 ? 1 : 0;
+        }
+
+
         glfwPollEvents();
 
         graphics.clearWindow(0.3, 0.3, 0.4);
-        polygonShader.useProgram();
-        glBindVertexArray(vao);
-        // glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_SHORT, (GLvoid*)0);
-        glBindVertexArray(0);
-        graphics.displayWindow();
+        graphics.displayWindow(world);
+
+        if(counter == 5) {
+            std::cout << "added!\n";
+            auto pentagon = world.createEntity();
+            auto& pMesh = world.addComponent<ape::Mesh>(pentagon);
+
+            graphics.addVertex(world, pentagon, 0.5f, 0.5f, 1.0f, 0.9f, 0.6f);
+            graphics.addVertex(world, pentagon, 0.1f, 0.3f, 0.7f, 0.19f, 0.06f);
+            graphics.addVertex(world, pentagon, 0.3f, 0.1f, 0.11f, 0.25f, 0.78f);
+            graphics.addVertex(world, pentagon, 0.7f, 0.1f, 0.96f, 0.99f, 0.11f);
+            graphics.addVertex(world, pentagon, 0.9f, 0.3f, 1.0f, 0.98f, 0.67f);
+
+            counter++;
+        }
+
+        frameCount++;
     }
-    
+
     return 0;
 }
