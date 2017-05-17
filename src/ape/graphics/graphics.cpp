@@ -1,7 +1,8 @@
 #include <ape/graphics/graphics.h>
 
 namespace ape {
-    Graphics::Graphics() {
+    Graphics::Graphics(World& world) :
+        mWorld(world) {
         // Initialise glfw
         if(!glfwInit()) {
             std::cout << "GLFW failed to initalise.\n";
@@ -69,8 +70,8 @@ namespace ape {
         return !glfwWindowShouldClose(mWindow);
     }
 
-    void Graphics::addVertex(World& world, entity_t entity, GLfloat x, GLfloat y, GLfloat red, GLfloat green, GLfloat blue) {
-        auto& mesh = world.getComponent<Mesh>(entity);
+    void Graphics::addVertex(entity_t entity, GLfloat x, GLfloat y, GLfloat red, GLfloat green, GLfloat blue) {
+        auto& mesh = mWorld.getComponent<Mesh>(entity);
 
         if(mesh.mBufferIndex == -1) {
             mesh.mBufferIndex = 0; // TODO: change this later
@@ -95,5 +96,20 @@ namespace ape {
             mesh.mIndexCount += 3;
             mPolygonBuffer.mElementCount += 3;
         }
+    }
+
+    void Graphics::setVertexColour(entity_t entity, int vertex, GLfloat red, GLfloat blue, GLfloat green) {
+        auto& mesh = mWorld.getComponent<Mesh>(entity);
+
+        mesh.mVertices[(vertex * mesh.mDataSize) + 2] = red;
+        mesh.mVertices[(vertex * mesh.mDataSize) + 3] = blue;
+        mesh.mVertices[(vertex * mesh.mDataSize) + 4] = green;
+    }
+
+    void Graphics::setVertexPosition(entity_t entity, int vertex, GLfloat x, GLfloat y) {
+        auto& mesh = mWorld.getComponent<Mesh>(entity);
+
+        mesh.mVertices[(vertex * mesh.mDataSize)] = x;
+        mesh.mVertices[(vertex * mesh.mDataSize) + 1] = y;
     }
 }
