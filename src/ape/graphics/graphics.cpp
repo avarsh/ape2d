@@ -2,7 +2,7 @@
 
 namespace ape {
     Graphics::Graphics(World& world) :
-        mWorld(world) {
+        world(world) {
         // Initialise glfw
         if(!glfwInit()) {
             std::cout << "GLFW failed to initalise.\n";
@@ -12,9 +12,9 @@ namespace ape {
     }
 
     Graphics::~Graphics() {
-        mPolygonBuffer.deleteBuffers();
+        polygonBuffer.deleteBuffers();
 
-        glfwDestroyWindow(mWindow);
+        glfwDestroyWindow(window);
         glfwTerminate();
     }
 
@@ -25,21 +25,39 @@ namespace ape {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-        mWindow = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-        glfwMakeContextCurrent(mWindow);
+        window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+        glfwMakeContextCurrent(window);
         gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
         glfwSwapInterval(0);
 
         int w, h;
-        glfwGetFramebufferSize(mWindow, &w, &h);
+        glfwGetFramebufferSize(window, &w, &h);
         glViewport(0, 0, w, h);
 
         // Load polygon vertex and fragment shaders
-        mPolygonShader.loadShaders("./data/shaders/polygon.vert", "./data/shaders/polygon.frag");
+        polygonShader.loadShaders("./data/shaders/polygon.vert", "./data/shaders/polygon.frag");
 
-        glGenVertexArrays(1, &mPolygonVertexArray);
-        mPolygonBuffer.initBuffers(mPolygonVertexArray);
+        glGenVertexArrays(1, &polygonVertexArray);
+
+        glBindVertexArray(polygonVertexArray);
+
+        polygonBuffer.initBuffers();
+
+        // The position attribute
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(0);
+
+        // The colour attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
+        // Unbind everything
+        glBindVertexArray(0);
+
+        // Unbind these after unbinding vertex array
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     void Graphics::clearWindow(float red, float green, float blue, float alpha) {
@@ -47,69 +65,77 @@ namespace ape {
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    void Graphics::displayWindow(World& world) {
+    void Graphics::displayWindow() {
 
-        mPolygonShader.useProgram();
+        polygonShader.useProgram();
 
         // Draw polygons
-        mPolygonBuffer.updateBuffer(world);
+        if(polygonBuffer.vertexCount > 0 && polygonBuffer.elementCount > 0) {
+            polygonBuffer.updateBuffer(world);
 
-        glBindVertexArray(mPolygonVertexArray);
-        glDrawElements(GL_TRIANGLES, mPolygonBuffer.mElementCount, GL_UNSIGNED_SHORT, (GLvoid*)0);
-        glBindVertexArray(0);
+            glBindVertexArray(polygonVertexArray);
+            glDrawElements(GL_TRIANGLES, polygonBuffer.elementCount, GL_UNSIGNED_SHORT, (GLvoid*)0);
 
-        // Unbind buffer objects
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            // Unbind everything
+            glBindVertexArray(0);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
 
         // Swap buffers
-        glfwSwapBuffers(mWindow);
+        glfwSwapBuffers(window);
     }
 
     bool Graphics::windowIsOpen() {
-        return !glfwWindowShouldClose(mWindow);
+        return !glfwWindowShouldClose(window);
     }
 
     void Graphics::addVertex(entity_t entity, GLfloat x, GLfloat y, GLfloat red, GLfloat green, GLfloat blue) {
-        auto& mesh = mWorld.getComponent<Mesh>(entity);
+        auto& mesh = world.getComponent<Mesh>(entity);
 
-        if(mesh.mBufferIndex == -1) {
-            mesh.mBufferIndex = 0; // TODO: change this later
+        if(mesh.bufferIndex == -1) {
+            mesh.bufferIndex = 0; // TODO: change this later
         }
 
-        mesh.mVertices.push_back(x);
-        mesh.mVertices.push_back(y);
-        mesh.mVertices.push_back(red);
-        mesh.mVertices.push_back(green);
-        mesh.mVertices.push_back(blue);
-
-        mesh.mVertexCount++;
-        mPolygonBuffer.mVertexCount++;
+        mesh.vertices.push_back(Vertex(x, y, red, green, blue));
+        polygonBuffer.vertexCount++;
 
         // Append to indices, but only if we have enough vertices to
         // form a triangle or above
-        if(mesh.mVertexCount >= 3) {
-            mesh.mIndices.push_back(0);
-            mesh.mIndices.push_back(mesh.mVertexCount - 2);
-            mesh.mIndices.push_back(mesh.mVertexCount - 1);
+        if(mesh.vertices.size() >= 3) {
+            mesh.indices.push_back(0);
+            mesh.indices.push_back(mesh.vertices.size() - 2);
+            mesh.indices.push_back(mesh.vertices.size() - 1);
 
-            mesh.mIndexCount += 3;
-            mPolygonBuffer.mElementCount += 3;
+            polygonBuffer.elementCount += 3;
         }
     }
 
     void Graphics::setVertexColour(entity_t entity, int vertex, GLfloat red, GLfloat blue, GLfloat green) {
-        auto& mesh = mWorld.getComponent<Mesh>(entity);
+        auto& mesh = world.getComponent<Mesh>(entity);
 
-        mesh.mVertices[(vertex * mesh.mDataSize) + 2] = red;
-        mesh.mVertices[(vertex * mesh.mDataSize) + 3] = blue;
-        mesh.mVertices[(vertex * mesh.mDataSize) + 4] = green;
+        assert(vertex < mesh.vertices.size());
+
+        mesh.vertices[vertex].colors.red = red;
+        mesh.vertices[vertex].colors.blue = blue;
+        mesh.vertices[vertex].colors.green = green;
     }
 
     void Graphics::setVertexPosition(entity_t entity, int vertex, GLfloat x, GLfloat y) {
-        auto& mesh = mWorld.getComponent<Mesh>(entity);
+        auto& mesh = world.getComponent<Mesh>(entity);
+        mesh.vertices[vertex].position.x = x;
+        mesh.vertices[vertex].position.y = y;
+    }
 
-        mesh.mVertices[(vertex * mesh.mDataSize)] = x;
-        mesh.mVertices[(vertex * mesh.mDataSize) + 1] = y;
+    void Graphics::move(entity_t entity, ape::Vec2<GLfloat> displacement) {
+        auto& mesh = world.getComponent<Mesh>(entity);
+
+        for(auto& vertex : mesh.vertices) {
+            vertex.position += displacement;
+        }
+    }
+
+    GLFWwindow* Graphics::getWindow() {
+        return window;
     }
 }

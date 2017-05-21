@@ -8,3 +8,6 @@ INCLUDEDIRS := -Iinclude/ -Ideps/
 
 primitives: ./tests/primitivetest.cpp
 	$(CXX) $(CPPFLAGS) -o ./bin/primitivetest ./tests/primitivetest.cpp $(DEPS) $(APEGRAPHICS) $(APEWORLD) $(INCLUDEDIRS) $(LDLIBS)
+
+mousetest: ./tests/mousetest.cpp
+	$(CXX) $(CPPFLAGS) -o ./bin/mousetest ./tests/mousetest.cpp $(DEPS) $(APEGRAPHICS) $(APEWORLD) $(INCLUDEDIRS) $(LDLIBS)

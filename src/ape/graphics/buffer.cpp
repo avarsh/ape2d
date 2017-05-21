@@ -6,45 +6,29 @@ namespace ape {
 
     }
 
-    void Buffer::initBuffers(GLuint vertexArray) {
+    void Buffer::initBuffers() {
 
         // Generate the buffers
-        glGenBuffers(1, &mVertexBuffer);
-        glGenBuffers(1, &mIndexBuffer);
+        glGenBuffers(1, &vertexBuffer);
+        glGenBuffers(1, &indexBuffer);
 
-        glBindVertexArray(vertexArray);
-
-        glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
         glBufferData(GL_ARRAY_BUFFER, 65536, NULL, GL_DYNAMIC_DRAW);
 
-        // The position attribute
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-        glEnableVertexAttribArray(0);
-
-        // The colour attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(1);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, 65536, NULL, GL_DYNAMIC_DRAW);
-
-        glBindVertexArray(0);
-
-        // Unbind these after unbinding vertex array
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     void Buffer::updateBuffer(World& world) {
 
-        glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 
         GLfloat *vertPointer = (GLfloat*)glMapBufferRange(GL_ARRAY_BUFFER, 0,
-            mVertexCount * mDataSize, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
+            vertexCount * dataSize, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
 
         GLushort *indexPointer = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0,
-            mElementCount, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
+            elementCount, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
 
         assert(vertPointer != NULL);
         assert(indexPointer != NULL);
@@ -55,21 +39,26 @@ namespace ape {
         int vertexCount = 0;
 
         for(auto& mesh : world.getComponentList<Mesh>()) {
-            auto vertices = mesh.mVertices;
-            auto indices = mesh.mIndices;
+            const auto& vertices = mesh.vertices;
+            const auto& indices = mesh.indices;
 
-            for(int offset = 0; offset < vertices.size(); offset++) {
-                vertPointer[vertIndex + offset] = vertices[offset];
+            for(int vertex = 0; vertex < vertices.size(); vertex++) {
+                vertPointer[vertIndex + (vertex * mesh.dataSize)] = vertices[vertex].position.x;
+                vertPointer[vertIndex + (vertex * mesh.dataSize) + 1] = vertices[vertex].position.y;
+                vertPointer[vertIndex + (vertex * mesh.dataSize) + 2] = vertices[vertex].colors.red;
+                vertPointer[vertIndex + (vertex * mesh.dataSize) + 3] = vertices[vertex].colors.green;
+                vertPointer[vertIndex + (vertex * mesh.dataSize) + 4] = vertices[vertex].colors.blue;
             }
 
             for(int offset = 0; offset < indices.size(); offset++) {
                 indexPointer[indicesIndex + offset] = indices[offset] + vertexCount;
             }
 
-            vertIndex += vertices.size();
+            vertIndex += (vertices.size() * mesh.dataSize);
+
             indicesIndex += indices.size();
 
-            vertexCount += mesh.mVertexCount;
+            vertexCount += mesh.vertices.size();
         }
 
         glUnmapBuffer(GL_ARRAY_BUFFER);
@@ -77,7 +66,7 @@ namespace ape {
     }
 
     void Buffer::deleteBuffers() {
-        glDeleteBuffers(1, &mVertexBuffer);
-        glDeleteBuffers(1, &mIndexBuffer);
+        glDeleteBuffers(1, &vertexBuffer);
+        glDeleteBuffers(1, &indexBuffer);
     }
 }

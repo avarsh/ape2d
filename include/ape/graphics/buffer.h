@@ -13,19 +13,19 @@ namespace ape {
         public:
             Buffer();
 
-            void initBuffers(GLuint vertexArray);
+            void initBuffers();
 
             void updateBuffer(World& world);
 
             void deleteBuffers();
 
-            int mVertexCount {0};
-            int mElementCount {0};
+            int vertexCount {0};
+            int elementCount {0};
 
-            int mDataSize {5};
+            int dataSize {5};
         private:
-            GLuint mVertexBuffer;
-            GLuint mIndexBuffer;
+            GLuint vertexBuffer;
+            GLuint indexBuffer;
     };
 }
 

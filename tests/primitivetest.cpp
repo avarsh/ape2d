@@ -29,12 +29,14 @@ int main() {
 
     double start = glfwGetTime();
     double elapsed = 0;
+    double deltaTime = 0;
     int frameCount = 0;
 
     int counter = 0;
     while(graphics.windowIsOpen()) {
         double current = glfwGetTime();
-        elapsed += current - start;
+        deltaTime = current - start;
+        elapsed += deltaTime;
         start = current;
 
         if(elapsed > 1.f) {
@@ -49,9 +51,9 @@ int main() {
         glfwPollEvents();
 
         graphics.clearWindow(0.3, 0.3, 0.4);
-        graphics.displayWindow(world);
+        graphics.displayWindow();
 
-        if(counter == 5) {
+        if(counter == 2) {
             auto pentagon = world.createEntity();
             world.addComponent<ape::Mesh>(pentagon);
 
@@ -66,13 +68,7 @@ int main() {
             counter++;
         }
 
-        pos1 += 0.0001;
-        pos2 += 0.0001;
-        pos3 += 0.0001;
-
-        graphics.setVertexPosition(triangle, 0, pos1, 1.0f);
-        graphics.setVertexPosition(triangle, 1, pos2, 0.4f);
-        graphics.setVertexPosition(triangle, 2, pos3, 0.8f);
+        graphics.move(triangle, ape::Vec2<GLfloat>(deltaTime * 1, 0));
 
         frameCount++;
     }

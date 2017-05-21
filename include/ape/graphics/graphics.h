@@ -11,6 +11,8 @@
 
 #include <ape/ecs/world.h>
 
+#include <ape/utils/vector.h>
+
 namespace ape {
 
     class Graphics {
@@ -22,7 +24,7 @@ namespace ape {
 
             void clearWindow(float red=0.f, float green=0.f, float blue=0.f, float alpha=1.f);
 
-            void displayWindow(World& world);
+            void displayWindow();
 
             bool windowIsOpen();
 
@@ -31,19 +33,23 @@ namespace ape {
             void setVertexColour(entity_t entity, int vertex, GLfloat red, GLfloat blue, GLfloat green);
 
             void setVertexPosition(entity_t entity, int vertex, GLfloat x, GLfloat y);
+
+            void move(entity_t entity, Vec2<GLfloat> displacement);
+
+            GLFWwindow* getWindow();
         private:
-            GLFWwindow* mWindow {nullptr};
+            GLFWwindow* window {nullptr};
 
             static void _errorCallback(int error, const char* description) {
                 std::cout << "Error " << error << " occured within GLFW: " << description << "\n";
             }
 
-            Shader mPolygonShader;
+            Shader polygonShader;
 
-            GLuint mPolygonVertexArray;
-            Buffer mPolygonBuffer;
+            GLuint polygonVertexArray;
+            Buffer polygonBuffer;
 
-            World& mWorld;
+            World& world;
     };
 }
 
