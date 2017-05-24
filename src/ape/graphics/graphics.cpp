@@ -67,14 +67,14 @@ namespace ape {
 
     void Graphics::displayWindow() {
 
-        polygonShader.useProgram();
+        polygonShader.useShader();
 
         // Draw polygons
-        if(polygonBuffer.vertexCount > 0 && polygonBuffer.elementCount > 0) {
-            polygonBuffer.updateBuffer(world);
+        if(polygonBuffer.getVertexCount() > 0 && polygonBuffer.getElementCount() > 0) {
+            polygonBuffer.flush(world);
 
             glBindVertexArray(polygonVertexArray);
-            glDrawElements(GL_TRIANGLES, polygonBuffer.elementCount, GL_UNSIGNED_SHORT, (GLvoid*)0);
+            glDrawElements(GL_TRIANGLES, polygonBuffer.getElementCount(), GL_UNSIGNED_SHORT, (GLvoid*)0);
 
             // Unbind everything
             glBindVertexArray(0);
@@ -98,7 +98,7 @@ namespace ape {
         }
 
         mesh.vertices.push_back(Vertex(x, y, red, green, blue));
-        polygonBuffer.vertexCount++;
+        polygonBuffer.setVertexCount(polygonBuffer.getVertexCount() + 1);
 
         // Append to indices, but only if we have enough vertices to
         // form a triangle or above
@@ -107,18 +107,18 @@ namespace ape {
             mesh.indices.push_back(mesh.vertices.size() - 2);
             mesh.indices.push_back(mesh.vertices.size() - 1);
 
-            polygonBuffer.elementCount += 3;
+            polygonBuffer.setElementCount(polygonBuffer.getElementCount() + 3);
         }
     }
 
-    void Graphics::setVertexColour(entity_t entity, int vertex, GLfloat red, GLfloat blue, GLfloat green) {
+    void Graphics::setVertexColor(entity_t entity, int vertex, GLfloat red, GLfloat blue, GLfloat green) {
         auto& mesh = world.getComponent<Mesh>(entity);
 
         assert(vertex < mesh.vertices.size());
 
-        mesh.vertices[vertex].colors.red = red;
-        mesh.vertices[vertex].colors.blue = blue;
-        mesh.vertices[vertex].colors.green = green;
+        mesh.vertices[vertex].color.red = red;
+        mesh.vertices[vertex].color.blue = blue;
+        mesh.vertices[vertex].color.green = green;
     }
 
     void Graphics::setVertexPosition(entity_t entity, int vertex, GLfloat x, GLfloat y) {
@@ -132,6 +132,24 @@ namespace ape {
 
         for(auto& vertex : mesh.vertices) {
             vertex.position += displacement;
+        }
+    }
+
+    void Graphics::createRectangle (entity_t entity, GLfloat left, GLfloat top, GLfloat width, GLfloat height) {
+        if(!world.entityHasComponent<Mesh>(entity))
+            world.addComponent<Mesh>(entity);
+
+        addVertex(entity, left, top);
+        addVertex(entity, left, top - height);
+        addVertex(entity, left + width, top - height);
+        addVertex(entity, left + width, top);
+    }
+
+    void Graphics::setFillColor(entity_t entity, GLfloat red, GLfloat green, GLfloat blue) {
+        auto& mesh = world.getComponent<Mesh>(entity);
+
+        for(int vertex = 0; vertex < mesh.vertices.size(); vertex++) {
+            setVertexColor(entity, vertex, red, blue, green);
         }
     }
 

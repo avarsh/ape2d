@@ -14,18 +14,22 @@ namespace ape {
             Buffer();
 
             void initBuffers();
-
-            void updateBuffer(World& world);
-
+            void flush (World& world);
             void deleteBuffers();
+
+            int getVertexCount();
+            void setVertexCount(int vertexCount);
+
+            int getElementCount();
+            void setElementCount(int elementCount);
+        private:
+            GLuint vertexBuffer;
+            GLuint indexBuffer;
 
             int vertexCount {0};
             int elementCount {0};
 
             int dataSize {5};
-        private:
-            GLuint vertexBuffer;
-            GLuint indexBuffer;
     };
 }
 

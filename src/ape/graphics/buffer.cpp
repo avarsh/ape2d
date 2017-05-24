@@ -2,12 +2,9 @@
 
 namespace ape {
 
-    Buffer::Buffer() {
-
-    }
+    Buffer::Buffer() { }
 
     void Buffer::initBuffers() {
-
         // Generate the buffers
         glGenBuffers(1, &vertexBuffer);
         glGenBuffers(1, &indexBuffer);
@@ -19,7 +16,9 @@ namespace ape {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, 65536, NULL, GL_DYNAMIC_DRAW);
     }
 
-    void Buffer::updateBuffer(World& world) {
+    void Buffer::flush(World& world) {
+
+        //std::cout << vertexCount * dataSize << ", " << elementCount << std::endl;
 
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -33,32 +32,36 @@ namespace ape {
         assert(vertPointer != NULL);
         assert(indexPointer != NULL);
 
-        int vertIndex = 0;
+        int dataIndex = 0;
         int indicesIndex = 0;
-
-        int vertexCount = 0;
+        int renderedVertices = 0;
 
         for(auto& mesh : world.getComponentList<Mesh>()) {
             const auto& vertices = mesh.vertices;
             const auto& indices = mesh.indices;
 
             for(int vertex = 0; vertex < vertices.size(); vertex++) {
-                vertPointer[vertIndex + (vertex * mesh.dataSize)] = vertices[vertex].position.x;
-                vertPointer[vertIndex + (vertex * mesh.dataSize) + 1] = vertices[vertex].position.y;
-                vertPointer[vertIndex + (vertex * mesh.dataSize) + 2] = vertices[vertex].colors.red;
-                vertPointer[vertIndex + (vertex * mesh.dataSize) + 3] = vertices[vertex].colors.green;
-                vertPointer[vertIndex + (vertex * mesh.dataSize) + 4] = vertices[vertex].colors.blue;
+                int offset = dataIndex + (vertex * this->dataSize);
+
+                vertPointer[offset]     = vertices[vertex].position.x;
+                vertPointer[offset + 1] = vertices[vertex].position.y;
+                vertPointer[offset + 2] = vertices[vertex].color.red;
+                vertPointer[offset + 3] = vertices[vertex].color.green;
+                vertPointer[offset + 4] = vertices[vertex].color.blue;
+
+                if((mesh.mask&VM_TEXTURE) == VM_TEXTURE) {
+                    vertPointer[offset + 5] = vertices[vertex].texCoord.x;
+                    vertPointer[offset + 6] = vertices[vertex].texCoord.y;
+                }
             }
 
             for(int offset = 0; offset < indices.size(); offset++) {
-                indexPointer[indicesIndex + offset] = indices[offset] + vertexCount;
+                indexPointer[indicesIndex + offset] = indices[offset] + renderedVertices;
             }
 
-            vertIndex += (vertices.size() * mesh.dataSize);
-
+            dataIndex += (vertices.size() * mesh.dataSize);
             indicesIndex += indices.size();
-
-            vertexCount += mesh.vertices.size();
+            renderedVertices += vertices.size();
         }
 
         glUnmapBuffer(GL_ARRAY_BUFFER);
@@ -68,5 +71,21 @@ namespace ape {
     void Buffer::deleteBuffers() {
         glDeleteBuffers(1, &vertexBuffer);
         glDeleteBuffers(1, &indexBuffer);
+    }
+
+    int Buffer::getVertexCount() {
+        return vertexCount;
+    }
+
+    void Buffer::setVertexCount(int vertexCount) {
+        this->vertexCount = vertexCount;
+    }
+
+    int Buffer::getElementCount() {
+        return elementCount;
+    }
+
+    void Buffer::setElementCount(int elementCount) {
+        this->elementCount = elementCount;
     }
 }

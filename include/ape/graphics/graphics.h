@@ -30,11 +30,15 @@ namespace ape {
 
             void addVertex(entity_t entity, GLfloat x, GLfloat y, GLfloat red=1.0f, GLfloat green=1.0f, GLfloat blue=1.0f);
 
-            void setVertexColour(entity_t entity, int vertex, GLfloat red, GLfloat blue, GLfloat green);
+            void setVertexColor(entity_t entity, int vertex, GLfloat red, GLfloat blue, GLfloat green);
+
+            void setFillColor(entity_t entity, GLfloat red, GLfloat green, GLfloat blue);
 
             void setVertexPosition(entity_t entity, int vertex, GLfloat x, GLfloat y);
 
             void move(entity_t entity, Vec2<GLfloat> displacement);
+
+            void createRectangle (entity_t entity, GLfloat left, GLfloat top, GLfloat width, GLfloat height);
 
             GLFWwindow* getWindow();
         private:

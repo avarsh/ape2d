@@ -12,7 +12,7 @@ namespace ape {
 
         std::string fileStrings[2];
         std::ifstream shaderFiles[2];
-        
+
         for(auto& file : shaderFiles) {
            file.exceptions(std::ifstream::badbit);
         }
@@ -49,9 +49,9 @@ namespace ape {
             shaderCodes[index] = fileStrings[index].c_str();
 
             // Compile the shaders
-            
+
             GLenum shaderEnum = (index == vertexIndex) ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER;
-            shaders[index] = glCreateShader(shaderEnum);     
+            shaders[index] = glCreateShader(shaderEnum);
             glShaderSource(shaders[index], 1, &shaderCodes[index], nullptr);
             glCompileShader(shaders[index]);
 
@@ -78,7 +78,7 @@ namespace ape {
         glDeleteShader(shaders[1]);
     }
 
-    void Shader::useProgram() {
+    void Shader::useShader() {
         glUseProgram(mProgram);
     }
 }
