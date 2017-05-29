@@ -14,21 +14,30 @@ namespace ape {
      */
     template <typename... Args>
     class Event {
-        public:
-            typedef std::function<void(Args...)> FuncType;
+    public:
+        typedef std::function<void(Args...)> FuncType;
 
-            void addCallback(FuncType function) {
-                callbackFunctions.push_back(function);
+        /**
+         * Allows subscribers to add a function to be executed
+         * when the event is emitted.
+         * @param function A std::function that matches the event's signature.
+         */
+        void addCallback(FuncType function) {
+            callbackFunctions.push_back(function);
+        }
+
+        /**
+         * Allows the event publisher to emit the event.
+         * @param arguments All the arguments which match the event signature.
+         */
+        void emit(Args... arguments) {
+            for(auto func : callbackFunctions) {
+                func(arguments...);
             }
+        }
 
-            void emit(Args... arguments) {
-                for(auto func : callbackFunctions) {
-                    func(arguments...);
-                }
-            }
-
-        private:
-            std::vector<FuncType> callbackFunctions;
+    private:
+        std::vector<FuncType> callbackFunctions;
     };
 }
 

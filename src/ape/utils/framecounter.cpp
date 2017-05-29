@@ -25,10 +25,6 @@ namespace ape {
         return deltaTime;
     }
 
-    double FrameCounter::getElapsed() {
-        return elapsed;
-    }
-
     int FrameCounter::getFPS() {
         return FPS;
     }

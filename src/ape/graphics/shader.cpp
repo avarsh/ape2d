@@ -1,11 +1,11 @@
 #include <ape/graphics/shader.h>
-#include <iostream>
+
 #include <fstream>
+#include <iostream>
 #include <sstream>
 
 namespace ape {
-    void Shader::loadShaders(const std::string& vertexFile,
-            const std::string& fragmentFile) {
+    void Shader::load(const std::string& vertexFile, const std::string& fragmentFile) {
 
         int vertexIndex = 0;
         int fragmentIndex = 1;
@@ -40,7 +40,7 @@ namespace ape {
         const GLchar* shaderCodes[2];
         GLuint shaders[2];
 
-        mProgram = glCreateProgram();
+        program = glCreateProgram();
 
         GLint success;
         GLchar infoLog[512];
@@ -63,14 +63,14 @@ namespace ape {
                     infoLog << std::endl;
             }
 
-            glAttachShader(mProgram, shaders[index]);
+            glAttachShader(program, shaders[index]);
         }
 
-        glLinkProgram(mProgram);
+        glLinkProgram(program);
 
-        glGetProgramiv(mProgram, GL_LINK_STATUS, &success);
+        glGetProgramiv(program, GL_LINK_STATUS, &success);
         if(!success) {
-            glGetProgramInfoLog(mProgram, 512, nullptr, infoLog);
+            glGetProgramInfoLog(program, 512, nullptr, infoLog);
             std::cout << "Error: Program linking failed.\n" << infoLog << std::endl;
         }
 
@@ -78,7 +78,11 @@ namespace ape {
         glDeleteShader(shaders[1]);
     }
 
-    void Shader::useShader() {
-        glUseProgram(mProgram);
+    GLuint Shader::getProgram() {
+        return program;
+    }
+
+    void Shader::use() {
+        glUseProgram(program);
     }
 }

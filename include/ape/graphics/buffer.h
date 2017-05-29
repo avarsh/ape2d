@@ -2,34 +2,40 @@
 #define BUFFER_H
 
 #include <glad/glad.h>
-#include <vector>
-
-#include <ape/ecs/world.h>
-#include <ape/graphics/meshcomponent.h>
-#include <ape/utils/vector.h>
+#include <ape/graphics/vertex_attributes.h>
+#include <ape/graphics/mesh.h>
+#include <iostream>
 
 namespace ape {
+
+    template<typename DataType>
     class Buffer {
-        public:
-            Buffer();
+    public:
+        void init(GLenum type, GLvoid* data, int size, bool dynamic) {
+            bufferType = type;
 
-            void initBuffers();
-            void flush (World& world);
-            void deleteBuffers();
+            glGenBuffers(1, &bufferID);
+            bind();
 
-            int getVertexCount();
-            void setVertexCount(int vertexCount);
+            GLenum usage = dynamic ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
+            glBufferData(bufferType, size, data, usage);
+        }
 
-            int getElementCount();
-            void setElementCount(int elementCount);
-        private:
-            GLuint vertexBuffer;
-            GLuint indexBuffer;
+        void bind() {
+            glBindBuffer(bufferType, bufferID);
+        }
 
-            int vertexCount {0};
-            int elementCount {0};
+        GLuint getID() {
+            return bufferID;
+        }
 
-            int dataSize {5};
+        void deleteBuffer() {
+            glDeleteBuffers(1, &bufferID);
+        }
+
+    private:
+        GLuint bufferID;
+        GLenum bufferType;
     };
 }
 

@@ -17,57 +17,57 @@ namespace ape {
 
     template<class DerivedComponent>
     class ComponentManager {
-        public:
-            /**
-             * Adds a component to the list.
-             * @param  entity The entity the component is attached to.
-             * @return        The index of the component in the list.
-             */
-            int addComponent(entity_t entity) {
-                DerivedComponent component;
-                component.entity = entity;
-                mComponentList.push_back(component);
-                return mComponentList.size() - 1;
-            }
+    public:
+        /**
+         * Adds a component to the list.
+         * @param  entity The entity the component is attached to.
+         * @return        The index of the component in the list.
+         */
+        int addComponent(entity_t entity) {
+            DerivedComponent component;
+            component.entity = entity;
+            mComponentList.push_back(component);
+            return mComponentList.size() - 1;
+        }
 
-            /**
-             * Removes a component from the list.
-             * @param  index The component's index within it's pool.
-             * @return       The entity holding the component which has been moved.
-             */
-            entity_t removeComponent(int index) {
-                _assertComponent(index);
-                if(index != (mComponentList.size() - 1)) {
-                    std::swap(mComponentList[index], mComponentList.back());
-                    mComponentList.pop_back();
-
-                    return mComponentList[index].entity;
-                }
-
+        /**
+         * Removes a component from the list.
+         * @param  index The component's index within it's pool.
+         * @return       The entity holding the component which has been moved.
+         */
+        entity_t removeComponent(int index) {
+            _assertComponent(index);
+            if(index != (mComponentList.size() - 1)) {
+                std::swap(mComponentList[index], mComponentList.back());
                 mComponentList.pop_back();
-                return 0;
+
+                return mComponentList[index].entity;
             }
 
-            void setComponentEnabled(int index, bool isEnabled) {
-                _assertComponent(index);
-                mComponentList[index].enabled = isEnabled;
-            }
+            mComponentList.pop_back();
+            return 0;
+        }
 
-            /**
-             * Gets the list of components.
-             * @return A reference to the vector of component instances.
-             */
-            std::vector<DerivedComponent>& getComponentList() {
-                return mComponentList;
-            }
+        void setComponentEnabled(int index, bool isEnabled) {
+            _assertComponent(index);
+            mComponentList[index].enabled = isEnabled;
+        }
 
-        private:
-            std::vector<DerivedComponent> mComponentList;
+        /**
+         * Gets the list of components.
+         * @return A reference to the vector of component instances.
+         */
+        std::vector<DerivedComponent>& getComponentList() {
+            return mComponentList;
+        }
 
-            void _assertComponent(int index) {
-                assert(index >= 0);
-                assert(index < mComponentList.size());
-            }
+    private:
+        std::vector<DerivedComponent> mComponentList;
+
+        void _assertComponent(int index) {
+            assert(index >= 0);
+            assert(index < mComponentList.size());
+        }
     };
 }
 

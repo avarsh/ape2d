@@ -3,17 +3,16 @@
 
 #include <string>
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 namespace ape {
-
     class Shader {
-        public:
-            void loadShaders(const std::string& vertexFile, const std::string& fragmentFile);
-            void useShader();
-        private:
-            GLuint mProgram;
+    public:
+        void load(const std::string& vertexFile, const std::string& fragmentFile);
+        GLuint getProgram();
+        void use();
+    private:
+        GLuint program;
     };
 }
 
-#endif // SHADER_H
+#endif

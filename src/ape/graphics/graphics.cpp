@@ -1,159 +1,114 @@
 #include <ape/graphics/graphics.h>
+#include <ape/graphics/texture.h>
+#include <iostream>
 
 namespace ape {
-    Graphics::Graphics(World& world) :
-        world(world) {
-        // Initialise glfw
-        if(!glfwInit()) {
-            std::cout << "GLFW failed to initalise.\n";
-        }
 
-        glfwSetErrorCallback(_errorCallback);
+    /*
+     * TODO: we can only have one instance of this class currently since it
+     * is managing the lifetime of GLFW. Maybe decouple the GLFW initalization
+     * and destruction from this class and let it be managed by the core
+     * engine? This could allow for some more interesting possibilities, e.g.
+     * multiple "worlds" each with their own graphics module, such as a world
+     * for the main menu, a world for the game, etc. We could also decouple
+     * the world from the graphics module and require it to be passed in to
+     * each function.
+     */
+
+    Graphics::Graphics(World& world) : world(world) {
+        if(!glfwInit()) {
+            std::cout << "GLFW failed to initalize!\n";
+        }
     }
 
     Graphics::~Graphics() {
-        polygonBuffer.deleteBuffers();
+        //batcher.deleteBuffers();
 
-        glfwDestroyWindow(window);
+        if(window != nullptr) {
+            glfwDestroyWindow(window);
+        }
+
         glfwTerminate();
     }
 
-    void Graphics::createWindow(unsigned int width, unsigned int height, const std::string& title) {
+    // Available window functions are described in detail here:
+    // http://www.glfw.org/docs/latest/window_guide.html
+    // They need to be exposed in the interface
+
+    // TODO: allow fullscreen windows and borderless windowed
+    void Graphics::createWindow(int width, int height, std::string title) {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+        //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-        window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+        dimensions = Vec2i(width, height);
+
+        // Create the window
+        window = glfwCreateWindow(dimensions.x, dimensions.y, title.c_str(), nullptr, nullptr);
         glfwMakeContextCurrent(window);
         gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
-        glfwSwapInterval(0);
+        glfwSwapInterval(0); // Turn off vsync by default
 
-        int w, h;
-        glfwGetFramebufferSize(window, &w, &h);
-        glViewport(0, 0, w, h);
+        // Set the viewport to be the same size as the window initially
+        int viewWidth, viewHeight;
+        glfwGetFramebufferSize(window, &viewWidth, &viewHeight);
+        _setViewport(Vec2i(viewWidth, viewHeight));
 
-        // Load polygon vertex and fragment shaders
-        polygonShader.loadShaders("./data/shaders/polygon.vert", "./data/shaders/polygon.frag");
+        texturedShader.load("./data/shaders/textured.vert", "./data/shaders/textured.frag");
+        texturedShader.use();
 
-        glGenVertexArrays(1, &polygonVertexArray);
-
-        glBindVertexArray(polygonVertexArray);
-
-        polygonBuffer.initBuffers();
-
-        // The position attribute
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-        glEnableVertexAttribArray(0);
-
-        // The colour attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(1);
-
-        // Unbind everything
-        glBindVertexArray(0);
-
-        // Unbind these after unbinding vertex array
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        GLint projection = glGetUniformLocation(texturedShader.getProgram(), "projection");
+        glUniformMatrix4fv(projection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
     }
 
-    void Graphics::clearWindow(float red, float green, float blue, float alpha) {
-        glClearColor(red, green, blue, alpha);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
-    void Graphics::displayWindow() {
-
-        polygonShader.useShader();
-
-        // Draw polygons
-        if(polygonBuffer.getVertexCount() > 0 && polygonBuffer.getElementCount() > 0) {
-            polygonBuffer.flush(world);
-
-            glBindVertexArray(polygonVertexArray);
-            glDrawElements(GL_TRIANGLES, polygonBuffer.getElementCount(), GL_UNSIGNED_SHORT, (GLvoid*)0);
-
-            // Unbind everything
-            glBindVertexArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        }
-
-        // Swap buffers
-        glfwSwapBuffers(window);
-    }
-
+    // TODO: capture an attempt at the window closing in an event, by using
+    // glfwSetWindowCloseCallback
     bool Graphics::windowIsOpen() {
         return !glfwWindowShouldClose(window);
     }
 
-    void Graphics::addVertex(entity_t entity, GLfloat x, GLfloat y, GLfloat red, GLfloat green, GLfloat blue) {
-        auto& mesh = world.getComponent<Mesh>(entity);
+    void Graphics::clearWindow(Color color) {
+        glClearColor(color.red, color.green, color.blue, 1.f);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
 
-        if(mesh.bufferIndex == -1) {
-            mesh.bufferIndex = 0; // TODO: change this later
+    void Graphics::displayWindow() {
+        texturedShader.use();
+
+        int index = 0;
+        for(auto& texture : textureList) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, texture.getID());
+            glUniform1i(glGetUniformLocation(texturedShader.getProgram(), "u_texture"), 0);
+
+            // TODO: Presort the sprites...
+            batcherList[index].draw(world);
+
+            index++;
         }
 
-        mesh.vertices.push_back(Vertex(x, y, red, green, blue));
-        polygonBuffer.setVertexCount(polygonBuffer.getVertexCount() + 1);
-
-        // Append to indices, but only if we have enough vertices to
-        // form a triangle or above
-        if(mesh.vertices.size() >= 3) {
-            mesh.indices.push_back(0);
-            mesh.indices.push_back(mesh.vertices.size() - 2);
-            mesh.indices.push_back(mesh.vertices.size() - 1);
-
-            polygonBuffer.setElementCount(polygonBuffer.getElementCount() + 3);
-        }
+        glfwSwapBuffers(window);
     }
 
-    void Graphics::setVertexColor(entity_t entity, int vertex, GLfloat red, GLfloat blue, GLfloat green) {
-        auto& mesh = world.getComponent<Mesh>(entity);
-
-        assert(vertex < mesh.vertices.size());
-
-        mesh.vertices[vertex].color.red = red;
-        mesh.vertices[vertex].color.blue = blue;
-        mesh.vertices[vertex].color.green = green;
+    void Graphics::_setViewport(Vec2i newDimensions) {
+        glViewport(0, 0, newDimensions.x, newDimensions.y);
+        projectionMatrix = glm::ortho(0.f, (float)newDimensions.x,
+            (float)newDimensions.y, 0.0f, -1.0f, 1.0f);
     }
 
-    void Graphics::setVertexPosition(entity_t entity, int vertex, GLfloat x, GLfloat y) {
-        auto& mesh = world.getComponent<Mesh>(entity);
-        mesh.vertices[vertex].position.x = x;
-        mesh.vertices[vertex].position.y = y;
-    }
+    int Graphics::addTexture(const Texture& texture) {
+        int ID = textureList.size();
 
-    void Graphics::move(entity_t entity, ape::Vec2<GLfloat> displacement) {
-        auto& mesh = world.getComponent<Mesh>(entity);
+        textureList.push_back(texture);
 
-        for(auto& vertex : mesh.vertices) {
-            vertex.position += displacement;
-        }
-    }
+        SpriteBatcher batcher;
+        batcher.generateBuffers(ID);
 
-    void Graphics::createRectangle (entity_t entity, GLfloat left, GLfloat top, GLfloat width, GLfloat height) {
-        if(!world.entityHasComponent<Mesh>(entity))
-            world.addComponent<Mesh>(entity);
+        batcherList.push_back(batcher);
 
-        addVertex(entity, left, top);
-        addVertex(entity, left, top - height);
-        addVertex(entity, left + width, top - height);
-        addVertex(entity, left + width, top);
-    }
-
-    void Graphics::setFillColor(entity_t entity, GLfloat red, GLfloat green, GLfloat blue) {
-        auto& mesh = world.getComponent<Mesh>(entity);
-
-        for(int vertex = 0; vertex < mesh.vertices.size(); vertex++) {
-            setVertexColor(entity, vertex, red, blue, green);
-        }
-    }
-
-    GLFWwindow* Graphics::getWindow() {
-        return window;
+        return ID;
     }
 }

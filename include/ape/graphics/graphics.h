@@ -3,57 +3,79 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <string>
-#include <iostream>
-
-#include <ape/graphics/shader.h>
-#include <ape/graphics/buffer.h>
 
 #include <ape/ecs/world.h>
-
 #include <ape/utils/vector.h>
 
+#include <ape/graphics/color.h>
+#include <ape/graphics/shader.h>
+#include <ape/graphics/sprite_batcher.h>
+#include <ape/graphics/texture.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include <string>
+
 namespace ape {
-
     class Graphics {
-        public:
-            Graphics(World& world);
-            ~Graphics();
+    public:
 
-            void createWindow(unsigned int width, unsigned int height, const std::string& title);
+        /**
+         * Constructor initalizing the module with a reference to the
+         * world it will display.
+         */
+        Graphics(World& world);
 
-            void clearWindow(float red=0.f, float green=0.f, float blue=0.f, float alpha=1.f);
+        /**
+         * Destructor, terminates the window and the GLFW instance.
+         */
+        ~Graphics();
 
-            void displayWindow();
+        /**
+         * Initializes the main window.
+         * @param width  The width of the window.
+         * @param height The height of the window.
+         * @param title  The string which will be the title of the window.
+         */
+        void createWindow(int width, int height, std::string title);
 
-            bool windowIsOpen();
+        /**
+         * Checks whether the window is still open.
+         * @return A boolean value indicating if the window is open.
+         */
+        bool windowIsOpen();
 
-            void addVertex(entity_t entity, GLfloat x, GLfloat y, GLfloat red=1.0f, GLfloat green=1.0f, GLfloat blue=1.0f);
+        /**
+         * Clears the window to a specified color.
+         * @param color The color to clear the window to.
+         */
+        void clearWindow(Color color);
 
-            void setVertexColor(entity_t entity, int vertex, GLfloat red, GLfloat blue, GLfloat green);
+        /**
+         * Displays the window, swapping buffers and rendering all meshes.
+         */
+        void displayWindow();
 
-            void setFillColor(entity_t entity, GLfloat red, GLfloat green, GLfloat blue);
+        int addTexture(const Texture& texture);
+    private:
+        GLFWwindow* window {nullptr};
+        Vec2i dimensions;
 
-            void setVertexPosition(entity_t entity, int vertex, GLfloat x, GLfloat y);
+        World& world;
 
-            void move(entity_t entity, Vec2<GLfloat> displacement);
+        Shader texturedShader;
+        SpriteBatcher batcher;
 
-            void createRectangle (entity_t entity, GLfloat left, GLfloat top, GLfloat width, GLfloat height);
+        std::vector<Texture> textureList;
+        std::vector<SpriteBatcher> batcherList;
 
-            GLFWwindow* getWindow();
-        private:
-            GLFWwindow* window {nullptr};
+        glm::mat4 projectionMatrix;
 
-            static void _errorCallback(int error, const char* description) {
-                std::cout << "Error " << error << " occured within GLFW: " << description << "\n";
-            }
+        void _setViewport(Vec2i newDimensions);
 
-            Shader polygonShader;
-
-            GLuint polygonVertexArray;
-            Buffer polygonBuffer;
-
-            World& world;
     };
 }
 
