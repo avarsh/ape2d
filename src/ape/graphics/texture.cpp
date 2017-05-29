@@ -38,4 +38,8 @@ namespace ape {
     GLuint Texture::getID() {
         return textureID;
     }
+
+    void Texture::bind() {
+        glBindTexture(GL_TEXTURE_2D, textureID);
+    }
 }

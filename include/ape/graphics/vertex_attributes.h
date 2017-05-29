@@ -17,7 +17,8 @@ namespace ape {
     enum AttributeLocations {
         LOCATION_POSITION = 0,
         LOCATION_COLOR    = 1,
-        LOCATION_TEXTURE  = 2
+        LOCATION_TEXTURE  = 2,
+        LOCATION_USER_DEF = 3
     };
 
     static int getMeshDataSize(int attributes) {

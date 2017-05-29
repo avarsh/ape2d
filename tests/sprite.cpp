@@ -11,7 +11,10 @@ int main(int argc, char* argv[])
     ape::World world;
     ape::Graphics graphics(world);
 
-    graphics.createWindow(800, 600, "Sprites!");
+    ape::Window& window = graphics.getMainWindow();
+    window.create(800, 600, "Sprites!");
+
+    graphics.init();
 
     ape::Texture catTexture;
 
@@ -61,11 +64,12 @@ int main(int argc, char* argv[])
     }
 
 
-    while(graphics.windowIsOpen()) {
+    while(window.isOpen()) {
         glfwPollEvents();
 
-        graphics.clearWindow(ape::Colors::Sea);
-        graphics.displayWindow();
+        window.clear(ape::Colors::Sea);
+        graphics.draw();
+        window.display();
     }
 
     return 0;

@@ -61,10 +61,10 @@ namespace ape {
         transformationBuffer.init(GL_ARRAY_BUFFER, NULL, maxSize, true);
 
         for(int column = 0; column < 4; column++) {
-            glVertexAttribPointer(3 + column, 3, GL_FLOAT, GL_FALSE,
+            glVertexAttribPointer(LOCATION_USER_DEF + column, 3, GL_FLOAT, GL_FALSE,
                 12 * sizeof(GLfloat), (GLvoid*)(column * 3 * sizeof(GLfloat)));
-            glEnableVertexAttribArray(3 + column);
-            glVertexAttribDivisor(3 + column, 1);
+            glEnableVertexAttribArray(LOCATION_USER_DEF + column);
+            glVertexAttribDivisor(LOCATION_USER_DEF + column, 1);
         }
 
         // =========

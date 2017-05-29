@@ -14,6 +14,8 @@ namespace ape {
         bool load(std::string path);
 
         GLuint getID();
+
+        void bind();
     private:
         GLuint textureID;
         Vec2i dimensions;

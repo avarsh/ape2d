@@ -6,7 +6,8 @@ APEWORLD := ./src/ape/ecs/world.cpp ./src/ape/ecs/defines.cpp
 APEUTILS := ./src/ape/utils/framecounter.cpp
 APEGRAPHICS := ./src/ape/graphics/graphics.cpp ./src/ape/graphics/static.cpp \
 	./src/ape/graphics/shader.cpp ./src/ape/graphics/sprite_batcher.cpp \
-	./src/ape/graphics/texture.cpp ./src/ape/graphics/buffer.cpp
+	./src/ape/graphics/texture.cpp ./src/ape/graphics/buffer.cpp \
+	./src/ape/graphics/window.cpp
 INCLUDEDIRS := -Iinclude/ -Ideps/
 
 window: ./tests/window.cpp

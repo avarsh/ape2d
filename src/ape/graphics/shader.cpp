@@ -85,4 +85,8 @@ namespace ape {
     void Shader::use() {
         glUseProgram(program);
     }
+
+    int Shader::getUniformLocation(const std::string& uniformName) {
+        return glGetUniformLocation(program, uniformName.c_str());
+    }
 }

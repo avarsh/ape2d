@@ -19,15 +19,16 @@ namespace ape {
         if(!glfwInit()) {
             std::cout << "GLFW failed to initalize!\n";
         }
+
+        window.resizedEvent.addCallback([this](Vec2i newDims) {
+            _setViewport(newDims);
+        });
     }
 
     Graphics::~Graphics() {
         //batcher.deleteBuffers();
 
-        if(window != nullptr) {
-            glfwDestroyWindow(window);
-        }
-
+        window.destroy();
         glfwTerminate();
     }
 
@@ -36,61 +37,35 @@ namespace ape {
     // They need to be exposed in the interface
 
     // TODO: allow fullscreen windows and borderless windowed
-    void Graphics::createWindow(int width, int height, std::string title) {
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-        //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-        dimensions = Vec2i(width, height);
-
-        // Create the window
-        window = glfwCreateWindow(dimensions.x, dimensions.y, title.c_str(), nullptr, nullptr);
-        glfwMakeContextCurrent(window);
-        gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-
-        glfwSwapInterval(0); // Turn off vsync by default
-
-        // Set the viewport to be the same size as the window initially
-        int viewWidth, viewHeight;
-        glfwGetFramebufferSize(window, &viewWidth, &viewHeight);
-        _setViewport(Vec2i(viewWidth, viewHeight));
-
+    void Graphics::init() {
         texturedShader.load("./data/shaders/textured.vert", "./data/shaders/textured.frag");
         texturedShader.use();
 
-        GLint projection = glGetUniformLocation(texturedShader.getProgram(), "projection");
+        // TODO: do this in the _setViewport function
+        // We need to have a window created event to distinguish the inital
+        // creation from subsequent resizes
+        GLint projection = texturedShader.getUniformLocation("projection");
         glUniformMatrix4fv(projection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
     }
 
-    // TODO: capture an attempt at the window closing in an event, by using
-    // glfwSetWindowCloseCallback
-    bool Graphics::windowIsOpen() {
-        return !glfwWindowShouldClose(window);
-    }
-
-    void Graphics::clearWindow(Color color) {
-        glClearColor(color.red, color.green, color.blue, 1.f);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
-    void Graphics::displayWindow() {
+    void Graphics::draw() {
         texturedShader.use();
 
         int index = 0;
+        glActiveTexture(GL_TEXTURE0);
         for(auto& texture : textureList) {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texture.getID());
-            glUniform1i(glGetUniformLocation(texturedShader.getProgram(), "u_texture"), 0);
+            texture.bind();
+            glUniform1i(texturedShader.getUniformLocation("u_texture"), 0);
 
             // TODO: Presort the sprites...
             batcherList[index].draw(world);
 
             index++;
         }
+    }
 
-        glfwSwapBuffers(window);
+    Window& Graphics::getWindow() {
+        return window;
     }
 
     void Graphics::_setViewport(Vec2i newDimensions) {

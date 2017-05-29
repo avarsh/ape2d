@@ -10,6 +10,8 @@ namespace ape {
         void load(const std::string& vertexFile, const std::string& fragmentFile);
         GLuint getProgram();
         void use();
+
+        int getUniformLocation(const std::string& uniformName);
     private:
         GLuint program;
     };
