@@ -1,5 +1,5 @@
 #include <GLFW/glfw3.h>
-#include <ape/utils/framecounter.h>
+#include <ape/utils/frame_counter.h>
 
 namespace ape {
     void FrameCounter::startTimer() {

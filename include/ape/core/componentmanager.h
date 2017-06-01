@@ -4,7 +4,7 @@
 #include <vector>   /* std::vector */
 #include <cassert>  /* assert()    */
 
-#include <ape/ecs/defines.h>
+#include <ape/core/defines.h>
 
 namespace ape {
 
@@ -26,8 +26,8 @@ namespace ape {
         int addComponent(entity_t entity) {
             DerivedComponent component;
             component.entity = entity;
-            mComponentList.push_back(component);
-            return mComponentList.size() - 1;
+            componentList.push_back(component);
+            return componentList.size() - 1;
         }
 
         /**
@@ -37,20 +37,20 @@ namespace ape {
          */
         entity_t removeComponent(int index) {
             _assertComponent(index);
-            if(index != (mComponentList.size() - 1)) {
-                std::swap(mComponentList[index], mComponentList.back());
-                mComponentList.pop_back();
+            if(index != (componentList.size() - 1)) {
+                std::swap(componentList[index], componentList.back());
+                componentList.pop_back();
 
-                return mComponentList[index].entity;
+                return componentList[index].entity;
             }
 
-            mComponentList.pop_back();
+            componentList.pop_back();
             return 0;
         }
 
         void setComponentEnabled(int index, bool isEnabled) {
             _assertComponent(index);
-            mComponentList[index].enabled = isEnabled;
+            componentList[index].enabled = isEnabled;
         }
 
         /**
@@ -58,15 +58,15 @@ namespace ape {
          * @return A reference to the vector of component instances.
          */
         std::vector<DerivedComponent>& getComponentList() {
-            return mComponentList;
+            return componentList;
         }
 
     private:
-        std::vector<DerivedComponent> mComponentList;
+        std::vector<DerivedComponent> componentList;
 
         void _assertComponent(int index) {
             assert(index >= 0);
-            assert(index < mComponentList.size());
+            assert(index < componentList.size());
         }
     };
 }

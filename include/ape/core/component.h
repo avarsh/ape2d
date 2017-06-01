@@ -1,8 +1,8 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include <ape/ecs/defines.h>
-#include <ape/ecs/componentmanager.h>
+#include <ape/core/defines.h>
+#include <ape/core/componentmanager.h>
 
 namespace ape {
 
@@ -57,7 +57,7 @@ namespace ape {
 
         virtual int remove(int index) {
             // Ask the manager to remove it...
-            return mManager.removeComponent(index);
+            return Manager.removeComponent(index);
         }
 
         entity_t entity { ENTITY_INVALID };
@@ -65,11 +65,11 @@ namespace ape {
 
         // The manager for the component, shared by all instances of the
         // component.
-        static ComponentManager<DerivedComponent> mManager;
+        static ComponentManager<DerivedComponent> Manager;
     };
 
     template<class DerivedComponent>
-    ComponentManager<DerivedComponent> Component<DerivedComponent>::mManager;
+    ComponentManager<DerivedComponent> Component<DerivedComponent>::Manager;
 }
 
 #endif

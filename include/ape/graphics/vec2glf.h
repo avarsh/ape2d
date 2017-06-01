@@ -1,7 +1,7 @@
 #ifndef VEC2_GLF_H
 #define VEC2_GLF_H
 
-#include <ape/utils/vector.h>
+#include <ape/core/vec2.h>
 #include <glad/glad.h>
 
 namespace ape {

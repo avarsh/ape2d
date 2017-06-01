@@ -6,14 +6,19 @@
 
 #include <string>
 
-#include <ape/utils/event.h>
+#include <ape/core/event.h>
 #include <ape/graphics/color.h>
-#include <ape/utils/vector.h>
+#include <ape/core/vec2.h>
 
 namespace ape {
 
     class Window {
     public:
+        Window();
+
+        Window(const Window& other) = delete;
+        void operator=(const Window &other) = delete;
+
         /**
          * Initializes the main window.
          * @param width  The width of the window.
@@ -29,19 +34,27 @@ namespace ape {
         bool isOpen();
 
         /**
-         * Clears the window to a specified color.
-         * @param color The color to clear the window to.
+         * Sets the title of the window.
+         * @param title The string to be set as the title.
          */
-        void clear(Color color);
+        void setTitle(const std::string& title);
 
         /**
-         * Displays the window, swapping buffers and rendering all meshes.
+         * Destroys the window.
          */
-        void display();
-
         void destroy();
 
+        GLFWwindow* getWindow();
+
+        /**
+         * Event emitted when the window is resized.
+         */
         Event<Vec2i> resizedEvent;
+
+        /**
+         * Event emitted when the window is first created.
+         */
+        Event<Vec2i> createdEvent;
     private:
         GLFWwindow* window {nullptr};
         Vec2i dimensions;

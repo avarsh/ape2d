@@ -1,5 +1,5 @@
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef VEC2_H
+#define VEC2_H
 
 #include <type_traits>
 
@@ -72,8 +72,6 @@ namespace ape {
             return *this;
         }
 
-
-
         bool operator==(const Vec2<T>& val) {
             if((x == val.x) && (y == val.y)) {
                 return true;
@@ -136,4 +134,4 @@ namespace ape {
     };
 }
 
-#endif // VECTOR_H
+#endif // VEC2_H

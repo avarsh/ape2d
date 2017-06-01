@@ -22,7 +22,7 @@ void main()
     model[2] = vec4(in_transform3, 0.0f);
     model[3] = vec4(in_transform4, 1.0f);
 
-    gl_Position = projection * model * vec4(in_position.x, in_position.y, 0.0, 1.0);
+    gl_Position =  projection * model * vec4(in_position.x, in_position.y, 0.0, 1.0);
     ex_color = in_color;
     ex_texture = in_texture;
 }

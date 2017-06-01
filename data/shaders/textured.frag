@@ -9,5 +9,5 @@ uniform sampler2D u_texture;
 
 void main()
 {
-    out_color = texture(u_texture, vec2(ex_texture.x, 1.0 - ex_texture.y)) * vec4(ex_color, 1.0);
+    out_color = texture(u_texture, ex_texture) * vec4(ex_color, 1.0);
 }

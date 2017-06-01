@@ -1,76 +1,76 @@
-#include <ape/ecs/world.h>
+#include <ape/core/world.h>
 
 namespace ape {
     entity_t World::createEntity() {
-        if(mFreeList.size() > 0) {
-            entity_t entity = mFreeList.front();
-            mFreeList.pop();
+        if(freeList.size() > 0) {
+            entity_t entity = freeList.front();
+            freeList.pop();
 
-            mEntityData[entity - 1].alive = true;
-            mEntityData[entity - 1].mNext = getNext(entity);
-            mInitiationFunc(entity);
+            entityData[entity - 1].alive = true;
+            entityData[entity - 1].next = getNext(entity);
+            initiationFunc(entity);
 
             return entity;
         }
 
-        entity_t entity = mCounter++;
+        entity_t entity = counter++;
 
-        mEntityData.push_back(EntityData());
-        mInitiationFunc(entity);
-        mEntityData[entity - 1].mNext = getNext(entity);
+        entityData.push_back(EntityData());
+        initiationFunc(entity);
+        entityData[entity - 1].next = getNext(entity);
 
         return entity;
     }
 
     entity_t World::createEntityFromBlueprint(int blueprint) {
-        assert(blueprint < mBlueprints.size());
+        assert(blueprint < blueprints.size());
         entity_t newEntity = createEntity();
 
-        mBlueprints[blueprint](newEntity);
+        blueprints[blueprint](newEntity);
 
         return newEntity;
     }
 
     void World::deleteEntity(entity_t entity) {
         _assertEntity(entity);
-        mKillList.push(entity);
+        killList.push(entity);
     }
 
     void World::refresh() {
-        while(mKillList.size() > 0) {
-            auto entity = mKillList.front();
+        while(killList.size() > 0) {
+            auto entity = killList.front();
 
-            mEntityData[entity - 1].alive = false;
+            entityData[entity - 1].alive = false;
 
-            entity_t prev = mEntityData[entity - 1].mPrevious;
-            entity_t next = mEntityData[entity - 1].mNext;
+            entity_t prev = entityData[entity - 1].previous;
+            entity_t next = entityData[entity - 1].next;
 
             if(prev != ENTITY_INVALID) {
-                mEntityData[prev - 1].mNext = next;
+                entityData[prev - 1].next = next;
             }
 
             if(next != ENTITY_INVALID) {
-                mEntityData[next - 1].mPrevious = prev;
+                entityData[next - 1].previous = prev;
             }
 
             // Iterate over every component type
             for(int i = 1; i < currentBitsize; i = i << 1) {
                 // Check if the entity has that component type
-                if((mEntityData[entity - 1].mask&i) == i) {
+                if((entityData[entity - 1].mask&i) == i) {
                     // If it does, find out where it is located
-                    int index = mEntityData[entity - 1].mIndices[i];
-                    entity_t entityToUpdate = mComponentInstances[i]->remove(index);
+                    int index = entityData[entity - 1].indices[i];
+                    entity_t entityToUpdate = componentInstances[i]->remove(index);
 
                     if(entityToUpdate != ENTITY_INVALID) {
-                        mEntityData[entityToUpdate - 1].mIndices[i] = index;
+                        entityData[entityToUpdate - 1].indices[i] = index;
                     }
                 }
             }
 
-            mEntityData[entity - 1].mask = 0;
-            mFreeList.push(entity);
+            entityData[entity - 1].mask = 0;
+            freeList.push(entity);
 
-            mKillList.pop();
+            killList.pop();
         }
     }
 
@@ -82,14 +82,14 @@ namespace ape {
         bool nextIsAlive = false;
         entity_t nextAlive = ENTITY_INVALID;
         while(!nextIsAlive) {
-            if(currentEntity == mEntityData.size()) {
+            if(currentEntity == entityData.size()) {
                 nextIsAlive = true;
-            }
-
-            currentEntity++;
-            if(mEntityData[currentEntity - 1].alive) {
-                nextAlive = currentEntity;
-                nextIsAlive = true;
+            } else {
+                currentEntity++;
+                if(entityData[currentEntity - 1].alive) {
+                    nextAlive = currentEntity;
+                    nextIsAlive = true;
+                }
             }
         }
 
@@ -102,14 +102,14 @@ namespace ape {
         }
 
         int tagKey = _getTagKey(tag);
-        getComponent<TagComponent>(entity).mTags[tagKey] = tag;
+        getComponent<TagComponent>(entity).tags[tagKey] = tag;
     }
 
     std::vector<entity_t> World::getTaggedEntities(std::string tag) {
         std::vector<entity_t> entities;
         int tagKey = _getTagKey(tag);
         for(auto& tagComponent : getComponentList<TagComponent>()) {
-            if(tagComponent.mTags.find(tagKey) != tagComponent.mTags.end()) {
+            if(tagComponent.tags.find(tagKey) != tagComponent.tags.end()) {
                 entities.push_back(tagComponent.entity);
             }
         }
@@ -124,7 +124,7 @@ namespace ape {
 
         int tagKey = _getTagKey(tag);
         auto& tagComponent = getComponent<TagComponent>(entity);
-        if(tagComponent.mTags.find(tagKey) == tagComponent.mTags.end()) {
+        if(tagComponent.tags.find(tagKey) == tagComponent.tags.end()) {
             return false;
         }
 
@@ -133,17 +133,17 @@ namespace ape {
 
     // Look at World::_getComponentHandle for an explanation on how this works
     int World::_getTagKey(std::string tag) {
-        int& key = mTagKeys[tag];
+        int& key = tagKeys[tag];
         if(key) return key;
-        key = mTagCounter;
-        mTagCounter++;
+        key = tagCounter;
+        tagCounter++;
         return key;
     }
 
     void World::_assertEntity(entity_t entity) {
-        assert(entity < mCounter);
+        assert(entity < counter);
         assert(entity > ENTITY_INVALID);
-        assert(mEntityData[entity - 1].alive);
+        assert(entityData[entity - 1].alive);
     }
 
 }

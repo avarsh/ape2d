@@ -1,7 +1,7 @@
 #ifndef FRAME_COUNTER_H
 #define FRAME_COUNTER_H
 
-#include <ape/utils/event.h>
+#include <ape/core/event.h>
 
 namespace ape {
 

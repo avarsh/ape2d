@@ -10,10 +10,10 @@
 #include <functional>       /* std::function      */
 #include <cassert>          /* assert()           */
 
-#include <ape/ecs/defines.h>
-#include <ape/ecs/component.h>
-#include <ape/ecs/componentmanager.h>
-#include <ape/utils/event.h>
+#include <ape/core/defines.h>
+#include <ape/core/component.h>
+#include <ape/core/componentmanager.h>
+#include <ape/core/event.h>
 
 namespace ape {
 
@@ -98,20 +98,20 @@ namespace ape {
             }
 
             // We ask the manager to add the component...
-            int index = DerivedComponent::mManager.addComponent(entity);
+            int index = DerivedComponent::Manager.addComponent(entity);
             // Then we store the index of the component within its pool
             // in a map.
             int cHandle = getComponentHandle<DerivedComponent>();
-            mEntityData[entity - 1].mIndices[cHandle] = index;
+            entityData[entity - 1].indices[cHandle] = index;
             // Modify the mask to reflect that the entity has the component.
-            mEntityData[entity - 1].mask |= cHandle;
+            entityData[entity - 1].mask |= cHandle;
 
             // We check whether we have an instance of the component added
             // to our map; otherwise, we create one.
             try {
-                mComponentInstances.at(cHandle);
+                componentInstances.at(cHandle);
             } catch (const std::out_of_range& error) {
-                mComponentInstances[cHandle] = std::make_unique<DerivedComponent>();
+                componentInstances[cHandle] = std::make_unique<DerivedComponent>();
             }
 
             return getComponent<DerivedComponent>(entity);
@@ -153,14 +153,14 @@ namespace ape {
             assert(entityHasComponent<DerivedComponent>(entity));
 
             int handle = getComponentHandle<DerivedComponent>();
-            int index = mEntityData[entity - 1].mIndices[handle];
-            entity_t entityToUpdate = DerivedComponent::mManager.removeComponent(index);
+            int index = entityData[entity - 1].indices[handle];
+            entity_t entityToUpdate = DerivedComponent::Manager.removeComponent(index);
 
-            mEntityData[entity - 1].mask &= ~handle;
+            entityData[entity - 1].mask &= ~handle;
 
 
             if(entityToUpdate != ENTITY_INVALID) {
-                mEntityData[entityToUpdate - 1].mIndices[handle] = index;
+                entityData[entityToUpdate - 1].indices[handle] = index;
             }
         }
 
@@ -195,8 +195,8 @@ namespace ape {
             assert(entityHasComponent<DerivedComponent>(entity));
 
             int handle = getComponentHandle<DerivedComponent>();
-            int index = mEntityData[entity - 1].mIndices[handle];
-            DerivedComponent::mManager.setComponentEnabled(index, false);
+            int index = entityData[entity - 1].indices[handle];
+            DerivedComponent::Manager.setComponentEnabled(index, false);
         }
 
         template<class DerivedComponent>
@@ -206,8 +206,8 @@ namespace ape {
             assert(entityHasComponent<DerivedComponent>(entity));
 
             int handle = getComponentHandle<DerivedComponent>();
-            int index = mEntityData[entity - 1].mIndices[handle];
-            DerivedComponent::mManager.setComponentEnabled(index, true);
+            int index = entityData[entity - 1].indices[handle];
+            DerivedComponent::Manager.setComponentEnabled(index, true);
         }
 
         /**
@@ -226,7 +226,7 @@ namespace ape {
             int mask = getComponentHandle<DerivedComponent>();
             // Retrieve the component's location within its pool using
             // our mappings
-            int index = mEntityData[entity - 1].mIndices[mask];
+            int index = entityData[entity - 1].indices[mask];
             return getComponentList<DerivedComponent>()[index];
         }
 
@@ -241,7 +241,7 @@ namespace ape {
             _assertEntity(entity);
 
             int cMask = getComponentHandle<DerivedComponent>();
-            if((mEntityData[entity - 1].mask&cMask) == cMask) {
+            if((entityData[entity - 1].mask&cMask) == cMask) {
                 return true;
             }
 
@@ -287,7 +287,7 @@ namespace ape {
              * the default constructor. For an integer value, this default
              * is 0.
              */
-            int& handle = mComponentTypeMap[typeid(Component)];
+            int& handle = componentTypeMap[typeid(Component)];
 
             /*
              * If the handle is not 0 (component handles cannot be 0!),
@@ -322,7 +322,7 @@ namespace ape {
             _staticAssertBase<DerivedComponent>();
 
             // Basically a convenience wrapper
-            return DerivedComponent::mManager.getComponentList();
+            return DerivedComponent::Manager.getComponentList();
         }
 
         /**
@@ -333,7 +333,7 @@ namespace ape {
          */
         template<class ...Components>
         void setDefaultComponents() {
-            mInitiationFunc = [this](entity_t entity) {
+            initiationFunc = [this](entity_t entity) {
                 addComponents<Components...>(entity);
             };
         }
@@ -346,12 +346,12 @@ namespace ape {
         template<class ...Components>
         int addBlueprint() {
             // A blueprint is just a lambda which adds the components.
-            mBlueprints.push_back([this](entity_t entity){
+            blueprints.push_back([this](entity_t entity){
                 addComponents<Components...>(entity);
             });
 
             // The handle is the blueprint's index
-            return mBlueprints.size() - 1;
+            return blueprints.size() - 1;
         }
 
         Event<entity_t> entityDeletedEvent;
@@ -364,34 +364,32 @@ namespace ape {
          * components it has and a boolean flag to mark it as alive.
          */
         struct EntityData {
-            std::unordered_map<int, int> mIndices;
+            std::unordered_map<int, int> indices;
             int mask {0};
             bool alive {true};
 
-            entity_t mNext { ENTITY_INVALID };
-            entity_t mPrevious { ENTITY_INVALID };
+            entity_t next { ENTITY_INVALID };
+            entity_t previous { ENTITY_INVALID };
         };
 
         /*
          * A custom component, used to store strings, or "tags".
          */
         struct TagComponent : public Component<TagComponent> {
-            std::unordered_map<int, std::string> mTags;
+            std::unordered_map<int, std::string> tags;
         };
 
         // Used to keep track of tags and to look them up quickly in tag components.
-        std::unordered_map<std::string, int> mTagKeys;
+        std::unordered_map<std::string, int> tagKeys;
 
         // Used to assign a unique key to each tag.
-        int mTagCounter {1};
+        int tagCounter {1};
 
         /*
          * Gets the key value for a tag - the key value is then used
          * to lookup the tag in the tag component.
          */
         int _getTagKey(std::string tag);
-
-
 
         /*
          * A convenience function used to check at compile time if a template
@@ -410,26 +408,26 @@ namespace ape {
         void _assertEntity(entity_t entity);
 
         // The data for each entity
-        std::vector<EntityData> mEntityData;
+        std::vector<EntityData> entityData;
 
         // Used to allocate new entities - note that entities cannot
         // have a handle of 0. This is useful when checking certain
         // parameters.
-        entity_t mCounter {1};
+        entity_t counter {1};
 
         // The queue of entities which have recently been deleted
-        std::queue<entity_t> mFreeList;
+        std::queue<entity_t> freeList;
 
         // The queue of entities which have recently been deleted
-        std::queue<entity_t> mKillList;
+        std::queue<entity_t> killList;
 
         // The world keeps an instance of every component which is created.
         // This is done to access static members such as the component managers.
-        std::unordered_map<int, std::unique_ptr<BaseComponent>> mComponentInstances;
+        std::unordered_map<int, std::unique_ptr<BaseComponent>> componentInstances;
 
         // We can map types to integer handles for components. This is mainly
         // used to build bitmasks for entities
-        std::unordered_map<std::type_index, int> mComponentTypeMap;
+        std::unordered_map<std::type_index, int> componentTypeMap;
 
         // The current bitsize, shifted left by 1 for every component.
         // Note that components cannot have a handle of 0.
@@ -437,14 +435,10 @@ namespace ape {
 
         // A function applied to every entity upon creation - usually used
         // to add components by default.
-        std::function<void(entity_t)> mInitiationFunc { [](entity_t e) {} };
+        std::function<void(entity_t)> initiationFunc { [](entity_t e) {} };
 
         // Blueprint related data
-        std::vector<std::function<void(entity_t)>> mBlueprints;
-
-        struct {
-            Event<entity_t, int> componentAdded;
-        } events;
+        std::vector<std::function<void(entity_t)>> blueprints;
     };
 }
 

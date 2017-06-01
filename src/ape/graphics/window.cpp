@@ -2,11 +2,18 @@
 
 namespace ape {
 
+    Window::Window() { }
+
+    // Available window functions are described in detail here:
+    // http://www.glfw.org/docs/latest/window_guide.html
+    // They need to be exposed in the interface
+
     void Window::create(int width, int height, std::string title) {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        // TODO: allow for window creation hints
         //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
         dimensions = Vec2i(width, height);
@@ -22,7 +29,7 @@ namespace ape {
         int viewWidth, viewHeight;
         glfwGetFramebufferSize(window, &viewWidth, &viewHeight);
 
-        resizedEvent.emit(Vec2i(viewWidth, viewHeight));
+        createdEvent.emit(Vec2i(viewWidth, viewHeight));
     }
 
     // TODO: capture an attempt at the window closing in an event, by using
@@ -31,13 +38,12 @@ namespace ape {
         return !glfwWindowShouldClose(window);
     }
 
-    void Window::clear(Color color) {
-        glClearColor(color.red, color.green, color.blue, 1.f);
-        glClear(GL_COLOR_BUFFER_BIT);
+    void Window::setTitle(const std::string& title) {
+        glfwSetWindowTitle(window, title.c_str());
     }
 
-    void Window::display() {
-        glfwSwapBuffers(window);
+    GLFWwindow* Window::getWindow() {
+        return window;
     }
 
     void Window::destroy() {

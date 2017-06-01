@@ -3,23 +3,16 @@
 
 #include <glad/glad.h>
 #include <string>
-#include <ape/utils/vector.h>
+
+#include <ape/graphics/rect.h>
 
 namespace ape {
 
-    class Texture {
-    public:
-        Texture();
-
-        bool load(std::string path);
-
-        GLuint getID();
-
+    struct Texture {
         void bind();
-    private:
-        GLuint textureID;
-        Vec2i dimensions;
+        GLuint id;
+        Vec2i size;
     };
 }
 
-#endif // TEXTURE_H
+#endif
