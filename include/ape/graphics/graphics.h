@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <stack>
 
 #include <ape/core/world.h>
 #include <ape/core/vec2.h>
@@ -72,33 +73,15 @@ namespace ape {
         Texture& loadTexture(const std::string& source);
     private:
         void _setViewport(Vec2i newDimensions);
-        void _createSpriteBuffer();
 
         World& world;
         Window window;
         Shader texturedShader;
         glm::mat4 projectionMatrix;
         std::map<GLuint, Texture> textureMap;
+        std::map<GLuint, BatchRenderer> rendererMap;
 
         std::vector<Mesh> meshDrawList;
-
-        std::vector<BatchRenderer> batchRenderers;
-
-        GLuint vertexArray;
-        Buffer<GLfloat> squareVBO, attributeVBO, matrixVBO;
-        Buffer<GLushort> squareEBO;
-
-        GLfloat square[8] = {
-            0.f, 0.f,
-            0.f, 1.f,
-            1.f, 1.f,
-            1.f, 0.0f
-        };
-
-        GLushort indices[6] = {
-            0, 1, 2,
-            0, 2, 3
-        };
 
         int maxSize {65536};
     };

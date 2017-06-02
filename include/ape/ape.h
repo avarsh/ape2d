@@ -4,6 +4,7 @@
 #include <ape/core/world.h>
 #include <ape/graphics/graphics.h>
 #include <ape/core/transform.h>
+#include <ape/utils/frame_counter.h>
 
 namespace ape {
 

@@ -1,3 +1,5 @@
+#define NDEBUG
+
 #include <ape/ape.h>
 
 int main(int argc, char* argv[])
@@ -9,35 +11,48 @@ int main(int argc, char* argv[])
 
     window.create(800, 600, "Sprites!");
 
-    ape::Texture backgroundTexture;
-    ape::Texture spriteTexture;
+    ape::Texture textures[2];
+    std::string textureSources[] = {
+        "./examples/images/car.png",
+        "./examples/images/post.png"
+    };
 
     try {
-        backgroundTexture = graphics.loadTexture("./data/background.png");
-        spriteTexture = graphics.loadTexture("./data/sprite.png");
+        for(int i = 0; i < 2; i++) {
+            textures[i] = graphics.loadTexture(textureSources[i]);
+        }
     } catch (std::runtime_error err) {
         std::cout << err.what() << std::endl;
         return 1;
     }
 
-    auto background = world.createEntity();
-    auto& transform = world.addComponent<ape::Transform>(background);
-    auto& mesh = world.addComponent<ape::Mesh>(background);
 
-    mesh.setTexture(backgroundTexture);
+    for(int i = 0; i < 2; i++) {
+        auto entity = world.createEntity();
+        auto& transform = world.addComponent<ape::Transform>(entity);
+        auto& mesh = world.addComponent<ape::Mesh>(entity);
 
-    auto sprite = world.createEntity();
-    auto& transform2 = world.addComponent<ape::Transform>(sprite);
-    auto& mesh2 = world.addComponent<ape::Mesh>(sprite);
+        mesh.setTexture(textures[i]);
 
-    mesh2.setTexture(spriteTexture);
+        transform.position = ape::Vec2f(i * 200, i * 150);
+    }
+
+    ape::FrameCounter counter;
+    counter.counterTickEvent.addCallback([&window](int fps) {
+        window.setTitle("Sprites! Running at: " + std::to_string(fps) + " FPS");
+    });
+    counter.startTimer();
 
     while(window.isOpen()) {
         engine.pollEvents();
+        counter.tick();
 
-        graphics.clear(ape::Colors::Sky);
-        graphics.draw(background);
-        graphics.draw(sprite);
+        graphics.clear(ape::Colors::Sea);
+
+        for(auto& mesh : world.getComponentList<ape::Mesh>()) {
+            graphics.draw(mesh.entity);
+        }
+
         graphics.display();
     }
 

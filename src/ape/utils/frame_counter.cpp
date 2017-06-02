@@ -7,7 +7,7 @@ namespace ape {
         start = glfwGetTime();
     }
 
-    double FrameCounter::calculateFPS() {
+    double FrameCounter::tick() {
         double current = glfwGetTime();
         double deltaTime = current - start;
         elapsed += deltaTime;

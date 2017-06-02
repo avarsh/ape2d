@@ -8,7 +8,79 @@
 
 namespace ape {
 
-    BatchRenderer::BatchRenderer(GLuint textureId) : textureId(textureId) { }
+    BatchRenderer::BatchRenderer() {
+        // ================
+        // Generate buffers
+        // ================
+
+        glGenVertexArrays(1, &vertexArray);
+        glBindVertexArray(vertexArray);
+
+        // =====================
+        // Initalise the buffers
+        // =====================
+
+        // ======================
+        // Buffers for the square
+        // ======================
+
+        squareVBO.init(GL_ARRAY_BUFFER, square, sizeof(square), false);
+        squareEBO.init(GL_ELEMENT_ARRAY_BUFFER, indices, sizeof(indices), false);
+
+        squareVBO.bind();
+
+        glVertexAttribPointer(VertexAttributeInfo::PositionLocation,
+            VertexAttributeInfo::PositionSize, GL_FLOAT, GL_FALSE,
+            VertexAttributeInfo::PositionSize * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(VertexAttributeInfo::PositionLocation);
+
+        // ==========================
+        // The buffer for each vertex
+        // ==========================
+
+        attributeVBO.init(GL_ARRAY_BUFFER, NULL, maxSize, true);
+        attributeVBO.bind();
+
+        int size = VertexAttributeInfo::ColorSize + VertexAttributeInfo::TextureSize;
+
+        glVertexAttribPointer(VertexAttributeInfo::ColorLocation,
+            VertexAttributeInfo::ColorSize, GL_FLOAT, GL_FALSE,
+            size * sizeof(GLfloat), (GLvoid*)0);
+
+        glEnableVertexAttribArray(VertexAttributeInfo::ColorLocation);
+
+        glVertexAttribPointer(VertexAttributeInfo::TextureLocation,
+            VertexAttributeInfo::TextureSize, GL_FLOAT, GL_FALSE,
+            size * sizeof(GLfloat), (GLvoid*)(VertexAttributeInfo::ColorSize * sizeof(GLfloat)));
+
+        glEnableVertexAttribArray(VertexAttributeInfo::TextureLocation);
+
+        // ============================
+        // The buffer for each instance
+        // ============================
+
+        matrixVBO.init(GL_ARRAY_BUFFER, NULL, maxSize, true);
+
+        for(int column = 0; column < 4; column++) {
+            glVertexAttribPointer(VertexAttributeInfo::TextureLocation + 1 + column, 3, GL_FLOAT, GL_FALSE,
+                12 * sizeof(GLfloat), (GLvoid*)(column * 3 * sizeof(GLfloat)));
+            glEnableVertexAttribArray(VertexAttributeInfo::TextureLocation + 1 + column);
+            glVertexAttribDivisor(VertexAttributeInfo::TextureLocation + 1 + column, 1);
+        }
+
+        // =========
+        // Unbinding
+        // =========
+
+        glBindVertexArray(0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+
+    void BatchRenderer::setTextureId(GLuint textureId) {
+        this->textureId = textureId;
+    }
 
     GLuint BatchRenderer::getTextureId() {
         return textureId;
@@ -18,7 +90,7 @@ namespace ape {
         meshDrawList.push_back(mesh);
     }
 
-    void BatchRenderer::drawAll(World& world, Buffer<GLfloat>& attributeVBO, Buffer<GLfloat>& matrixVBO) {
+    void BatchRenderer::flush(World& world) {
         attributeVBO.bind();
 
         int listSize = meshDrawList.size();
@@ -95,9 +167,11 @@ namespace ape {
 
         glUnmapBuffer(GL_ARRAY_BUFFER);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
 
-    int BatchRenderer::getMeshListSize() {
-        return meshDrawList.size();
+        glBindVertexArray(vertexArray);
+        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, meshDrawList.size());
+        glBindVertexArray(0);
+
+        meshDrawList.clear();
     }
 }

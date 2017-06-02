@@ -23,7 +23,7 @@ namespace ape {
          * previous clock call.
          * @return The time delta between the two clocks.
          */
-        double calculateFPS();
+        double tick();
 
         /**
          * Gets the last known value for the FPS.
