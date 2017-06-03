@@ -1,4 +1,4 @@
-#version 330
+#version 420
 
 in vec3 ex_color;
 in vec2 ex_texture;

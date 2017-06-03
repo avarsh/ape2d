@@ -90,26 +90,44 @@ namespace ape {
         meshDrawList.push_back(mesh);
     }
 
+    void BatchRenderer::begin() {
+        rendered = 0;
+        //meshDrawList.clear();
+    }
+
     void BatchRenderer::flush(World& world) {
+
+        // Bind the per-vertex attribute buffer
         attributeVBO.bind();
 
         int listSize = meshDrawList.size();
+        // We have color and texture attrbiutes, so each vertex receives
+        // 3 + 2 = 5 values
+        int attributeDataSize = VertexAttributeInfo::ColorSize + VertexAttributeInfo::TextureSize;
 
+        // Rendered is how many instances we have rendered so far
+        // There are 4 vertices for each instance
+        int start = (rendered * 4 * attributeDataSize);
+        int length = listSize * 4 * attributeDataSize;
+
+        // Map the buffer
         GLfloat *attributePointer = (GLfloat*)glMapBufferRange(GL_ARRAY_BUFFER, 0,
-            listSize * 4 * (VertexAttributeInfo::ColorSize + VertexAttributeInfo::TextureSize),
-            GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
+            length + start,  GL_MAP_WRITE_BIT);
 
         assert(attributePointer != NULL);
 
         std::vector<glm::mat4> transformations;
 
-        int dataOffset = 0;
+        int dataOffset = start;
+        int renderedThisFlush = 0;
 
+        // Iterate over the meshes which the batcher has to draw
         for(auto& mesh : meshDrawList) {
             if(world.entityHasComponent<Transform>(mesh.entity)) {
                 auto& transform = world.getComponent<Transform>(mesh.entity);
                 auto& vertices = mesh.getVertices();
 
+                // Send the corresponsing data for each vertex in the mesh
                 for(int index = 0; index < vertices.size(); index++) {
                     auto& vertex = vertices[index];
 
@@ -136,25 +154,33 @@ namespace ape {
                 spriteTransform = glm::rotate(spriteTransform, transform.rotation,
                     glm::vec3(0.0f, 0.0f, 1.f));
 
-                // TODO: test this
                 spriteTransform = glm::translate(spriteTransform, glm::vec3(
                     -mesh.getOrigin().x, -mesh.getOrigin().x, 0.f
                 ));
 
                 transformations.push_back(spriteTransform);
+                renderedThisFlush++;
             }
         }
 
         glUnmapBuffer(GL_ARRAY_BUFFER);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+        // Write to the per-instance transformation VBO
         matrixVBO.bind();
 
+        // There are 4 columns, each with 3 rows
+        // (The last row is not included and is added in the shader)
+        start =  rendered * 4 * 3;
+        length = listSize * 4 * 3;
+
         GLfloat *matrixPointer = (GLfloat*)glMapBufferRange(GL_ARRAY_BUFFER, 0,
-            listSize * 4 * 3, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
+            length + start, GL_MAP_WRITE_BIT);
+
         assert(matrixPointer != NULL);
 
-        int count = 0;
+        // For each column in each transformation matrix, write the rows
+        // to the buffer
+        int count = start;
         for(auto& transform : transformations) {
             for(int column = 0; column < 4; column++) {
                 matrixPointer[count]         = transform[column].x;
@@ -168,10 +194,13 @@ namespace ape {
         glUnmapBuffer(GL_ARRAY_BUFFER);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+        // Draw elements, using the number of instances we have
+        // rendered so far as the base instance
         glBindVertexArray(vertexArray);
-        glDrawElementsInstanced(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, meshDrawList.size());
+        glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0, renderedThisFlush, rendered);
         glBindVertexArray(0);
 
         meshDrawList.clear();
+        rendered += renderedThisFlush;
     }
 }

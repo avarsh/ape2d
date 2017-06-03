@@ -34,8 +34,24 @@ int main(int argc, char* argv[])
 
         mesh.setTexture(textures[i]);
 
-        transform.position = ape::Vec2f(i * 200, i * 150);
+        transform.position = ape::Vec2f(i * 10, i * 15);
     }
+
+    auto second = world.createEntity();
+    auto& transform = world.addComponent<ape::Transform>(second);
+    auto& mesh = world.addComponent<ape::Mesh>(second);
+
+    mesh.setTexture(textures[0]);
+
+    transform.position = ape::Vec2f(100, 100);
+
+    auto third = world.createEntity();
+    auto& transform2 = world.addComponent<ape::Transform>(third);
+    auto& mesh2 = world.addComponent<ape::Mesh>(third);
+
+    mesh2.setTexture(textures[1]);
+
+    transform2.position = ape::Vec2f(150, 150);
 
     ape::FrameCounter counter;
     counter.counterTickEvent.addCallback([&window](int fps) {
@@ -45,7 +61,7 @@ int main(int argc, char* argv[])
 
     while(window.isOpen()) {
         engine.pollEvents();
-        counter.tick();
+        //counter.tick();
 
         graphics.clear(ape::Colors::Sea);
 

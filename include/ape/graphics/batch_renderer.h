@@ -12,6 +12,7 @@ namespace ape {
     public:
         BatchRenderer();
         void setTextureId(GLuint textureId);
+        void begin();
         GLuint getTextureId();
         void addMesh(Mesh mesh);
         void flush(World& world);
@@ -37,6 +38,7 @@ namespace ape {
         GLuint vertexArray;
 
         int maxSize {65536};
+        int rendered {0};
     };
 }
 

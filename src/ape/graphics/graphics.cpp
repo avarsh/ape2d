@@ -40,6 +40,10 @@ namespace ape {
         glClearColor(color.red, color.green, color.blue, 1.f);
         glClear(GL_COLOR_BUFFER_BIT);
         meshDrawList.clear();
+
+        for(auto& rendererPair : rendererMap) {
+            rendererPair.second.begin();
+        }
     }
 
     void Graphics::draw(entity_t entity) {
