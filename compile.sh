@@ -22,6 +22,6 @@ then
   src/ape/graphics/color.cpp src/ape/graphics/graphics.cpp src/ape/graphics/shader.cpp \
   src/ape/graphics/vertex_attributes.cpp src/ape/graphics/window.cpp \
   src/ape/graphics/batch_renderer.cpp src/ape/graphics/mesh.cpp src/ape/graphics/texture.cpp \
-  deps/glad/glad.c \
+  src/ape/core/transform.cpp deps/glad/glad.c \
   -Ideps/  -Iinclude/ -lm -lglfw -lGL -lSOIL
 fi

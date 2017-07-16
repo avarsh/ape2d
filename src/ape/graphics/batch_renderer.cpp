@@ -144,14 +144,14 @@ namespace ape {
                 glm::mat4 spriteTransform;
 
                 spriteTransform = glm::translate(spriteTransform, glm::vec3(
-                    transform.position.x, transform.position.y, 0.f
+                    transform.getPosition().x, transform.getPosition().y, 0.f
                 ));
 
                 spriteTransform = glm::scale(spriteTransform, glm::vec3(
                     mesh.getTextureRect().size.x, mesh.getTextureRect().size.y, 1.f
                 ));
 
-                spriteTransform = glm::rotate(spriteTransform, transform.rotation,
+                spriteTransform = glm::rotate(spriteTransform, transform.getRotation(),
                     glm::vec3(0.0f, 0.0f, 1.f));
 
                 spriteTransform = glm::translate(spriteTransform, glm::vec3(

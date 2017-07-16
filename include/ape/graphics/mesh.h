@@ -37,6 +37,8 @@ namespace ape {
         GLuint textureId {0};
         Rect textureRect;
 
+        Vec2i textureSize;
+
         Vec2f origin;
     };
 }

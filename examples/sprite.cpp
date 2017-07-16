@@ -1,5 +1,3 @@
-#define NDEBUG
-
 #include <ape/ape.h>
 
 int main(int argc, char* argv[])
@@ -26,46 +24,38 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    int count = 0;
+    while(count < 5) {
+        for(int j = 1; j < 3; j++) {
+            auto entity = world.createEntity();
+            auto& transform = world.addComponent<ape::Transform>(entity);
+            auto& mesh = world.addComponent<ape::Mesh>(entity);
 
-    for(int i = 0; i < 2; i++) {
-        auto entity = world.createEntity();
-        auto& transform = world.addComponent<ape::Transform>(entity);
-        auto& mesh = world.addComponent<ape::Mesh>(entity);
+            mesh.setTexture(textures[j - 1]);
 
-        mesh.setTexture(textures[i]);
+            transform.setPosition(count * j * 10, count * j * 10);
+        }
 
-        transform.position = ape::Vec2f(i * 10, i * 15);
+        count++;
     }
 
-    auto second = world.createEntity();
-    auto& transform = world.addComponent<ape::Transform>(second);
-    auto& mesh = world.addComponent<ape::Mesh>(second);
-
-    mesh.setTexture(textures[0]);
-
-    transform.position = ape::Vec2f(100, 100);
-
-    auto third = world.createEntity();
-    auto& transform2 = world.addComponent<ape::Transform>(third);
-    auto& mesh2 = world.addComponent<ape::Mesh>(third);
-
-    mesh2.setTexture(textures[1]);
-
-    transform2.position = ape::Vec2f(150, 150);
-
     ape::FrameCounter counter;
-    counter.counterTickEvent.addCallback([&window](int fps) {
+
+    auto callback = [&window](int fps) {
         window.setTitle("Sprites! Running at: " + std::to_string(fps) + " FPS");
-    });
+    };
+
+    counter.counterTickEvent.addCallback(callback);
     counter.startTimer();
 
     while(window.isOpen()) {
         engine.pollEvents();
-        //counter.tick();
+        counter.tick();
 
         graphics.clear(ape::Colors::Sea);
 
         for(auto& mesh : world.getComponentList<ape::Mesh>()) {
+            world.getComponent<ape::Transform>(mesh.entity).move(0.01, 0.01);
             graphics.draw(mesh.entity);
         }
 

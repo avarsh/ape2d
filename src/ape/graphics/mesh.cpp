@@ -5,7 +5,7 @@ namespace ape {
         textureId = texture.id;
         // Set this to be the whole texture by default
         textureRect.position = Vec2i(0, 0);
-        textureRect.size = texture.size;
+        textureRect.size = textureSize = texture.size;
 
         vertices.clear();
         for(int i = 0; i < 4; i++) {

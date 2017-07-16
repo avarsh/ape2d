@@ -45,10 +45,10 @@ namespace ape {
         double start {0.0};
         double elapsed {0.0};
 
-        int FPS;
+        int FPS {0};
 
-        int tickCounter;
-        double frameTime;
+        int tickCounter {0};
+        double frameTime {0};
     };
 }
 
