@@ -17,4 +17,4 @@ namespace ape {
     };
 }
 
-#endif
+#endif // SHADER_H

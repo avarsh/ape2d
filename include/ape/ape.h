@@ -1,10 +1,10 @@
 #ifndef APE_H
 #define APE_H
 
-#include <ape/core/world.h>
 #include <ape/graphics/graphics.h>
-#include <ape/core/transform.h>
+#include <ape/core/world.h>
 #include <ape/utils/frame_counter.h>
+#include <ape/core/transform.h>
 
 namespace ape {
 
@@ -13,14 +13,11 @@ namespace ape {
         Engine();
 
         Graphics& getGraphics();
-
         World& getWorld();
-
-        void pollEvents();
     private:
-        World world;
         Graphics graphics;
+        World world;
     };
 }
 
-#endif // APE_H
+#endif

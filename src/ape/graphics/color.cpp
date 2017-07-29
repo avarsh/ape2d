@@ -1,5 +1,4 @@
 #include <ape/graphics/color.h>
-#include <ape/graphics/vertex_attributes.h>
 
 ape::Color ape::Colors::Red = ape::Color(255, 0, 0);
 ape::Color ape::Colors::White = ape::Color(255, 255, 255);

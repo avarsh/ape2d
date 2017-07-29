@@ -39,11 +39,29 @@ namespace ape {
          */
         void setTitle(const std::string& title);
 
+        void setVerticalSync(bool setting);
+
+        /**
+         * Clears the window background colour.
+         * @param backgroundColor The colour to set the background to.
+         */
+        void clear(Color backgroundColor = Color(0, 0, 0));
+
+        /**
+         * Swaps the buffers so that any rendered entities are displayed.
+         */
+        void display();
+
         /**
          * Destroys the window.
          */
         void destroy();
 
+        /**
+         * Gets the actual GLFW window pointer - only for internal/testing
+         * purposes.
+         * @return A pointer to a GLFWwindow instance
+         */
         GLFWwindow* getWindow();
 
         /**

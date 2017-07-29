@@ -19,7 +19,9 @@ namespace ape {
         dimensions = Vec2i(width, height);
 
         // Create the window
-        window = glfwCreateWindow(dimensions.x, dimensions.y, title.c_str(), nullptr, nullptr);
+        window = glfwCreateWindow(dimensions.x, dimensions.y, title.c_str(),
+                                  nullptr, nullptr);
+
         glfwMakeContextCurrent(window);
         gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
@@ -40,6 +42,21 @@ namespace ape {
 
     void Window::setTitle(const std::string& title) {
         glfwSetWindowTitle(window, title.c_str());
+    }
+
+    void Window::setVerticalSync(bool setting) {
+        int interval = setting ? 1 : 0;
+        glfwSwapInterval(interval);
+    }
+
+    void Window::clear(Color backgroundColor) {
+        glClearColor(backgroundColor.red, backgroundColor.green,
+                     backgroundColor.blue, 1.f);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    void Window::display() {
+        glfwSwapBuffers(window);
     }
 
     GLFWwindow* Window::getWindow() {
