@@ -21,10 +21,10 @@ namespace ape {
 
         GLfloat quadVertices[16] = {
             // Position // Texture - TEMPORARY
-            0.f, 0.f,   0.0f, 1.0f,
-            0.f, 0.1f,  0.0f, 0.0f,
-            0.1f, 0.1f, 1.0f, 0.0f,
-            0.1f, 0.f,  1.0f, 1.0f
+            0.f, 0.f,       0.0f, 1.0f,
+            0.f, 100.f,     0.0f, 0.0f,
+            100.f, 100.f,   1.0f, 0.0f,
+            100.f, 0.f,     1.0f, 1.0f
         };
 
         GLushort indices[6] = {

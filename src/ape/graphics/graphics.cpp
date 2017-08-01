@@ -7,7 +7,13 @@ namespace ape {
         glfwSetErrorCallback(_errorCallbackFunc);
 
         window.createdEvent.addCallback([this](Vec2i dims) {
-            this->_onWindowCreation();
+            instancedShader.load("data/shaders/instancedv1.vert",
+                                 "data/shaders/instancedv1.frag");
+            _setViewport(dims);
+        });
+
+        TextureStore::textureLoaded.addCallback([this](int ID) {
+            rendererStore.push_back(std::make_unique<Renderer>());
         });
     }
 
@@ -32,16 +38,6 @@ namespace ape {
         if(spriteList.size() > 0) {
             instancedShader.use();
 
-            //Material* previousMat = spriteList[0]->getMaterial();
-            /*Material* previousMaterial  = spriteList[0]->getMaterial();
-            Material* material          = previousMat;
-            Renderer& previousRenderer  = previousMat->getRenderer();
-            Renderer& renderer          = previousRenderer;
-            auto currentTextureID       = previousMat->getTextureID();
-            //material->bind();
-
-            //Renderer& renderer = material->getRenderer();*/
-
             // Set the active texture unit to 0
             int loc = instancedShader.getUniformLocation("tex");
             glUniform1i(loc, 0);
@@ -51,69 +47,45 @@ namespace ape {
             // if we have one sprite, then the for loop never runs so
             // we never initialise the renderer
             auto sprite = spriteList[0];
-            sprite->getMaterial()->getRenderer().begin();
-            renderedMaterials.push_back(sprite->getMaterial()->getTextureID());
+            int textureID = sprite->getTextureID();
+            Texture& texture = TextureStore::getTexture(textureID);
+            rendererStore[textureID]->begin();
+            renderedMaterials.push_back(textureID);
 
-            // TODO: Change to getMaterialID()
             for(int i = 0; i < (spriteList.size() - 1); i++) {
                 auto sprite         = spriteList[i];
-                Material* material  = sprite->getMaterial();
-                auto currentMatID   = material->getTextureID();
+                auto currentTexID   = sprite->getTextureID();
+                auto& texture       = TextureStore::getTexture(currentTexID);
+                auto& renderer      = rendererStore[currentTexID];
 
                 if(std::find(renderedMaterials.begin(),
                              renderedMaterials.end(),
-                             currentMatID) == renderedMaterials.end()) {
+                             currentTexID) == renderedMaterials.end()) {
                     // We haven't rendered this material before on this frame
-                    material->getRenderer().begin();
-                    renderedMaterials.push_back(currentMatID);
+                    renderer->begin();
+                    renderedMaterials.push_back(currentTexID);
                 }
 
                 auto nextSprite = spriteList[i + 1];
 
-                material->getRenderer().draw(sprite);
+                renderer->draw(sprite);
 
-                if(nextSprite->getMaterial()->getTextureID() != currentMatID) {
+                if(nextSprite->getTextureID() != currentTexID) {
                     // The next sprite has a different material, so flush this
                     // renderer to the GPU
-                    material->bind(); // Set the texture
-                    material->getRenderer().end(world); // Flush data
+                    texture.bind(); // Set the texture
+                    renderer->end(world); // Flush data
                 }
             }
 
             // We need to render the last sprite
             auto last = spriteList.back();
-            Material* lastMaterial = last->getMaterial();
-            lastMaterial->getRenderer().draw(last);
+            texture = TextureStore::getTexture(last->getTextureID());
+            auto& renderer = rendererStore[last->getTextureID()];
+            renderer->draw(last);
 
-            lastMaterial->bind();
-            lastMaterial->getRenderer().end(world);
-
-            /*for(auto sprite : spriteList) {
-                material = sprite->getMaterial();
-                renderer = material->getRenderer();
-
-                if(material->getTextureID() != currentTextureID) {
-                    // We have changed the material so bind the previous material
-                    // and flush the previous renderer
-                    previousMaterial->bind();
-                    previousRenderer.end(world);
-
-                    // Update the previous material and the current texture
-                    previousMaterial = material;
-                    previousRenderer = renderer;
-                    currentTextureID = material->getTextureID();
-                }
-
-                if(renderedMaterials.find(currentTextureID) == renderedMaterials.end()) {
-                    renderer.begin();
-                    renderedMaterials.insert(currentTextureID);
-                }
-
-                renderer.draw(sprite);
-            }
-
-            previousMat->bind();
-            previousRenderer.end(world);*/
+            texture.bind();
+            renderer->end(world);
         }
     }
 
@@ -123,8 +95,14 @@ namespace ape {
         std::cout << description << "\n";
     }
 
-    void Graphics::_onWindowCreation() {
-        instancedShader.load("data/shaders/instancedv1.vert",
-                             "data/shaders/instancedv1.frag");
+    void Graphics::_setViewport(Vec2i newDimensions) {
+        glViewport(0, 0, newDimensions.x, newDimensions.y);
+        projectionMatrix = glm::ortho(0.f, (float)newDimensions.x,
+            (float)newDimensions.y, 0.0f, -1.0f, 1.0f);
+
+        // TODO: only set shader if it is not currently in use
+        instancedShader.use();
+        GLint projection = instancedShader.getUniformLocation("projection");
+        glUniformMatrix4fv(projection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
     }
 }

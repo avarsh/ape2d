@@ -4,12 +4,13 @@
 #include <glad/glad.h>
 #include <string>
 
-#include <ape/graphics/renderer.h>
+#include <ape/core/vec2.h>
 
 namespace ape {
 
-    class Material {
+    class Texture {
     public:
+        Texture(GLuint textureID, Vec2i size);
 
         /**
          * Binds the texture ID so that sprites can be rendered using it.
@@ -29,15 +30,11 @@ namespace ape {
          */
         bool loadTexture(const std::string& source);
 
-        /**
-         * Gets the renderer instance associated with the material.
-         * @return A reference to the Renderer class instance owned by the material.
-         */
-        Renderer& getRenderer();
+        Vec2i getSize();
     private:
         GLuint textureID;
+        Vec2i textureSize;
 
-        Renderer renderer;
     };
 }
 

@@ -1,11 +1,11 @@
 #include <ape/graphics/sprite.h>
 
 namespace ape {
-    void Sprite::setMaterial(Material* material) {
-        this->material = material;
+    void Sprite::setTextureID(int ID) {
+        this->textureID = ID;
     }
 
-    Material* Sprite::getMaterial() {
-        return material;
+    int Sprite::getTextureID() {
+        return textureID;
     }
 }

@@ -90,7 +90,6 @@ namespace ape {
             auto& transform = world.getComponent<Transform>(sprite->entity);
             Vec2f pos = transform.getPosition();
 
-            //std::cout << pos.x << ", " << pos.y << std::endl;
             transforms.push_back(pos.x);
             transforms.push_back(pos.y);
 
@@ -102,11 +101,9 @@ namespace ape {
         glBufferSubData(GL_ARRAY_BUFFER, rendered * 2 * sizeof(float),
                         transforms.size() * sizeof(float),
                         &transforms[0]);
-
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glBindVertexArray(vertexArray);
-
         glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT,
                                 0, toRender, rendered);
         glBindVertexArray(0);
