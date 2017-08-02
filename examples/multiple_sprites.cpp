@@ -6,15 +6,13 @@ int main() {
     ape::Engine engine;
     auto& graphics = engine.getGraphics();
     auto& window = graphics.getWindow();
+    auto& textureStore = graphics.getTextureStore();
     auto& world = engine.getWorld();
 
     window.create(600, 600, "Sprite Batching Example");
 
-    ape::Material marioTex;
-    marioTex.loadTexture("examples/images/mario.png");
-
-    ape::Material luigiTex;
-    luigiTex.loadTexture("examples/images/luigi.png");
+    auto marioTex = textureStore.loadTexture("examples/images/mario.png");
+    auto luigiTex = textureStore.loadTexture("examples/images/luigi.png");
 
     // TODO: Have built-in blueprints such as ape::Blueprints::Sprite
     // which automatically add these components
@@ -22,9 +20,9 @@ int main() {
     for(int i = 0; i < num; i++) {
 
 	    float r = (float)rand() / (float)RAND_MAX;
-        float posX = -1 + r * 2;
+        float posX = 0 + r * 400;
         r = (float)rand() / (float)RAND_MAX;
-        float posY = -1 + r * 2;
+        float posY = 0 + r * 400;
 
         auto entity = world.createEntity();
         auto& transform = world.addComponent<ape::Transform>(entity);
@@ -42,9 +40,9 @@ int main() {
 
         // Swap materials every sprite
         if(i % 2 == 0) {
-            sprite.setMaterial(&marioTex);
+            sprite.setTextureID(marioTex, textureStore);
         } else {
-            sprite.setMaterial(&luigiTex);
+            sprite.setTextureID(luigiTex, textureStore);
         }
     }
 

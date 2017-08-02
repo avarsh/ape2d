@@ -22,9 +22,9 @@ namespace ape {
         GLfloat quadVertices[16] = {
             // Position // Texture - TEMPORARY
             0.f, 0.f,       0.0f, 1.0f,
-            0.f, 100.f,     0.0f, 0.0f,
-            100.f, 100.f,   1.0f, 0.0f,
-            100.f, 0.f,     1.0f, 1.0f
+            0.f, 1.f,       0.0f, 0.0f,
+            1.f, 1.f,       1.0f, 0.0f,
+            1.f, 0.f,       1.0f, 1.0f
         };
 
         GLushort indices[6] = {
@@ -38,6 +38,8 @@ namespace ape {
 
         int toRender {0};
         int rendered {0};
+
+        int instanceDataSize {4};
     };
 }
 

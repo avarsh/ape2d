@@ -31,6 +31,8 @@ namespace ape {
          */
         Window& getWindow();
 
+        TextureStore& getTextureStore();
+
         void begin();
         void draw(Sprite* sprite);
         void end();
@@ -49,6 +51,8 @@ namespace ape {
         glm::mat4 projectionMatrix;
 
         std::vector<std::unique_ptr<Renderer>> rendererStore;
+
+        TextureStore textureStore;
     };
 }
 

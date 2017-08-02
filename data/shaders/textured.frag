@@ -1,13 +1,13 @@
 #version 420
 
-in vec3 ex_color;
-in vec2 ex_texture;
+in vec3 outColor;
+in vec2 outTexture;
 
-out vec4 out_color;
+out vec4 exColor;
 
-uniform sampler2D u_texture;
+uniform sampler2D tex;
 
 void main()
 {
-    out_color = texture(u_texture, ex_texture) * vec4(ex_color, 1.0);
+    exColor = texture(tex, outTexture) * vec4(outColor, 1.0);
 }

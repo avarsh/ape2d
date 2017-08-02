@@ -4,18 +4,19 @@
 #include <string>
 #include <ape/graphics/texture.h>
 #include <ape/core/event.h>
+#include <memory>
 #include <vector>
 
 namespace ape {
     class TextureStore {
     public:
-        static int loadTexture(const std::string& source);
-        static void deleteTexture(int ID);
-        static Texture& getTexture(int ID);
+        int loadTexture(const std::string& source);
+        void deleteTexture(int ID);
+        std::shared_ptr<Texture> getTexture(int ID);
 
-        static Event<int> textureLoaded;
+        Event<int> textureLoaded;
     private:
-        static std::vector<Texture> textureList;
+        std::vector<std::shared_ptr<Texture>> textureList;
     };
 }
 

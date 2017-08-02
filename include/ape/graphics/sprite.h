@@ -8,10 +8,13 @@ namespace ape {
 
     class Sprite : public Component<Sprite> {
     public:
-        void setTextureID(int ID);
+        void setTextureID(int ID, TextureStore& textureStore);
         int getTextureID();
+
+        Vec2i getSize();
     private:
         int textureID;
+        Vec2i size;
     };
 }
 

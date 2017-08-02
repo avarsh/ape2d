@@ -60,10 +60,16 @@ namespace ape {
 
         glBufferData(GL_ARRAY_BUFFER, 65536, NULL, GL_DYNAMIC_DRAW);
 
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat),
-                              (GLvoid*)0);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+                              4 * sizeof(GLfloat), (GLvoid*)0);
         glVertexAttribDivisor(1, 1);
         glEnableVertexAttribArray(1);
+
+        glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE,
+                              4 * sizeof(GLfloat),
+                              (GLvoid*)(2 * sizeof(GLfloat)));
+        glVertexAttribDivisor(3, 1);
+        glEnableVertexAttribArray(3);
 
         glBindVertexArray(0);
 
@@ -89,16 +95,18 @@ namespace ape {
         for(Sprite* sprite : spriteList) {
             auto& transform = world.getComponent<Transform>(sprite->entity);
             Vec2f pos = transform.getPosition();
+            Vec2i size = sprite->getSize();
 
             transforms.push_back(pos.x);
             transforms.push_back(pos.y);
+            transforms.push_back(size.x);
+            transforms.push_back(size.y);
 
             toRender++;
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, instVBO);
-        // The 2 is actually the amount of the data we're sending per instance
-        glBufferSubData(GL_ARRAY_BUFFER, rendered * 2 * sizeof(float),
+        glBufferSubData(GL_ARRAY_BUFFER, rendered * 4 * sizeof(float),
                         transforms.size() * sizeof(float),
                         &transforms[0]);
         glBindBuffer(GL_ARRAY_BUFFER, 0);

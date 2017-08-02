@@ -7,12 +7,12 @@ namespace ape {
         glfwSetErrorCallback(_errorCallbackFunc);
 
         window.createdEvent.addCallback([this](Vec2i dims) {
-            instancedShader.load("data/shaders/instancedv1.vert",
-                                 "data/shaders/instancedv1.frag");
+            instancedShader.load("data/shaders/textured.vert",
+                                 "data/shaders/textured.frag");
             _setViewport(dims);
         });
 
-        TextureStore::textureLoaded.addCallback([this](int ID) {
+        textureStore.textureLoaded.addCallback([this](int ID) {
             rendererStore.push_back(std::make_unique<Renderer>());
         });
     }
@@ -23,6 +23,10 @@ namespace ape {
 
     Window& Graphics::getWindow() {
         return window;
+    }
+
+    TextureStore& Graphics::getTextureStore() {
+        return textureStore;
     }
 
     void Graphics::begin() {
@@ -48,14 +52,15 @@ namespace ape {
             // we never initialise the renderer
             auto sprite = spriteList[0];
             int textureID = sprite->getTextureID();
-            Texture& texture = TextureStore::getTexture(textureID);
+            auto texture = textureStore.getTexture(textureID);
+            texture->bind();
             rendererStore[textureID]->begin();
             renderedMaterials.push_back(textureID);
 
             for(int i = 0; i < (spriteList.size() - 1); i++) {
                 auto sprite         = spriteList[i];
                 auto currentTexID   = sprite->getTextureID();
-                auto& texture       = TextureStore::getTexture(currentTexID);
+                auto texture       = textureStore.getTexture(currentTexID);
                 auto& renderer      = rendererStore[currentTexID];
 
                 if(std::find(renderedMaterials.begin(),
@@ -73,18 +78,18 @@ namespace ape {
                 if(nextSprite->getTextureID() != currentTexID) {
                     // The next sprite has a different material, so flush this
                     // renderer to the GPU
-                    texture.bind(); // Set the texture
+                    texture->bind(); // Set the texture
                     renderer->end(world); // Flush data
                 }
             }
 
             // We need to render the last sprite
             auto last = spriteList.back();
-            texture = TextureStore::getTexture(last->getTextureID());
+            texture = textureStore.getTexture(last->getTextureID());
             auto& renderer = rendererStore[last->getTextureID()];
             renderer->draw(last);
 
-            texture.bind();
+            texture->bind();
             renderer->end(world);
         }
     }

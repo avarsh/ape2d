@@ -4,8 +4,6 @@
 #include <cassert>
 
 namespace ape {
-    Event<int> TextureStore::textureLoaded;
-    std::vector<Texture> TextureStore::textureList;
 
     int TextureStore::loadTexture(const std::string& source) {
         GLuint textureID;
@@ -45,7 +43,7 @@ namespace ape {
 
         glBindTexture(GL_TEXTURE_2D, 0); // Unbind
 
-        Texture texture(textureID, textureSize);
+        auto texture = std::make_shared<Texture>(textureID, textureSize);
         textureList.push_back(texture);
 
         int ID = textureList.size() - 1;
@@ -54,7 +52,7 @@ namespace ape {
         return ID;
     }
 
-    Texture& TextureStore::getTexture(int ID) {
+    std::shared_ptr<Texture> TextureStore::getTexture(int ID) {
         assert(ID >= 0 && ID < textureList.size());
 
         return textureList[ID];

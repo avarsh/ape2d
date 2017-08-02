@@ -5,11 +5,12 @@ int main() {
     ape::Engine engine;
     auto& graphics = engine.getGraphics();
     auto& window = graphics.getWindow();
+    auto& textureStore = graphics.getTextureStore();
     auto& world = engine.getWorld();
 
     window.create(600, 600, "Single Sprite Example");
 
-    auto spriteTexture = ape::TextureStore::loadTexture("examples/images/mario.png");
+    auto spriteTexture = textureStore.loadTexture("examples/images/mario.png");
 
     // TODO: Have built-in blueprints such as ape::Blueprints::Sprite
     // which automatically add these components
@@ -17,7 +18,7 @@ int main() {
     auto& transform = world.addComponent<ape::Transform>(entity);
     auto& sprite = world.addComponent<ape::Sprite>(entity);
     transform.setPosition(0, 0);
-    sprite.setTextureID(spriteTexture);
+    sprite.setTextureID(spriteTexture, textureStore);
 
     while(window.isOpen()) {
         glfwPollEvents();
