@@ -4,7 +4,7 @@
 #include <iostream>
 
 namespace ape {
-    Texture::Texture(GLuint textureID, Vec2i size) {
+    Texture::Texture(GLuint textureID, Vec2f size) {
         this->textureID = textureID;
         this->textureSize = size;
     }
@@ -17,7 +17,7 @@ namespace ape {
         return textureID;
     }
 
-    Vec2i Texture::getSize() {
+    Vec2f Texture::getSize() {
         return textureSize;
     }
 }

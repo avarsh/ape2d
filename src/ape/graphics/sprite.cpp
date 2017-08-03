@@ -10,7 +10,19 @@ namespace ape {
         return textureID;
     }
 
-    Vec2i Sprite::getSize() {
+    Vec2f Sprite::getSize() {
         return size;
+    }
+
+    void Sprite::setSize(Vec2f newSize) {
+        size = newSize;
+    }
+
+    void Sprite::scaleBy(Vec2f scaleFactor) {
+        size = size * scaleFactor;
+    }
+
+    void Sprite::scaleBy(float scaleFactor) {
+        size = size * scaleFactor;
     }
 }

@@ -95,7 +95,7 @@ namespace ape {
         for(Sprite* sprite : spriteList) {
             auto& transform = world.getComponent<Transform>(sprite->entity);
             Vec2f pos = transform.getPosition();
-            Vec2i size = sprite->getSize();
+            Vec2f size = sprite->getSize();
 
             transforms.push_back(pos.x);
             transforms.push_back(pos.y);

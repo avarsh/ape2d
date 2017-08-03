@@ -32,6 +32,10 @@ namespace ape {
             return Vec2<T>(x * val, y * val);
         }
 
+        Vec2<T> operator* (const Vec2<T>& v) {
+            return Vec2<T>(x * v.x, y * v.y);
+        }
+
         Vec2<T> operator/ (const T& val) {
             return Vec2<T>(x / val, y / val);
         }

@@ -43,7 +43,8 @@ namespace ape {
 
         glBindTexture(GL_TEXTURE_2D, 0); // Unbind
 
-        auto texture = std::make_shared<Texture>(textureID, textureSize);
+        Vec2f fTextureSize(textureSize.x, textureSize.y);
+        auto texture = std::make_shared<Texture>(textureID, fTextureSize);
         textureList.push_back(texture);
 
         int ID = textureList.size() - 1;

@@ -11,10 +11,15 @@ namespace ape {
         void setTextureID(int ID, TextureStore& textureStore);
         int getTextureID();
 
-        Vec2i getSize();
+        Vec2f getSize();
+
+        void setSize(Vec2f newSize);
+
+        void scaleBy(Vec2f scaleFactor);
+        void scaleBy(float scaleFactor);
     private:
         int textureID;
-        Vec2i size;
+        Vec2f size;
     };
 }
 
