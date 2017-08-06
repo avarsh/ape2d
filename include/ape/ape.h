@@ -5,6 +5,7 @@
 #include <ape/core/world.h>
 #include <ape/utils/frame_counter.h>
 #include <ape/core/transform.h>
+#include <ape/core/scene.h>
 
 namespace ape {
 
@@ -12,10 +13,14 @@ namespace ape {
     public:
         Engine();
 
+        void render();
+
         Graphics& getGraphics();
         World& getWorld();
+        Scene& getScene();
     private:
         Graphics graphics;
+        Scene scene;
         World world;
     };
 }

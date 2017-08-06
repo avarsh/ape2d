@@ -12,6 +12,12 @@
 
 namespace ape {
 
+    struct WindowMode {
+        static int WINDOWED;
+        static int FULLSCREEN;
+        static int WINDOWED_FULLSCREEN;
+    };
+
     class Window {
     public:
         Window();

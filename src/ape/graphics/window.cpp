@@ -2,6 +2,16 @@
 
 namespace ape {
 
+    /*
+     * If the Fullscreen mode is activated then no other mode is allowed.
+     * All Buttons takes precedence over close, maximize, minimize.
+     * If either of the Close, Maximize or Minimize buttons are enabled
+     * on their own, then it disables the others until they are also added.
+     */
+    int WindowMode::WINDOWED             = 1;
+    int WindowMode::FULLSCREEN           = 2;
+    int WindowMode::WINDOWED_FULLSCREEN  = 3;
+
     Window::Window() { }
 
     // Available window functions are described in detail here:

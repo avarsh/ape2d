@@ -290,7 +290,7 @@ namespace ape {
             int& handle = componentTypeMap[typeid(Component)];
 
             /*
-             * If the handle is not 0 (component handles cannot be 0!),
+             * If the handle is not 0 (component handles cannot be 0),
              * it can be returned. The expression will evaluate to true
              * if the handle exists.
              */
