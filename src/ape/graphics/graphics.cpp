@@ -13,7 +13,7 @@ namespace ape {
         });
 
         textureStore.textureLoaded.addCallback([this](int ID) {
-            rendererStore.push_back(std::make_unique<Renderer>());
+            rendererStore.push_back(std::make_shared<Renderer>());
         });
     }
 
@@ -31,7 +31,7 @@ namespace ape {
 
     void Graphics::begin() {
         spriteList.clear();
-        renderedMaterials.clear();
+        renderedTextures.clear();
     }
 
     void Graphics::draw(Sprite* sprite) {
@@ -47,50 +47,32 @@ namespace ape {
             glUniform1i(loc, 0);
             glActiveTexture(GL_TEXTURE0);
 
-            // NB. This is kind of hacky - it's basically because
-            // if we have one sprite, then the for loop never runs so
-            // we never initialise the renderer
-            auto sprite = spriteList[0];
-            int textureID = sprite->getTextureID();
-            auto texture = textureStore.getTexture(textureID);
-            texture->bind();
-            rendererStore[textureID]->begin();
-            renderedMaterials.push_back(textureID);
+            for(int i = 0; i < spriteList.size(); i++) {
+                auto sprite     = spriteList[i];
+                int textureID   = sprite->getTextureID();
+                auto texture    = textureStore.getTexture(textureID);
+                auto renderer   = rendererStore[textureID];
 
-            for(int i = 0; i < (spriteList.size() - 1); i++) {
-                auto sprite         = spriteList[i];
-                auto currentTexID   = sprite->getTextureID();
-                auto texture       = textureStore.getTexture(currentTexID);
-                auto& renderer      = rendererStore[currentTexID];
-
-                if(std::find(renderedMaterials.begin(),
-                             renderedMaterials.end(),
-                             currentTexID) == renderedMaterials.end()) {
-                    // We haven't rendered this material before on this frame
+                if(renderedTextures.find(textureID) == renderedTextures.end()) {
+                    // We haven't rendered this texture before on this frame
+                    // so initialise the associated renderer
                     renderer->begin();
-                    renderedMaterials.push_back(currentTexID);
+                    renderedTextures.insert(textureID);
                 }
 
-                auto nextSprite = spriteList[i + 1];
-
+                // Draw the sprite
                 renderer->draw(sprite);
 
-                if(nextSprite->getTextureID() != currentTexID) {
-                    // The next sprite has a different material, so flush this
-                    // renderer to the GPU
-                    texture->bind(); // Set the texture
-                    renderer->end(world); // Flush data
+                // We want to flush the contents of the renderer to the GPU
+                // either if this is the last sprite or if the next sprite
+                // uses a different texture
+                bool last = (i == spriteList.size() - 1);
+
+                if((last) || (!last && spriteList[i + 1]->getTextureID() != textureID)) {
+                    texture->bind();
+                    renderer->end(world);
                 }
             }
-
-            // We need to render the last sprite
-            auto last = spriteList.back();
-            texture = textureStore.getTexture(last->getTextureID());
-            auto& renderer = rendererStore[last->getTextureID()];
-            renderer->draw(last);
-
-            texture->bind();
-            renderer->end(world);
         }
     }
 

@@ -46,11 +46,10 @@ namespace ape {
         Shader instancedShader;
 
         std::vector<Sprite*> spriteList;
-        //std::set<GLuint> renderedMaterials;
-        std::vector<GLuint> renderedMaterials; // TODO: Change to set
+        std::set<int> renderedTextures;
         glm::mat4 projectionMatrix;
 
-        std::vector<std::unique_ptr<Renderer>> rendererStore;
+        std::vector<std::shared_ptr<Renderer>> rendererStore;
 
         TextureStore textureStore;
     };

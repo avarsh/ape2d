@@ -27,7 +27,9 @@ int main() {
         auto entity = world.createEntity();
         auto& transform = world.addComponent<ape::Transform>(entity);
         auto& sprite = world.addComponent<ape::Sprite>(entity);
+        auto& node = world.addComponent<ape::Node>(entity);
 
+        node.setParent(world, ape::Scene::rootNode);
         transform.setPosition(posX, posY);
 
         /*
@@ -58,16 +60,7 @@ int main() {
         frames.tick();
 
         window.clear(ape::Colors::Sky);
-
-        graphics.begin();
-        int i = 0;
-        for(auto& sprite : world.getComponentList<ape::Sprite>()) {
-            graphics.draw(&sprite);
-            i++;
-        }
-
-        graphics.end();
-
+        engine.render();
         window.display();
     }
 

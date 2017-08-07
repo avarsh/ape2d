@@ -22,7 +22,7 @@ namespace ape {
          *        and return
          *  3. then go back up one level and go to the next child
          *  4. do 1, 2 and 3 recursively
-         *  5. if there are no more children, go back up a level and it again 
+         *  5. if there are no more children, go back up a level and it again
          *  6. repeat until back at root node AND no more children left to visit
          */
 

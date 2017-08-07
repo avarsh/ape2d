@@ -4,6 +4,9 @@
 
 namespace ape {
 
+    int NodeTypes::ABSTRACT     = 0;
+    int NodeTypes::ACTUALIZED   = 1;
+
     void Node::setParent(World& world, entity_t parent) {
         if(world.entityHasComponent<Node>(parent)) {
             this->parent = parent;

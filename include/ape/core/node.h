@@ -7,6 +7,11 @@
 
 namespace ape {
 
+    struct NodeTypes {
+        static int ABSTRACT;
+        static int ACTUALIZED;
+    };
+
     class Node : public Component<Node> {
     public:
         void setParent(World& world, entity_t parent);
@@ -16,6 +21,7 @@ namespace ape {
         std::list<entity_t>& getChildren();
 
         int traversingChild {-1};
+        int nodeType {NodeTypes::ACTUALIZED};
     private:
         // We're using lists here because the nodes may be moving
         // around within the scene quite a lot - for example, when

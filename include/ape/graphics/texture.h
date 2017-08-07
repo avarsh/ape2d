@@ -33,6 +33,8 @@ namespace ape {
         bool loadTexture(const std::string& source);
 
         Vec2f getSize();
+
+        bool renderedThisFrame {false};
     private:
         GLuint textureID;
         Vec2f textureSize;
