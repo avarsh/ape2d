@@ -30,6 +30,7 @@ namespace ape {
     }
 
     void Scene::_traverse(entity_t entity, Graphics& graphics) {
+
         auto& node = world.getComponent<Node>(entity);
 
         if(node.traversingChild == -1) {
@@ -44,8 +45,25 @@ namespace ape {
         // Since this is set to -1 initially, increasing it will
         // point to the first child at index 0
         node.traversingChild++;
+        bool endPoint = false;
 
         if(node.traversingChild == node.getChildren().size()) {
+            endPoint = true;
+        } else {
+            // Otherwise, traverse the child
+            auto iter = node.getChildren().begin();
+            std::advance(iter, node.traversingChild);
+            while(*iter == ENTITY_INVALID) {
+                iter++;
+                node.traversingChild++;
+                if(iter == node.getChildren().end()) {
+                    endPoint = true;
+                }
+            }
+            _traverse(*iter, graphics);
+        }
+
+        if(endPoint) {
             node.traversingChild = -1; // Reset the index
 
             // If the parent is not invalid, then traverse it
@@ -57,11 +75,6 @@ namespace ape {
                 // so just end the recursion
                 return;
             }
-        } else {
-            // Otherwise, traverse the child
-            auto iter = node.getChildren().begin();
-            std::advance(iter, node.traversingChild);
-            _traverse(*iter, graphics);
         }
     }
 }

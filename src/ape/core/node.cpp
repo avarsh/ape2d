@@ -74,7 +74,9 @@ namespace ape {
 
         std::advance(childIter, start);
         for(int i = start; i <= end; i++) {
-            move(world.getComponent<Node>(*childIter).index);
+            if(*childIter != ENTITY_INVALID) {
+                move(world.getComponent<Node>(*childIter).index);
+            }
             move(childIter);
         }
     }
