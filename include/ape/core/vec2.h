@@ -40,6 +40,10 @@ namespace ape {
             return Vec2<T>(x / val, y / val);
         }
 
+        Vec2<T> operator/ (const Vec2<T>& v) {
+            return Vec2<T>(x / v.x, y / v.y);
+        }
+
         Vec2<T>& operator= (const Vec2<T>& v) {
             x = v.x;
             y = v.y;
@@ -95,7 +99,10 @@ namespace ape {
         T x, y;
     };
 
-    struct Vec2i : public Vec2<int> {
+    using Vec2i = Vec2<int>;
+    using Vec2f = Vec2<float>;
+
+    /*struct Vec2i : public Vec2<int> {
         Vec2i() {}
         Vec2i(int xValue, int yValue) :
             Vec2<int>(xValue, yValue) { }
@@ -135,7 +142,7 @@ namespace ape {
             y = v.y;
             return *this;
         }
-    };
+    };*/
 }
 
 #endif // VEC2_H

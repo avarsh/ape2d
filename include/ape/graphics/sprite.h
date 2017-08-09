@@ -3,6 +3,7 @@
 
 #include <ape/core/world.h>
 #include <ape/graphics/texture_store.h>
+#include <ape/core/rect.h>
 
 namespace ape {
 
@@ -17,9 +18,18 @@ namespace ape {
 
         void scaleBy(Vec2f scaleFactor);
         void scaleBy(float scaleFactor);
+
+        void setSubRect(float left, float top, float width, float height);
+        FloatRect getSubRect();
+        FloatRect getNormalizedSubRect();
     private:
         int textureID;
-        Vec2f size;
+        //Vec2f size;
+        Vec2f textureSize;
+        Vec2f scaleFactor {Vec2f(1.0f, 1.0f)};
+
+        FloatRect subRect;
+        FloatRect normalizedRect;
     };
 }
 

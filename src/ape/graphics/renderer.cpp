@@ -50,10 +50,6 @@ namespace ape {
                               2 * sizeof(GLfloat), (GLvoid*)0);
         glEnableVertexAttribArray(0);
 
-        //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-        //                      4 * sizeof(GLfloat), (GLvoid*)(2 * sizeof(GLfloat)));
-        //glEnableVertexAttribArray(2);
-
         // Instance buffers
         glGenBuffers(1, &instVBO);
         glBindBuffer(GL_ARRAY_BUFFER, instVBO);
@@ -86,14 +82,6 @@ namespace ape {
         glGenTextures(1, &vertTexture);
         glBindTexture(GL_TEXTURE_BUFFER, vertTexture);
         glTexBuffer(GL_TEXTURE_BUFFER, GL_RG32F, vertTBO);
-
-        /*
-        glBindBuffer(GL_ARRAY_BUFFER, vertVBO);
-        glBufferData(GL_ARRAY_BUFFER, 65536, NULL, GL_DYNAMIC_DRAW);
-
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-                              2 * sizeof(GLfloat), (GLvoid*)0);
-        glEnableVertexAttribArray(2);*/
 
         glBindVertexArray(0);
 
@@ -128,12 +116,26 @@ namespace ape {
             transforms.push_back(size.x);
             transforms.push_back(size.y);
 
+            FloatRect normalized = sprite->getNormalizedSubRect();
+
             GLfloat uvArray[] = {
-                0.0f, 0.0f,
-                0.0f, 1.f,
-                1.f, 1.f,
-                1.f, 0.0f
+                // top left
+                normalized.origin.x,
+                normalized.origin.y,
+                // bottom left
+                normalized.origin.x,
+                normalized.origin.y + normalized.size.y,
+                // bottom right
+                normalized.origin.x + normalized.size.x,
+                normalized.origin.y + normalized.size.y,
+                // top right
+                normalized.origin.x + normalized.size.x,
+                normalized.origin.y
             };
+
+            for(int i = 0; i < 8; i = i + 2) {
+                //std::cout << uvArray[i] << ", " << uvArray[i + 1] << "\n";
+            }
 
             uv.insert(uv.end(), uvArray, std::end(uvArray));
 
@@ -155,14 +157,13 @@ namespace ape {
 
         glActiveTexture(GL_TEXTURE0 + 1);
         glBindTexture(GL_TEXTURE_BUFFER, vertTexture);
-        int loc = shader.getUniformLocation("textureCoordinates");
-        glUniform1i(loc, 1);
         glTexBuffer(GL_TEXTURE_BUFFER, GL_RG32F, vertTBO);
 
-        loc = shader.getUniformLocation("tex");
-        glUniform1i(loc, 0);
         glActiveTexture(GL_TEXTURE0);
         texture.bind();
+
+        shader.setUniformInt("tex", 0);
+        shader.setUniformInt("textureCoordinates", 1);
 
         glBindVertexArray(vertexArray);
         glDrawElementsInstancedBaseInstance(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT,

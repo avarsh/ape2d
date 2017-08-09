@@ -16,7 +16,7 @@ int main() {
 
     // TODO: Have built-in blueprints such as ape::Blueprints::Sprite
     // which automatically add these components
-    int num = 4;
+    int num = 1000;
     for(int i = 0; i < num; i++) {
 
 	    float r = (float)rand() / (float)RAND_MAX;

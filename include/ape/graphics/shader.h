@@ -12,6 +12,7 @@ namespace ape {
         void use();
 
         int getUniformLocation(const std::string& uniformName);
+        void setUniformInt(const std::string& uniformName, int value);
     private:
         GLuint program;
     };
