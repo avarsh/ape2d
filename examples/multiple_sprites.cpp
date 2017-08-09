@@ -16,7 +16,7 @@ int main() {
 
     // TODO: Have built-in blueprints such as ape::Blueprints::Sprite
     // which automatically add these components
-    int num = 1000;
+    int num = 4;
     for(int i = 0; i < num; i++) {
 
 	    float r = (float)rand() / (float)RAND_MAX;
@@ -32,20 +32,22 @@ int main() {
         node.setParent(world, ape::Scene::rootNode);
         transform.setPosition(posX, posY);
 
-        /*
+
         // Swap materials half way through
         if(i >= (num / 2)) {
-            sprite.setMaterial(&marioTex);
+            sprite.setTextureID(marioTex, textureStore);
         } else {
-            sprite.setMaterial(&luigiTex);
-        }*/
+            sprite.setTextureID(luigiTex, textureStore);
+        }
 
         // Swap materials every sprite
+        /*
         if(i % 2 == 0) {
             sprite.setTextureID(marioTex, textureStore);
         } else {
             sprite.setTextureID(luigiTex, textureStore);
         }
+        */
     }
 
     ape::FrameCounter frames;

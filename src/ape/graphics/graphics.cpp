@@ -69,8 +69,8 @@ namespace ape {
                 bool last = (i == spriteList.size() - 1);
 
                 if((last) || (!last && spriteList[i + 1]->getTextureID() != textureID)) {
-                    texture->bind();
-                    renderer->end(world);
+                    //texture->bind();
+                    renderer->end(world, instancedShader, *texture);
                 }
             }
         }

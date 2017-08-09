@@ -5,6 +5,7 @@
 #include <vector>
 #include <ape/core/world.h>
 #include <ape/graphics/sprite.h>
+#include <ape/graphics/shader.h>
 
 namespace ape {
 
@@ -15,16 +16,16 @@ namespace ape {
 
         void begin();
         void draw(Sprite* sprite);
-        void end(World& world);
+        void end(World& world, Shader& shader, Texture& texture);
     private:
         std::vector<Sprite*> spriteList;
 
-        GLfloat quadVertices[16] = {
+        GLfloat quadVertices[8] = {
             // Position // Texture - TEMPORARY
-            0.f, 0.f,       0.0f, 1.0f,
-            0.f, 1.f,       0.0f, 0.0f,
-            1.f, 1.f,       1.0f, 0.0f,
-            1.f, 0.f,       1.0f, 1.0f
+            0.f, 0.f,
+            0.f, 1.f,
+            1.f, 1.f,
+            1.f, 0.f
         };
 
         GLushort indices[6] = {
@@ -33,8 +34,9 @@ namespace ape {
         };
 
         std::vector<float> transforms;
+        std::vector<GLfloat> uv;
 
-        GLuint vertexArray, quadVBO, quadEBO, instVBO;
+        GLuint vertexArray, quadVBO, quadEBO, instVBO, vertTBO, vertTexture;
 
         int toRender {0};
         int rendered {0};
