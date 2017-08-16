@@ -22,7 +22,8 @@ then
   src/ape/graphics/color.cpp src/ape/graphics/graphics.cpp src/ape/graphics/shader.cpp \
   src/ape/graphics/window.cpp src/ape/graphics/texture.cpp src/ape/graphics/sprite.cpp \
   src/ape/graphics/renderer.cpp src/ape/graphics/texture_store.cpp \
-  src/ape/core/node.cpp src/ape/core/scene.cpp \
+  src/ape/core/node.cpp src/ape/core/scene.cpp src/ape/input/context.cpp \
+  src/ape/input/context_manager.cpp \
   src/ape/core/transform.cpp deps/glad/glad.c \
   -Ideps/  -Iinclude/ -lm -lglfw -lGL -lSOIL
 fi

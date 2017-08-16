@@ -16,15 +16,10 @@ namespace ape {
          *   that all vertices in an instance use the
          *   same data.
          *
-         * - A per-vertex attribute buffer - this contains
-         *   the data for each vertex, such as texture
-         *   co-ordinates and colour.
-         *
-         *   Alternatively, a Uniform Buffer Object or a
-         *   Texture Buffer Object could be used to store
-         *   this data. The shader code would refer to the
-         *   gl_InstanceId and VertexId attributes to retrieve
-         *   this data.
+         *   A Texture Buffer Object - used to store
+         *   vertex specific data such as texture coordinates.
+         *   The shader code refers to the gl_InstanceId and
+         *   VertexId attributes to retrieve this data.
          */
 
         // Generate the buffers and array object
@@ -132,10 +127,6 @@ namespace ape {
                 normalized.origin.x + normalized.size.x,
                 normalized.origin.y
             };
-
-            for(int i = 0; i < 8; i = i + 2) {
-                //std::cout << uvArray[i] << ", " << uvArray[i + 1] << "\n";
-            }
 
             uv.insert(uv.end(), uvArray, std::end(uvArray));
 

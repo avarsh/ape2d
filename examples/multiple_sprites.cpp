@@ -14,8 +14,10 @@ int main() {
     auto marioTex = textureStore.loadTexture("examples/images/mario.png");
     auto luigiTex = textureStore.loadTexture("examples/images/luigi.png");
 
-    // TODO: Have built-in blueprints such as ape::Blueprints::Sprite
-    // which automatically add these components
+    if(marioTex == -1 || luigiTex == -1) {
+        return 1;
+    }
+
     int num = 1000;
     for(int i = 0; i < num; i++) {
 
@@ -32,22 +34,11 @@ int main() {
         node.setParent(world, ape::Scene::rootNode);
         transform.setPosition(posX, posY);
 
-
-        // Swap materials half way through
         if(i >= (num / 2)) {
             sprite.setTextureID(marioTex, textureStore);
         } else {
             sprite.setTextureID(luigiTex, textureStore);
         }
-
-        // Swap materials every sprite
-        /*
-        if(i % 2 == 0) {
-            sprite.setTextureID(marioTex, textureStore);
-        } else {
-            sprite.setTextureID(luigiTex, textureStore);
-        }
-        */
     }
 
     ape::FrameCounter frames;

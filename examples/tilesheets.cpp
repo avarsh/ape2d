@@ -9,16 +9,21 @@ int main() {
     window.create(800, 600, "Tilesheet example");
 
     auto tilesheet = textureStore.loadTexture("examples/images/tilesheet.png");
+    if(tilesheet == -1) {
+        return 1;
+    }
 
-    auto entity = world.createEntity();
-    auto& transform = world.addComponent<ape::Transform>(entity);
-    auto& sprite = world.addComponent<ape::Sprite>(entity);
-    auto& node = world.addComponent<ape::Node>(entity);
+    for(int i = 0; i < 2; i++) {
+        auto entity = world.createEntity();
+        auto& transform = world.addComponent<ape::Transform>(entity);
+        auto& sprite = world.addComponent<ape::Sprite>(entity);
+        auto& node = world.addComponent<ape::Node>(entity);
 
-    transform.setPosition(0, 0);
-    sprite.setTextureID(tilesheet, textureStore);
-    sprite.setSubRect(0, 0, 64, 64);
-    node.setParent(world, ape::Scene::rootNode);
+        transform.setPosition(64 * i, 64 * i);
+        sprite.setTextureID(tilesheet, textureStore);
+        sprite.setSubRect(0, i * 64, 64, 64);
+        node.setParent(world, ape::Scene::rootNode);
+    }
 
     while(window.isOpen()) {
         glfwPollEvents();

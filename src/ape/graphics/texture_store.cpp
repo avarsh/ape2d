@@ -24,7 +24,8 @@ namespace ape {
             std::cout << "===============\n";
             std::cout << "  Error when loading image from file: " << source << "\n";
             std::cout << "  " << SOIL_last_result() << "\n";
-            // TODO: Throw an error
+
+            return -1;
         }
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureSize.x, textureSize.y, 0,

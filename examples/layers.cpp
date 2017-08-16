@@ -17,6 +17,9 @@ int main() {
     node2.setParent(world, ape::Scene::rootNode);
 
     auto spriteTexture = textureStore.loadTexture("examples/images/mario.png");
+    if(spriteTexture == -1) {
+        return 1;
+    }
 
     auto createEntity = [&](float x, float y, ape::entity_t parentNode){
         auto entity = world.createEntity();

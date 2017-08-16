@@ -11,6 +11,10 @@ int main() {
 
     auto spriteTexture = textureStore.loadTexture("examples/images/mario.png");
 
+    if(spriteTexture == -1) {
+        return 1;
+    }
+
     // TODO: Have built-in blueprints such as ape::Blueprints::Sprite
     // which automatically add these components
     auto entity = world.createEntity();
