@@ -2,13 +2,12 @@
 
 int main() {
     ape::Engine engine;
-    auto& window = engine.getGraphics().getWindow();
-    auto& textureStore = engine.getGraphics().getTextureStore();
-    auto& world = engine.getWorld();
+    ape::Graphics& graphics = engine.graphics;
+    ape::World& world = engine.world;
 
-    window.create(800, 600, "Tilesheet example");
+    graphics.window.create(800, 600, "Tilesheet example");
 
-    auto tilesheet = textureStore.loadTexture("examples/images/tilesheet.png");
+    auto tilesheet = graphics.textureStore.loadTexture("examples/images/tilesheet.png");
     if(tilesheet == -1) {
         return 1;
     }
@@ -20,16 +19,16 @@ int main() {
         auto& node = world.addComponent<ape::Node>(entity);
 
         transform.setPosition(64 * i, 64 * i);
-        sprite.setTextureID(tilesheet, textureStore);
+        sprite.setTextureID(tilesheet, graphics.textureStore);
         sprite.setSubRect(0, i * 64, 64, 64);
         node.setParent(world, ape::Scene::rootNode);
     }
 
-    while(window.isOpen()) {
+    while(graphics.window.isOpen()) {
         glfwPollEvents();
 
-        window.clear(ape::Colors::Sky);
+        graphics.window.clear(ape::Colors::Sky);
         engine.render();
-        window.display();
+        graphics.window.display();
     }
 }

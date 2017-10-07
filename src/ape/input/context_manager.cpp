@@ -1,7 +1,7 @@
 #include <ape/input/context_manager.h>
 
 namespace ape {
-    std::shared_ptr<Context> ContextManager::createContext() {
+     ContextPtr ContextManager::createContext() {
         auto contextPtr = std::make_shared<Context>();
         contextPtr->priority = contextCount;
         if(firstContext == nullptr) {
@@ -17,5 +17,13 @@ namespace ape {
 
     void ContextManager::setContextPriority(ContextPtr context) {
 
+    }
+
+    ContextPtr ContextManager::getFirstContext() {
+        return firstContext;
+    }
+
+    void ContextManager::notify(int key, int action) {
+        
     }
 }

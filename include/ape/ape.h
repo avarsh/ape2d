@@ -6,6 +6,7 @@
 #include <ape/utils/frame_counter.h>
 #include <ape/core/transform.h>
 #include <ape/core/scene.h>
+#include <ape/input/context_manager.h>
 
 namespace ape {
 
@@ -15,13 +16,14 @@ namespace ape {
 
         void render();
 
-        Graphics& getGraphics();
-        World& getWorld();
-        Scene& getScene();
-    private:
         Graphics graphics;
         Scene scene;
         World world;
+        ContextManager contextManager;
+    private:
+        void _onWindowCreated();
+        static void _keyCallbackFunc(GLFWwindow* window, int key, int scancode,
+                                     int action, int mods);
     };
 }
 

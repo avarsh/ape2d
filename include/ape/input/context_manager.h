@@ -5,12 +5,15 @@
 #include <memory>
 
 namespace ape {
+    using ContextPtr = std::shared_ptr<Context>;
+
     class ContextManager {
     public:
-        using ContextPtr = std::shared_ptr<Context>;
-
         ContextPtr createContext();
         void setContextPriority(ContextPtr context);
+        ContextPtr getFirstContext();
+
+        void notify(int key, int action);
     private:
         ContextPtr firstContext {nullptr};
         ContextPtr lastContext {nullptr};

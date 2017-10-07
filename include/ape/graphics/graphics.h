@@ -36,8 +36,11 @@ namespace ape {
         void begin();
         void draw(Sprite* sprite);
         void end();
-    private:
+
         Window window;
+        TextureStore textureStore;
+    private:
+
         World& world;
 
         static void _errorCallbackFunc(int errorCode, const char* description);
@@ -51,7 +54,7 @@ namespace ape {
 
         std::vector<std::shared_ptr<Renderer>> rendererStore;
 
-        TextureStore textureStore;
+
     };
 }
 

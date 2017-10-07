@@ -82,6 +82,8 @@ namespace ape {
     private:
         GLFWwindow* window {nullptr};
         Vec2i dimensions;
+
+        friend class Engine;
     };
 }
 
