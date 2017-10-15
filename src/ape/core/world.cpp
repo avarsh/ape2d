@@ -1,149 +1,136 @@
 #include <ape/core/world.h>
 
 namespace ape {
-    entity_t World::createEntity() {
-        if(freeList.size() > 0) {
-            entity_t entity = freeList.front();
-            freeList.pop();
+    namespace world {
+        entity_t createEntity() {
+            if(detail::freeList.size() > 0) {
+                entity_t entity = detail::freeList.front();
+                detail::freeList.pop();
 
-            entityData[entity - 1].alive = true;
-            entityData[entity - 1].next = getNext(entity);
-            initiationFunc(entity);
+                detail::entityData[entity - 1].alive = true;
+                detail::entityData[entity - 1].next = getNext(entity);
+                detail::initiationFunc(entity);
+
+                return entity;
+            }
+
+            entity_t entity = detail::counter++;
+
+            detail::entityData.push_back(detail::EntityData());
+            detail::initiationFunc(entity);
+            detail::entityData[entity - 1].next = getNext(entity);
 
             return entity;
         }
 
-        entity_t entity = counter++;
+        entity_t createEntityFromBlueprint(int blueprint) {
+            assert(blueprint < detail::blueprints.size());
+            entity_t newEntity = createEntity();
 
-        entityData.push_back(EntityData());
-        initiationFunc(entity);
-        entityData[entity - 1].next = getNext(entity);
+            detail::blueprints[blueprint](newEntity);
 
-        return entity;
-    }
+            return newEntity;
+        }
 
-    entity_t World::createEntityFromBlueprint(int blueprint) {
-        assert(blueprint < blueprints.size());
-        entity_t newEntity = createEntity();
+        void deleteEntity(entity_t entity) {
+            detail::assertEntity(entity);
+            detail::killList.push(entity);
+        }
 
-        blueprints[blueprint](newEntity);
+        void refresh() {
+            while(detail::killList.size() > 0) {
+                auto entity = detail::killList.front();
 
-        return newEntity;
-    }
+                detail::entityData[entity - 1].alive = false;
 
-    void World::deleteEntity(entity_t entity) {
-        _assertEntity(entity);
-        killList.push(entity);
-    }
+                entity_t prev = detail::entityData[entity - 1].previous;
+                entity_t next = detail::entityData[entity - 1].next;
 
-    void World::refresh() {
-        while(killList.size() > 0) {
-            auto entity = killList.front();
+                if(prev != ENTITY_INVALID) {
+                    detail::entityData[prev - 1].next = next;
+                }
 
-            entityData[entity - 1].alive = false;
+                if(next != ENTITY_INVALID) {
+                    detail::entityData[next - 1].previous = prev;
+                }
 
-            entity_t prev = entityData[entity - 1].previous;
-            entity_t next = entityData[entity - 1].next;
+                // Iterate over every component type
+                for(int i = 1; i < detail::currentBitsize; i = i << 1) {
+                    // Check if the entity has that component type
+                    if((detail::entityData[entity - 1].mask&i) == i) {
+                        // If it does, find out where it is located
+                        int index = detail::entityData[entity - 1].indices[i];
+                        entity_t entityToUpdate = detail::componentInstances[i]->remove(index);
 
-            if(prev != ENTITY_INVALID) {
-                entityData[prev - 1].next = next;
+                        if(entityToUpdate != ENTITY_INVALID) {
+                            detail::entityData[entityToUpdate - 1].indices[i] = index;
+                        }
+                    }
+                }
+
+                detail::entityData[entity - 1].mask = 0;
+                detail::freeList.push(entity);
+
+                detail::killList.pop();
             }
+        }
 
-            if(next != ENTITY_INVALID) {
-                entityData[next - 1].previous = prev;
-            }
+        entity_t getFirstEntity() {
+            return getNext(ENTITY_INVALID);
+        }
 
-            // Iterate over every component type
-            for(int i = 1; i < currentBitsize; i = i << 1) {
-                // Check if the entity has that component type
-                if((entityData[entity - 1].mask&i) == i) {
-                    // If it does, find out where it is located
-                    int index = entityData[entity - 1].indices[i];
-                    entity_t entityToUpdate = componentInstances[i]->remove(index);
-
-                    if(entityToUpdate != ENTITY_INVALID) {
-                        entityData[entityToUpdate - 1].indices[i] = index;
+        entity_t getNext(entity_t currentEntity) {
+            bool nextIsAlive = false;
+            entity_t nextAlive = ENTITY_INVALID;
+            while(!nextIsAlive) {
+                if(currentEntity == detail::entityData.size()) {
+                    nextIsAlive = true;
+                } else {
+                    currentEntity++;
+                    if(detail::entityData[currentEntity - 1].alive) {
+                        nextAlive = currentEntity;
+                        nextIsAlive = true;
                     }
                 }
             }
 
-            entityData[entity - 1].mask = 0;
-            freeList.push(entity);
-
-            killList.pop();
+            return nextAlive;
         }
-    }
 
-    entity_t World::getFirstEntity() {
-        return getNext(ENTITY_INVALID);
-    }
+        void addTag(entity_t entity, std::string tag) {
+            if(!entityHasComponent<detail::TagComponent>(entity)) {
+                addComponent<detail::TagComponent>(entity);
+            }
 
-    entity_t World::getNext(entity_t currentEntity) {
-        bool nextIsAlive = false;
-        entity_t nextAlive = ENTITY_INVALID;
-        while(!nextIsAlive) {
-            if(currentEntity == entityData.size()) {
-                nextIsAlive = true;
-            } else {
-                currentEntity++;
-                if(entityData[currentEntity - 1].alive) {
-                    nextAlive = currentEntity;
-                    nextIsAlive = true;
+            int tagKey = detail::getTagKey(tag);
+            getComponent<detail::TagComponent>(entity).tags[tagKey] = tag;
+        }
+
+        std::vector<entity_t> getTaggedEntities(std::string tag) {
+            std::vector<entity_t> entities;
+            int tagKey = detail::getTagKey(tag);
+            for(auto& tagComponent : getComponentList<detail::TagComponent>()) {
+                if(tagComponent.tags.find(tagKey) != tagComponent.tags.end()) {
+                    entities.push_back(tagComponent.entity);
                 }
             }
+
+            return entities;
         }
 
-        return nextAlive;
-    }
-
-    void World::addTag(entity_t entity, std::string tag) {
-        if(!entityHasComponent<TagComponent>(entity)) {
-            addComponent<TagComponent>(entity);
-        }
-
-        int tagKey = _getTagKey(tag);
-        getComponent<TagComponent>(entity).tags[tagKey] = tag;
-    }
-
-    std::vector<entity_t> World::getTaggedEntities(std::string tag) {
-        std::vector<entity_t> entities;
-        int tagKey = _getTagKey(tag);
-        for(auto& tagComponent : getComponentList<TagComponent>()) {
-            if(tagComponent.tags.find(tagKey) != tagComponent.tags.end()) {
-                entities.push_back(tagComponent.entity);
+        bool entityHasTag(entity_t entity, std::string tag) {
+            if(!entityHasComponent<detail::TagComponent>(entity)) {
+                return false;
             }
+
+            int tagKey = detail::getTagKey(tag);
+            auto& tagComponent = getComponent<detail::TagComponent>(entity);
+            if(tagComponent.tags.find(tagKey) == tagComponent.tags.end()) {
+                return false;
+            }
+
+            return true;
         }
 
-        return entities;
     }
-
-    bool World::entityHasTag(entity_t entity, std::string tag) {
-        if(!entityHasComponent<TagComponent>(entity)) {
-            return false;
-        }
-
-        int tagKey = _getTagKey(tag);
-        auto& tagComponent = getComponent<TagComponent>(entity);
-        if(tagComponent.tags.find(tagKey) == tagComponent.tags.end()) {
-            return false;
-        }
-
-        return true;
-    }
-
-    // Look at World::_getComponentHandle for an explanation on how this works
-    int World::_getTagKey(std::string tag) {
-        int& key = tagKeys[tag];
-        if(key) return key;
-        key = tagCounter;
-        tagCounter++;
-        return key;
-    }
-
-    void World::_assertEntity(entity_t entity) {
-        assert(entity < counter);
-        assert(entity > ENTITY_INVALID);
-        assert(entityData[entity - 1].alive);
-    }
-
 }

@@ -9,6 +9,8 @@
 #include <ape/core/world.h>
 #include <ape/graphics/renderer.h>
 
+#include <ape/graphics/detail/graphics_detail.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
@@ -19,42 +21,12 @@
 #include <set>
 
 namespace ape {
-    class Graphics {
-    public:
-        Graphics(World& world);
-        ~Graphics();
-
-        /**
-         * Get the window object associated with the graphics class
-         * instance.
-         * @return A reference to the window class instance.
-         */
-        Window& getWindow();
-
-        TextureStore& getTextureStore();
+    namespace graphics {
+        void init ();
 
         void begin();
         void draw(Sprite* sprite);
         void end();
-
-        Window window;
-        TextureStore textureStore;
-    private:
-
-        World& world;
-
-        static void _errorCallbackFunc(int errorCode, const char* description);
-        void _setViewport(Vec2i newDimensions);
-
-        Shader instancedShader;
-
-        std::vector<Sprite*> spriteList;
-        std::set<int> renderedTextures;
-        glm::mat4 projectionMatrix;
-
-        std::vector<std::shared_ptr<Renderer>> rendererStore;
-
-
     };
 }
 

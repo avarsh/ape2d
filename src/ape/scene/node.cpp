@@ -1,4 +1,4 @@
-#include <ape/core/node.h>
+#include <ape/scene/node.h>
 #include <iterator>
 #include <algorithm>
 
@@ -7,10 +7,10 @@ namespace ape {
     int NodeTypes::ABSTRACT     = 0;
     int NodeTypes::ACTUALIZED   = 1;
 
-    void Node::setParent(World& world, entity_t parent) {
-        if(world.entityHasComponent<Node>(parent)) {
+    void Node::setParent(entity_t parent) {
+        if(world::entityHasComponent<Node>(parent)) {
             this->parent = parent;
-            auto& parentNode = world.getComponent<Node>(parent);
+            auto& parentNode = world::getComponent<Node>(parent);
             // Class instances are allowed to access private data
             // from any other class instance...
             parentNode.children.push_back(this->entity);
@@ -20,12 +20,12 @@ namespace ape {
         }
     }
 
-    void Node::setIndex(World& world, int index) {
+    void Node::setIndex(int index) {
         if(this->index == index) {
             return;
         }
 
-        auto& parentNode = world.getComponent<Node>(parent);
+        auto& parentNode = world::getComponent<Node>(parent);
         int oldIndex = this->index;
         this->index = index;
 
@@ -75,7 +75,7 @@ namespace ape {
         std::advance(childIter, start);
         for(int i = start; i <= end; i++) {
             if(*childIter != ENTITY_INVALID) {
-                move(world.getComponent<Node>(*childIter).index);
+                move(world::getComponent<Node>(*childIter).index);
             }
             move(childIter);
         }

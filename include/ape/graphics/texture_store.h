@@ -1,23 +1,22 @@
-#ifndef MATERIAL_STORE_H
-#define MATERIAL_STORE_H
+#ifndef TEXTURE_STORE_H
+#define TEXTURE_STORE_H
 
 #include <string>
 #include <ape/graphics/texture.h>
 #include <ape/core/event.h>
+#include <ape/graphics/detail/texture_store_detail.h>
+#include <SOIL2.h>
 #include <memory>
 #include <vector>
 
 namespace ape {
-    class TextureStore {
-    public:
+    namespace textureStore {
         int loadTexture(const std::string& source);
         void deleteTexture(int ID);
         std::shared_ptr<Texture> getTexture(int ID);
 
-        Event<int> textureLoaded;
-    private:
-        std::vector<std::shared_ptr<Texture>> textureList;
-    };
+        extern Event<int> textureLoaded;
+    }
 }
 
-#endif // MATERIAL_STORE_H
+#endif // TEXTURE_STORE_H

@@ -9,7 +9,7 @@ namespace ape {
 
     class Sprite : public Component<Sprite> {
     public:
-        void setTextureID(int ID, TextureStore& textureStore);
+        void setTextureID(int ID);
         int getTextureID();
 
         Vec2f getSize();

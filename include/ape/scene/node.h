@@ -14,8 +14,8 @@ namespace ape {
 
     class Node : public Component<Node> {
     public:
-        void setParent(World& world, entity_t parent);
-        void setIndex(World& world, int index);
+        void setParent(entity_t parent);
+        void setIndex(int index);
         int getIndex();
         entity_t getParent();
         std::list<entity_t>& getChildren();

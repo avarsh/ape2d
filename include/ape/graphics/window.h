@@ -4,27 +4,15 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include <string>
+#include <ape/graphics/detail/window_detail.h>
 
+#include <string>
 #include <ape/core/event.h>
 #include <ape/graphics/color.h>
 #include <ape/core/vec2.h>
 
 namespace ape {
-
-    struct WindowMode {
-        static int WINDOWED;
-        static int FULLSCREEN;
-        static int WINDOWED_FULLSCREEN;
-    };
-
-    class Window {
-    public:
-        Window();
-
-        Window(const Window& other) = delete;
-        void operator=(const Window &other) = delete;
-
+    namespace window {
         /**
          * Initializes the main window.
          * @param width  The width of the window.
@@ -45,6 +33,10 @@ namespace ape {
          */
         void setTitle(const std::string& title);
 
+        /**
+         * Enables or disables vertical sync, also known as v-sync.
+         * @param setting Boolean dictating if it is on or off.
+         */
         void setVerticalSync(bool setting);
 
         /**
@@ -64,27 +56,15 @@ namespace ape {
         void destroy();
 
         /**
-         * Gets the actual GLFW window pointer - only for internal/testing
-         * purposes.
-         * @return A pointer to a GLFWwindow instance
-         */
-        GLFWwindow* getWindow();
-
-        /**
          * Event emitted when the window is resized.
          */
-        Event<Vec2i> resizedEvent;
+        extern Event<Vec2i> resizedEvent;
 
         /**
          * Event emitted when the window is first created.
          */
-        Event<Vec2i> createdEvent;
-    private:
-        GLFWwindow* window {nullptr};
-        Vec2i dimensions;
-
-        friend class Engine;
-    };
+        extern Event<Vec2i> createdEvent;
+    }
 }
 
 #endif // WINDOW_H

@@ -99,10 +99,10 @@ namespace ape {
         spriteList.push_back(sprite);
     }
 
-    void Renderer::end(World& world, Shader& shader, Texture& texture) {
+    void Renderer::end(Shader& shader, Texture& texture) {
         int i = 1;
         for(Sprite* sprite : spriteList) {
-            auto& transform = world.getComponent<Transform>(sprite->entity);
+            auto& transform = world::getComponent<Transform>(sprite->entity);
             Vec2f pos = transform.getPosition();
             Vec2f size = sprite->getSize();
 

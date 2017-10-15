@@ -15,6 +15,8 @@
 #include <ape/core/componentmanager.h>
 #include <ape/core/event.h>
 
+#include <ape/core/detail/world_detail.h>
+
 namespace ape {
 
     /**
@@ -23,8 +25,19 @@ namespace ape {
     * The world manages the creation and lifetime of entities and allows
     * information about entities such as components to be retrieved.
     */
-    class World {
-    public:
+    namespace world {
+
+        template<class DerivedComponent>
+        bool entityHasComponent(entity_t entity);
+
+        template<class DerivedComponent>
+        DerivedComponent& getComponent(entity_t entity);
+
+        template<class Component>
+        int getComponentHandle();
+
+        template<class DerivedComponent>
+        std::vector<DerivedComponent>& getComponentList();
 
         /**
          * Creates a new entity, or reassigns one which has been previously
@@ -90,8 +103,8 @@ namespace ape {
         DerivedComponent& addComponent(entity_t entity) {
             // TODO: Allow for the component to be initialized with variadic
             // parameters
-            _staticAssertBase<DerivedComponent>();
-            _assertEntity(entity);
+            detail::staticAssertBase<DerivedComponent>();
+            detail::assertEntity(entity);
 
             if(entityHasComponent<DerivedComponent>(entity)) {
                 return getComponent<DerivedComponent>(entity);
@@ -102,16 +115,16 @@ namespace ape {
             // Then we store the index of the component within its pool
             // in a map.
             int cHandle = getComponentHandle<DerivedComponent>();
-            entityData[entity - 1].indices[cHandle] = index;
+            detail::entityData[entity - 1].indices[cHandle] = index;
             // Modify the mask to reflect that the entity has the component.
-            entityData[entity - 1].mask |= cHandle;
+            detail::entityData[entity - 1].mask |= cHandle;
 
             // We check whether we have an instance of the component added
             // to our map; otherwise, we create one.
             try {
-                componentInstances.at(cHandle);
+                detail::componentInstances.at(cHandle);
             } catch (const std::out_of_range& error) {
-                componentInstances[cHandle] = std::make_unique<DerivedComponent>();
+                detail::componentInstances[cHandle] = std::make_unique<DerivedComponent>();
             }
 
             return getComponent<DerivedComponent>(entity);
@@ -148,19 +161,19 @@ namespace ape {
          */
         template<class DerivedComponent>
         void removeComponent(entity_t entity) {
-            _staticAssertBase<DerivedComponent>();
-            _assertEntity(entity);
+            detail::staticAssertBase<DerivedComponent>();
+            detail::assertEntity(entity);
             assert(entityHasComponent<DerivedComponent>(entity));
 
             int handle = getComponentHandle<DerivedComponent>();
-            int index = entityData[entity - 1].indices[handle];
+            int index = detail::entityData[entity - 1].indices[handle];
             entity_t entityToUpdate = DerivedComponent::Manager.removeComponent(index);
 
-            entityData[entity - 1].mask &= ~handle;
+            detail::entityData[entity - 1].mask &= ~handle;
 
 
             if(entityToUpdate != ENTITY_INVALID) {
-                entityData[entityToUpdate - 1].indices[handle] = index;
+                detail::entityData[entityToUpdate - 1].indices[handle] = index;
             }
         }
 
@@ -190,23 +203,23 @@ namespace ape {
 
         template<class DerivedComponent>
         void disableComponent(entity_t entity) {
-            _staticAssertBase<DerivedComponent>();
-            _assertEntity(entity);
+            detail::staticAssertBase<DerivedComponent>();
+            detail::assertEntity(entity);
             assert(entityHasComponent<DerivedComponent>(entity));
 
             int handle = getComponentHandle<DerivedComponent>();
-            int index = entityData[entity - 1].indices[handle];
+            int index = detail::entityData[entity - 1].indices[handle];
             DerivedComponent::Manager.setComponentEnabled(index, false);
         }
 
         template<class DerivedComponent>
         void enableComponent(entity_t entity) {
-            _staticAssertBase<DerivedComponent>();
-            _assertEntity(entity);
+            detail::staticAssertBase<DerivedComponent>();
+            detail::assertEntity(entity);
             assert(entityHasComponent<DerivedComponent>(entity));
 
             int handle = getComponentHandle<DerivedComponent>();
-            int index = entityData[entity - 1].indices[handle];
+            int index = detail::entityData[entity - 1].indices[handle];
             DerivedComponent::Manager.setComponentEnabled(index, true);
         }
 
@@ -218,15 +231,15 @@ namespace ape {
          */
         template<class DerivedComponent>
         DerivedComponent& getComponent(entity_t entity) {
-            _staticAssertBase<DerivedComponent>();
-            _assertEntity(entity);
+            detail::staticAssertBase<DerivedComponent>();
+            detail::assertEntity(entity);
             assert(entityHasComponent<DerivedComponent>(entity));
 
             // Firstly get the mask for the component
             int mask = getComponentHandle<DerivedComponent>();
             // Retrieve the component's location within its pool using
             // our mappings
-            int index = entityData[entity - 1].indices[mask];
+            int index = detail::entityData[entity - 1].indices[mask];
             return getComponentList<DerivedComponent>()[index];
         }
 
@@ -237,11 +250,11 @@ namespace ape {
          */
         template<class DerivedComponent>
         bool entityHasComponent(entity_t entity) {
-            _staticAssertBase<DerivedComponent>();
-            _assertEntity(entity);
+            detail::staticAssertBase<DerivedComponent>();
+            detail::assertEntity(entity);
 
             int cMask = getComponentHandle<DerivedComponent>();
-            if((entityData[entity - 1].mask&cMask) == cMask) {
+            if((detail::entityData[entity - 1].mask&cMask) == cMask) {
                 return true;
             }
 
@@ -287,7 +300,7 @@ namespace ape {
              * the default constructor. For an integer value, this default
              * is 0.
              */
-            int& handle = componentTypeMap[typeid(Component)];
+            int& handle = detail::componentTypeMap[typeid(Component)];
 
             /*
              * If the handle is not 0 (component handles cannot be 0),
@@ -301,13 +314,13 @@ namespace ape {
              * Because we are using a reference, this will also modify
              * the hashed value in the map.
              */
-            handle = currentBitsize;
+            handle = detail::currentBitsize;
 
             /*
              * Shift it left by 1 so we can get a unique series of bits for
              * each component
              */
-            currentBitsize = currentBitsize << 1;
+            detail::currentBitsize = detail::currentBitsize << 1;
 
             return handle;
         }
@@ -319,7 +332,7 @@ namespace ape {
          */
         template<class DerivedComponent>
         std::vector<DerivedComponent>& getComponentList() {
-            _staticAssertBase<DerivedComponent>();
+            detail::staticAssertBase<DerivedComponent>();
 
             // Basically a convenience wrapper
             return DerivedComponent::Manager.getComponentList();
@@ -333,7 +346,7 @@ namespace ape {
          */
         template<class ...Components>
         void setDefaultComponents() {
-            initiationFunc = [this](entity_t entity) {
+            detail::initiationFunc = [](entity_t entity) {
                 addComponents<Components...>(entity);
             };
         }
@@ -346,99 +359,13 @@ namespace ape {
         template<class ...Components>
         int addBlueprint() {
             // A blueprint is just a lambda which adds the components.
-            blueprints.push_back([this](entity_t entity){
+            detail::blueprints.push_back([](entity_t entity){
                 addComponents<Components...>(entity);
             });
 
             // The handle is the blueprint's index
-            return blueprints.size() - 1;
+            return detail::blueprints.size() - 1;
         }
-
-        Event<entity_t> entityDeletedEvent;
-
-    private:
-
-        /*
-         * A structure to store data about an entity, such as where its
-         * components are in their pools, a bitmask to indicate what
-         * components it has and a boolean flag to mark it as alive.
-         */
-        struct EntityData {
-            std::unordered_map<int, int> indices;
-            int mask {0};
-            bool alive {true};
-
-            entity_t next { ENTITY_INVALID };
-            entity_t previous { ENTITY_INVALID };
-        };
-
-        /*
-         * A custom component, used to store strings, or "tags".
-         */
-        struct TagComponent : public Component<TagComponent> {
-            std::unordered_map<int, std::string> tags;
-        };
-
-        // Used to keep track of tags and to look them up quickly in tag components.
-        std::unordered_map<std::string, int> tagKeys;
-
-        // Used to assign a unique key to each tag.
-        int tagCounter {1};
-
-        /*
-         * Gets the key value for a tag - the key value is then used
-         * to lookup the tag in the tag component.
-         */
-        int _getTagKey(std::string tag);
-
-        /*
-         * A convenience function used to check at compile time if a template
-         * parameter is derived from the component base class.
-         */
-
-        template<class DerivedComponent>
-        void _staticAssertBase() {
-            static_assert(std::is_base_of<BaseComponent, DerivedComponent>::value,
-                         "Template parameter does not derive from base component class");
-        }
-
-        /*
-         * A convenience function used to check whether an entity is valid.
-         */
-        void _assertEntity(entity_t entity);
-
-        // The data for each entity
-        std::vector<EntityData> entityData;
-
-        // Used to allocate new entities - note that entities cannot
-        // have a handle of 0. This is useful when checking certain
-        // parameters.
-        entity_t counter {1};
-
-        // The queue of entities which have recently been deleted
-        std::queue<entity_t> freeList;
-
-        // The queue of entities which have recently been deleted
-        std::queue<entity_t> killList;
-
-        // The world keeps an instance of every component which is created.
-        // This is done to access static members such as the component managers.
-        std::unordered_map<int, std::unique_ptr<BaseComponent>> componentInstances;
-
-        // We can map types to integer handles for components. This is mainly
-        // used to build bitmasks for entities
-        std::unordered_map<std::type_index, int> componentTypeMap;
-
-        // The current bitsize, shifted left by 1 for every component.
-        // Note that components cannot have a handle of 0.
-        int currentBitsize {1};
-
-        // A function applied to every entity upon creation - usually used
-        // to add components by default.
-        std::function<void(entity_t)> initiationFunc { [](entity_t e) {} };
-
-        // Blueprint related data
-        std::vector<std::function<void(entity_t)>> blueprints;
     };
 }
 

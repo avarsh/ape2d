@@ -16,7 +16,7 @@ namespace ape {
 
         void begin();
         void draw(Sprite* sprite);
-        void end(World& world, Shader& shader, Texture& texture);
+        void end(Shader& shader, Texture& texture);
     private:
         std::vector<Sprite*> spriteList;
 

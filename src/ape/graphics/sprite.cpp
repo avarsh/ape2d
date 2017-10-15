@@ -1,9 +1,9 @@
 #include <ape/graphics/sprite.h>
 
 namespace ape {
-    void Sprite::setTextureID(int ID, TextureStore& textureStore) {
+    void Sprite::setTextureID(int ID) {
         textureID = ID;
-        textureSize = textureStore.getTexture(ID)->getSize();
+        textureSize = textureStore::getTexture(ID)->getSize();
         setSubRect(0, 0, textureSize.x, textureSize.y);
     }
 

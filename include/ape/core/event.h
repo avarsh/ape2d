@@ -26,6 +26,9 @@ namespace ape {
             callbackFunctions.push_back(function);
         }
 
+        // TODO
+        // removeCallback();
+
         /**
          * Allows the event publisher to emit the event.
          * @param arguments All the arguments which match the event signature.
