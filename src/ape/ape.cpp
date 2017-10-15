@@ -8,6 +8,8 @@ namespace ape {
 
     void update() {
         glfwPollEvents();
+        graphics::begin();
         scene::render();
+        graphics::end();
     }
 }

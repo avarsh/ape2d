@@ -41,15 +41,10 @@ int main() {
 
     frames.startTimer();
     while(ape::window::isOpen()) {
-        ape::update();
         frames.tick();
 
         ape::window::clear(ape::Colors::Slate);
-        ape::graphics::begin();
-        for(auto& sprite : ape::world::getComponentList<ape::Sprite>()) {
-            ape::graphics::draw(&sprite);
-        }
-        ape::graphics::end();
+        ape::update();
         ape::window::display();
     }
 
