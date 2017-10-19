@@ -4,6 +4,9 @@ namespace ape {
     void init() {
         graphics::init();
         scene::init();
+        ape::window::createdEvent.addCallback([&](Vec2i size){
+            input::init();
+        });
     }
 
     void update() {

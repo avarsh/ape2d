@@ -7,6 +7,8 @@
 #include <ape/core/transform.h>
 #include <ape/scene/scene.h>
 #include <ape/utils/frame_counter.h>
+#include <ape/input/input_system.h>
+
 
 namespace ape {
     void init();
