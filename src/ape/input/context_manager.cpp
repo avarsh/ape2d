@@ -44,16 +44,31 @@ namespace ape {
             return *(iter);
         }
 
-        void ContextManager::transmitInput(InputData inputData) {
+        void ContextManager::transmitAction(ActionData actionData) {
             auto iter = contextList.begin();
 
             while(iter != contextList.end()) {
                 Context::DeviceMap& deviceMap = (*iter).keyboardMappings;
 
-                auto mapping = (*iter).keyboardMappings.find(inputData.getID());
-                if(mapping != (*iter).keyboardMappings.end()) {
-                    mapping->second(inputData); // Execute the function
+                /*
+                if(actionData.device == Device::MOUSE) {
+                    deviceMap = (*iter).miceMappings;
                 }
+                */
+
+                auto mapping = (*iter).keyboardMappings.find(actionData.getID());
+                if(mapping != (*iter).keyboardMappings.end()) {
+                    mapping->second(); // Execute the function
+                }
+                std::advance(iter, 1);
+            }
+        }
+
+        void ContextManager::pollInputStates() {
+            auto iter = contextList.begin();
+
+            while(iter != contextList.end()) {
+                iter->pollStates();
                 std::advance(iter, 1);
             }
         }

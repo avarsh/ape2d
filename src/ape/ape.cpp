@@ -11,6 +11,7 @@ namespace ape {
 
     void update() {
         glfwPollEvents();
+        input::ContextManager::pollInputStates();
         graphics::begin();
         scene::render();
         graphics::end();

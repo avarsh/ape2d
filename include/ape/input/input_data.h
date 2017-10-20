@@ -8,10 +8,14 @@ namespace ape {
             MOUSE
         };
 
-        enum class EventType {
+        enum class ActionType {
             KEY_PRESS = 1000,
             KEY_RELEASE = 2000,
             MOUSE_BUTTON_DOWN = 3000
+        };
+
+        enum class StateType {
+            KEY_DOWN = 4000,
         };
 
         enum Keys {
@@ -20,26 +24,45 @@ namespace ape {
 
         struct InputData {
             InputData() { }
+            InputData(Device device) : device(device) { }
+            Device device;
+        };
 
-            InputData(Device device, EventType eventType, int eventData) :
-                eventType(eventType), eventData(eventData), device(device) {
-            }
+        struct ActionData : public InputData {
+            ActionData() { }
 
-            Device device; // Keyboard or mouse signal
-            EventType eventType; // Press, release etc.
-            int eventData; // e.g. which key or mouse button
+            ActionData(Device device, ActionType action, int data) :
+                action(action), data(data), InputData(device) { }
 
-            bool operator==(const InputData& comparisonData) {
-                if((comparisonData.eventType == this->eventType) &&
-                   (comparisonData.eventData == this->eventData)) {
-                       return true;
-                }
-
-                return false;
-            }
+            ActionType action;  // Press, release etc.
+            int data;           // e.g. which key or mouse button
 
             int getID() {
-                return static_cast<int>(eventType) + eventData;
+                return static_cast<int>(action) + data;
+            }
+        };
+
+        struct StateData : public InputData {
+            StateData() { }
+
+            StateData(Device device, StateType state, int data) :
+                state(state), data(data), InputData(device) { }
+
+            StateType state;  // Press, release etc.
+            int data;           // e.g. which key or mouse button
+
+            int getID() {
+                return static_cast<int>(state) + data;
+            }
+
+            static StateType getStateFromID(int ID) {
+                int stateCode = ID - (ID % 1000);
+                return static_cast<StateType>(stateCode);
+            }
+
+            static int getDataFromID(int ID) {
+                int stateData = ID % 1000;
+                return stateData;
             }
         };
     }

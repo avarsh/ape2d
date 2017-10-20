@@ -10,7 +10,8 @@ namespace ape {
         class ContextManager {
         public:
             static Context& createContext(unsigned int priority = 0);
-            static void transmitInput(InputData inputData);
+            static void transmitAction(ActionData actionData);
+            static void pollInputStates();
         private:
             static std::list<Context> contextList;
         };

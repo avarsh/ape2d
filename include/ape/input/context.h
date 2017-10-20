@@ -10,8 +10,10 @@ namespace ape {
     namespace input {
         class Context {
         public:
-            void addActionCallback(InputData inputData,
-                std::function<void(InputData)> callback);
+            void addActionCallback(ActionData actionData,
+                std::function<void()> callback);
+            void addStateCallback(StateData stateData,
+                std::function<void()> callback);
         private:
             friend class ContextManager;
 
@@ -19,8 +21,11 @@ namespace ape {
 
             int priority {-1};
 
-            using DeviceMap = std::map<int, std::function<void(InputData)>>;
+            using DeviceMap = std::map<int, std::function<void()>>;
             DeviceMap keyboardMappings;
+            DeviceMap keyboardStates;
+
+            void pollStates();
         };
     }
 }

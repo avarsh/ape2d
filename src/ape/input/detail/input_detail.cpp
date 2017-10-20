@@ -9,19 +9,15 @@ namespace ape {
         namespace detail {
             void keyCallbackFunc(GLFWwindow* window, int key, int scancode,
                                  int action, int mods) {
-                if(action == GLFW_REPEAT) return;
+                if(action == GLFW_REPEAT) return; // Not supporting this yet
 
-                InputData data;
-                std::map<int, EventType> eventConversionMap = {
-                    {GLFW_PRESS, EventType::KEY_PRESS},
-                    {GLFW_RELEASE, EventType::KEY_RELEASE}
-                };
+                ActionData data;
 
-                data.eventType = (action == GLFW_PRESS) ?
-                    EventType::KEY_PRESS : EventType::KEY_RELEASE;
-                data.eventData = key;
+                data.action = (action == GLFW_PRESS) ?
+                    ActionType::KEY_PRESS : ActionType::KEY_RELEASE;
+                data.data = key;
 
-                ContextManager::transmitInput(data);
+                ContextManager::transmitAction(data);
             }
         }
     }
