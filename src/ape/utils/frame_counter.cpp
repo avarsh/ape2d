@@ -3,7 +3,7 @@
 
 namespace ape {
     void FrameCounter::startTimer() {
-        glfwSetTime(0);
+        glfwSetTime(0); // TODO: roll out custom clock library
         start = glfwGetTime();
     }
 

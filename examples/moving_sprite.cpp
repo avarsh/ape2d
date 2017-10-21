@@ -21,28 +21,49 @@ int main() {
     // Set up inputs
     auto& context = ape::input::ContextManager::createContext(0);
     std::map<int, ape::Vec2f> keys = {
-        {GLFW_KEY_W, ape::Vec2f(0, -0.01)},
-        {GLFW_KEY_D, ape::Vec2f(0.01, 0)},
-        {GLFW_KEY_S, ape::Vec2f(0, 0.01)},
-        {GLFW_KEY_A, ape::Vec2f(-0.01, 0)}
+        {GLFW_KEY_W, ape::Vec2f(0, -100)},
+        {GLFW_KEY_D, ape::Vec2f(100, 0)},
+        {GLFW_KEY_S, ape::Vec2f(0, 100)},
+        {GLFW_KEY_A, ape::Vec2f(-100, 0)}
+    };
+
+    std::map<int, int> dirs = {
+        {GLFW_KEY_W, 1},
+        {GLFW_KEY_D, 0},
+        {GLFW_KEY_S, 1},
+        {GLFW_KEY_A, 0}
     };
 
     for(auto const& key : keys) {
-        ape::input::StateData data(
+        ape::input::StateData pressed(
             ape::input::Device::KEYBOARD,
             ape::input::StateType::KEY_DOWN,
             key.first
         );
 
-        context.addStateCallback(data, [&](){
+        context.addStateCallback(pressed, [&](){
             auto& transform = ape::world::getComponent<ape::Transform>(player);
-            transform.move(key.second.x, key.second.y);
+            auto current = transform.getVelocity();
+            if(dirs[key.first] == 0) {transform.setVelocity(key.second.x, current.y);}
+            if(dirs[key.first] == 1) {transform.setVelocity(current.x, key.second.y);}
+        });
+
+        ape::input::ActionData released(
+            ape::input::Device::KEYBOARD,
+            ape::input::ActionType::KEY_RELEASE,
+            key.first
+        );
+
+        context.addActionCallback(released, [&](){
+            auto& transform = ape::world::getComponent<ape::Transform>(player);
+            auto current = transform.getVelocity();
+            if(dirs[key.first] == 0) { transform.setVelocity(0, current.y); }
+            if(dirs[key.first] == 1) { transform.setVelocity(current.x, 0); }
         });
     }
 
     while(ape::window::isOpen()) {
         ape::window::clear(ape::Colors::Slate);
         ape::update();
-        ape::window::display();
     }
 }

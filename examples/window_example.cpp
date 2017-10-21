@@ -8,7 +8,7 @@ int main() {
         glfwPollEvents();
 
         ape::window::clear(ape::Colors::Orange);
-        ape::window::display();
+        ape::update();
     }
 
     ape::window::destroy();

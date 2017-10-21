@@ -15,6 +15,8 @@ namespace ape {
              */
             void setPosition(float x, float y);
 
+            void setPosition(Vec2f newPosition);
+
             /**
              * Gets the position of the entity.
              * @return A Vec2f containing the position coordinates.
@@ -28,6 +30,8 @@ namespace ape {
              */
             void move(float deltaX, float deltaY);
 
+            void move(Vec2f delta);
+
             /**
              * Sets the rotation of the entity.
              * @param rotation The angle in radians.
@@ -39,6 +43,10 @@ namespace ape {
              * @return [description]
              */
             float getRotation();
+
+            Vec2f getVelocity();
+
+            void setVelocity(float velX, float velY);
 
         private:
             Vec2f position;

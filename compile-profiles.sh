@@ -29,6 +29,6 @@ then
   src/ape/core/transform.cpp src/ape/utils/frame_counter.cpp \
   src/ape/scene/scene.cpp src/ape/scene/node.cpp \
   src/ape/scene/detail/scene_detail.cpp src/ape/input/context.cpp \
-  src/ape/input/context_manager.cpp \
+  src/ape/input/context_manager.cpp src/ape/detail/ape_detail.cpp \
   -Ideps/  -Iinclude/ -lm -lglfw -lGL -lSOIL
 fi
