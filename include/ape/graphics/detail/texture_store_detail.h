@@ -8,6 +8,7 @@
 namespace ape {
     namespace textureStore {
         namespace detail {
+            // List of textures
             extern std::vector<std::shared_ptr<Texture>> textureList;
         }
     }

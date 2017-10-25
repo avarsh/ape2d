@@ -9,7 +9,6 @@ namespace ape {
      * Simple utility class to calculate the frames per second count
      * for the application.
      */
-
     class FrameCounter {
     public:
 

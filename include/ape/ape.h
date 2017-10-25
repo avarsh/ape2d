@@ -16,6 +16,7 @@ namespace ape {
     void init();
     void update();
     void addSimulationCode(std::function<void(double dt)> function);
+    bool isRunning();
 }
 
 #endif // APE_H

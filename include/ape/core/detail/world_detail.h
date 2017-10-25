@@ -8,6 +8,7 @@
 #include <functional>
 #include <ape/core/defines.h>
 #include <ape/core/component.h>
+#include <ape/core/detail/component_detail.h>
 
 namespace ape {
     namespace world {
@@ -62,11 +63,12 @@ namespace ape {
 
             // The world keeps an instance of every component which is created.
             // This is done to access static members such as the component managers.
-            extern std::unordered_map<int, std::unique_ptr<BaseComponent>> componentInstances;
+            extern std::unordered_map<int, std::unique_ptr<ape::detail::BaseComponent>> componentInstances;
 
             // We can map types to integer handles for components. This is mainly
             // used to build bitmasks for entities
-            extern std::unordered_map<std::type_index, int> componentTypeMap;
+
+            //yextern std::unordered_map<std::type_index, int> componentTypeMap;
 
             // The current bitsize, shifted left by 1 for every component.
             // Note that components cannot have a handle of 0.
@@ -79,12 +81,19 @@ namespace ape {
             // Blueprint related data
             extern std::vector<std::function<void(entity_t)>> blueprints;
 
+            /*
+             * Compile time assert to check if component class is of the
+             * correct type.
+             */
             template<class DerivedComponent>
             void staticAssertBase() {
-                static_assert(std::is_base_of<BaseComponent, DerivedComponent>::value,
+                static_assert(std::is_base_of<ape::detail::BaseComponent, DerivedComponent>::value,
                              "Template parameter does not derive from base component class");
             }
 
+            /*
+             * Checks whether an entity is valid.
+             */
             void assertEntity(entity_t entity);
         }
     }

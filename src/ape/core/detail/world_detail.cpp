@@ -10,8 +10,8 @@ namespace ape {
             entity_t counter = 1;
             std::queue<entity_t> freeList;
             std::queue<entity_t> killList;
-            std::unordered_map<int, std::unique_ptr<BaseComponent>> componentInstances;
-            std::unordered_map<std::type_index, int> componentTypeMap;
+            std::unordered_map<int, std::unique_ptr<ape::detail::BaseComponent>> componentInstances;
+            // std::unordered_map<std::type_index, int> componentTypeMap;
             int currentBitsize = 1;
             std::function<void(entity_t)> initiationFunc = [](entity_t e) {};
             std::vector<std::function<void(entity_t)>> blueprints;

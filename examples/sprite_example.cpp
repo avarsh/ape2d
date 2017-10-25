@@ -30,7 +30,7 @@ int main() {
     });
 
     frames.startTimer();
-    while(ape::window::isOpen()) {
+    while(ape::isRunning()) {
         ape::update();
         frames.tick();
 
@@ -43,5 +43,5 @@ int main() {
         ape::window::display();
     }
 
-    ape::window::destroy();
+    return 0;
 }

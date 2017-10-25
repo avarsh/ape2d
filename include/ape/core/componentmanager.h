@@ -11,7 +11,8 @@ namespace ape {
     /**
      * The component manager manages each component, including
      * deletion and insertion of new components. Functions should not
-     * be invoked manually; the World class should be used instead.
+     * be invoked manually; the functions in the world namespace
+     * should be used instead.
      * @tparam The component to manage.
      */
 

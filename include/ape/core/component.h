@@ -3,24 +3,9 @@
 
 #include <ape/core/defines.h>
 #include <ape/core/componentmanager.h>
+#include <ape/core/detail/component_detail.h>
 
 namespace ape {
-
-    /**
-     * A base class for components. Custom components should not derive from
-     * this class! This is meant to be used to group components in
-     * certain collections, internally within the engine.
-     */
-
-    struct BaseComponent {
-        /**
-         * A virtual function enabling component removal within
-         * the world.
-         * @param  index The component's index within it's pool.
-         * @return       The entity holding the component which has been moved.
-         */
-        virtual int remove(int index) = 0;
-    };
 
     /**
      * A derived component class, intended to be inherited by all other
@@ -28,7 +13,7 @@ namespace ape {
      */
 
     template<class DerivedComponent>
-    struct Component : public BaseComponent {
+    struct Component : public detail::BaseComponent {
 
         /**
          * Implementation of the remove function, enabling a component
@@ -57,19 +42,25 @@ namespace ape {
 
         virtual int remove(int index) {
             // Ask the manager to remove it...
-            return Manager.removeComponent(index);
+            return manager.removeComponent(index);
         }
 
+        // The parent entity
         entity_t entity { ENTITY_INVALID };
+        // Whether the component is enabled or not
         bool enabled {true};
 
         // The manager for the component, shared by all instances of the
         // component.
-        static ComponentManager<DerivedComponent> Manager;
+        static ComponentManager<DerivedComponent> manager;
+        static int handle;
     };
 
     template<class DerivedComponent>
-    ComponentManager<DerivedComponent> Component<DerivedComponent>::Manager;
+    ComponentManager<DerivedComponent> Component<DerivedComponent>::manager;
+
+    template<class DerivedComponent>
+    int Component<DerivedComponent>::handle = 0;
 }
 
 #endif

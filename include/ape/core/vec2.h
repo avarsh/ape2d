@@ -6,11 +6,12 @@
 namespace ape {
 
     /**
-     * A structure which stores a pair of values of numerical type.
+     * A structure which stores a pair of values of numerical type and defines
+     * operations to allow quick calculations.
      */
     template<typename T>
     struct Vec2 {
-        // This is true for char...
+        // This is true for char because of how C/C++ types work...
         static_assert(std::is_arithmetic<T>::value, "Template argument must be a numeric type");
         Vec2() {
             x = y = T();
@@ -101,48 +102,7 @@ namespace ape {
 
     using Vec2i = Vec2<int>;
     using Vec2f = Vec2<float>;
-
-    /*struct Vec2i : public Vec2<int> {
-        Vec2i() {}
-        Vec2i(int xValue, int yValue) :
-            Vec2<int>(xValue, yValue) { }
-
-        Vec2i& operator= (const Vec2<int>& v) {
-            x = v.x;
-            y = v.y;
-            return *this;
-        }
-    };
-
-    struct Vec2f : public Vec2<float> {
-        Vec2f() {}
-        Vec2f(float xValue, float yValue) :
-            Vec2<float>(xValue, yValue) { }
-
-        Vec2f& operator= (const Vec2<float>& v) {
-            x = v.x;
-            y = v.y;
-            return *this;
-        }
-
-        Vec2f& operator= (float val) {
-            x = val;
-            y = val;
-            return *this;
-        }
-    };
-
-    struct Vec2u : public Vec2<unsigned int> {
-        Vec2u() {}
-        Vec2u(unsigned int xValue, unsigned int yValue) :
-            Vec2<unsigned int>(xValue, yValue) { }
-
-        Vec2u& operator= (const Vec2<unsigned int>& v) {
-            x = v.x;
-            y = v.y;
-            return *this;
-        }
-    };*/
+    using Vec2u = Vec2<unsigned int>;
 }
 
 #endif // VEC2_H

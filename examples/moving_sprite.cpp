@@ -62,8 +62,10 @@ int main() {
         });
     }
 
-    while(ape::window::isOpen()) {
+    while(ape::isRunning()) {
         ape::window::clear(ape::Colors::Slate);
         ape::update();
     }
+
+    return 0;
 }

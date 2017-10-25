@@ -23,10 +23,8 @@ int main() {
         std::cout << "W key held down!\n";
     });
 
-    while(ape::window::isOpen()) {
+    while(ape::isRunning()) {
         ape::window::clear(ape::Colors::Slate);
         ape::update();
     }
-
-    ape::window::destroy();
 }

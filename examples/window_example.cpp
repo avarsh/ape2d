@@ -4,12 +4,10 @@ int main() {
     ape::init();
     ape::window::create(800, 600, "Test window");
 
-    while(ape::window::isOpen()) {
-        glfwPollEvents();
-
+    while(ape::isRunning()) {
         ape::window::clear(ape::Colors::Orange);
         ape::update();
     }
 
-    ape::window::destroy();
+    return 0;
 }

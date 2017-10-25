@@ -64,10 +64,12 @@ namespace ape {
      *  -> Encapsulating pushing the event on to the event's queue AND the event
      *     Id queue.
      *  -> The use case - I intended this for applications where no immediate
-     *     response is required (i.e. the state of the world can change). One
-     *     case could be polling input and window events.
+     *     response is required (i.e. the state of the world is allowed to
+     *     change). One case could be polling input and window events.
      *
-     * I'll get round to it but focusing on getting the graphics working right now.
+     * Update: An early input system has been implemented, but for cases
+     * such as continuous states, this sort of system could be used, e.g.
+     * to keep the key in a state until a released event is seen.
      */
 
     /*

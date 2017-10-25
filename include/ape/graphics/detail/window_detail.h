@@ -9,8 +9,8 @@
 namespace ape {
     namespace window {
         namespace detail {
-            extern GLFWwindow* window;
-            extern Vec2i dimensions;
+            extern GLFWwindow* window; // The actual window instance
+            extern Vec2i dimensions; // Window dimensions
         }
     }
 }

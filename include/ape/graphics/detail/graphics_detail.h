@@ -16,13 +16,16 @@
 namespace ape {
     namespace graphics {
         namespace detail {
+            // Function to display errors created by GLFW
             void errorCallbackFunc(int errorCode, const char* description);
+            // Updates the view so it matches the new window dimensions
             void setViewport(Vec2i newDimensions);
 
-            extern Shader instancedShader;
-            extern std::vector<Sprite*> spriteList;
-            extern std::set<int> renderedTextures;
-            extern glm::mat4 projectionMatrix;
+            extern Shader instancedShader; // Default shader, renders sprites
+            extern std::vector<Sprite*> spriteList; // List of sprites to render
+            extern std::set<int> renderedTextures; // Textures rendered this frame
+            extern glm::mat4 projectionMatrix; // The projection matrix passed to shader
+            // List of renderers, which have a 1-to-1 relationship with textures
             extern std::vector<std::shared_ptr<Renderer>> rendererStore;
         }
     }

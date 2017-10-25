@@ -27,6 +27,7 @@ namespace ape {
     */
     namespace world {
 
+        // Forward declarations
         template<class DerivedComponent>
         bool entityHasComponent(entity_t entity);
 
@@ -38,6 +39,7 @@ namespace ape {
 
         template<class DerivedComponent>
         std::vector<DerivedComponent>& getComponentList();
+        // End of forward declarations
 
         /**
          * Creates a new entity, or reassigns one which has been previously
@@ -76,6 +78,12 @@ namespace ape {
          */
         std::vector<entity_t> getTaggedEntities(std::string tag);
 
+        /**
+         * Checks whether an entity has a specified tag.
+         * @param  entity The entity to check for.
+         * @param  tag    The tag, as a string, to check.
+         * @return        A boolean indicating whether the entity has that tag.
+         */
         bool entityHasTag(entity_t entity, std::string tag);
 
         /**
@@ -91,6 +99,9 @@ namespace ape {
          */
         entity_t getNext(entity_t currentEntity);
 
+        /**
+         * Updates the world so that deleted entities can be cleaned up.
+         */
         void refresh();
 
         /**
@@ -111,7 +122,7 @@ namespace ape {
             }
 
             // We ask the manager to add the component...
-            int index = DerivedComponent::Manager.addComponent(entity);
+            int index = DerivedComponent::manager.addComponent(entity);
             // Then we store the index of the component within its pool
             // in a map.
             int cHandle = getComponentHandle<DerivedComponent>();
@@ -167,7 +178,7 @@ namespace ape {
 
             int handle = getComponentHandle<DerivedComponent>();
             int index = detail::entityData[entity - 1].indices[handle];
-            entity_t entityToUpdate = DerivedComponent::Manager.removeComponent(index);
+            entity_t entityToUpdate = DerivedComponent::manager.removeComponent(index);
 
             detail::entityData[entity - 1].mask &= ~handle;
 
@@ -201,6 +212,12 @@ namespace ape {
             removeComponent<FirstComponent>(entity);
         }
 
+        /**
+         * Disables a component, indicating that it should not interact with
+         * the world.
+         * @tparam DerivedComponent The component type to disable.
+         * @param entity The entity to disable the component for.
+         */
         template<class DerivedComponent>
         void disableComponent(entity_t entity) {
             detail::staticAssertBase<DerivedComponent>();
@@ -209,9 +226,14 @@ namespace ape {
 
             int handle = getComponentHandle<DerivedComponent>();
             int index = detail::entityData[entity - 1].indices[handle];
-            DerivedComponent::Manager.setComponentEnabled(index, false);
+            DerivedComponent::manager.setComponentEnabled(index, false);
         }
 
+        /**
+         * Enables a component, allowing it to interact with the world.
+         * @tparam DerivedComponent The component type to enable.
+         * @param entity The entity to enable the component for.
+         */
         template<class DerivedComponent>
         void enableComponent(entity_t entity) {
             detail::staticAssertBase<DerivedComponent>();
@@ -220,7 +242,7 @@ namespace ape {
 
             int handle = getComponentHandle<DerivedComponent>();
             int index = detail::entityData[entity - 1].indices[handle];
-            DerivedComponent::Manager.setComponentEnabled(index, true);
+            DerivedComponent::manager.setComponentEnabled(index, true);
         }
 
         /**
@@ -240,7 +262,7 @@ namespace ape {
             // Retrieve the component's location within its pool using
             // our mappings
             int index = detail::entityData[entity - 1].indices[mask];
-            return getComponentList<DerivedComponent>()[index];
+            return DerivedComponent::manager.getComponentList()[index];
         }
 
         /**
@@ -300,21 +322,22 @@ namespace ape {
              * the default constructor. For an integer value, this default
              * is 0.
              */
-            int& handle = detail::componentTypeMap[typeid(Component)];
+            // TODO: Using typeid seems super inefficient
+            //int& handle = detail::componentTypeMap[typeid(Component)];
 
             /*
              * If the handle is not 0 (component handles cannot be 0),
              * it can be returned. The expression will evaluate to true
              * if the handle exists.
              */
-            if(handle) return handle;
+            if(Component::handle) return Component::handle;
 
             /*
              * Otherwise, we construct a new handle
              * Because we are using a reference, this will also modify
              * the hashed value in the map.
              */
-            handle = detail::currentBitsize;
+            Component::handle = detail::currentBitsize;
 
             /*
              * Shift it left by 1 so we can get a unique series of bits for
@@ -322,7 +345,7 @@ namespace ape {
              */
             detail::currentBitsize = detail::currentBitsize << 1;
 
-            return handle;
+            return Component::handle;
         }
 
         /**
@@ -335,7 +358,7 @@ namespace ape {
             detail::staticAssertBase<DerivedComponent>();
 
             // Basically a convenience wrapper
-            return DerivedComponent::Manager.getComponentList();
+            return DerivedComponent::manager.getComponentList();
         }
 
         /**

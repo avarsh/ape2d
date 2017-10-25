@@ -38,4 +38,8 @@ namespace ape {
     void Transform::setVelocity(float velX, float velY) {
         velocity = Vec2f(velX, velY);
     }
+
+    void Transform::setVelocity(Vec2f newVelocity) {
+        velocity = newVelocity;
+    }
 }

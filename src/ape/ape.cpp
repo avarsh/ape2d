@@ -45,4 +45,13 @@ namespace ape {
     void addSimulationCode(std::function<void(double dt)> function) {
         detail::simulationCode.push_back(function);
     }
+
+    bool isRunning() {
+        if(window::isOpen()) {
+            return true;
+        }
+
+        window::destroy();
+        return false;
+    }
 }

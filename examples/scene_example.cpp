@@ -40,12 +40,12 @@ int main() {
     });
 
     frames.startTimer();
-    while(ape::window::isOpen()) {
+    while(ape::isRunning()) {
         frames.tick();
 
         ape::window::clear(ape::Colors::Slate);
         ape::update();
     }
 
-    ape::window::destroy();
+    return 0;
 }

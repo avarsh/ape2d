@@ -15,6 +15,10 @@ namespace ape {
              */
             void setPosition(float x, float y);
 
+            /**
+             * Sets the position of the entity.
+             * @param newPosition The new position as a vector.
+             */
             void setPosition(Vec2f newPosition);
 
             /**
@@ -30,6 +34,10 @@ namespace ape {
              */
             void move(float deltaX, float deltaY);
 
+            /**
+             * Moves the entity's position.
+             * @param delta The amount to move as a vector.
+             */
             void move(Vec2f delta);
 
             /**
@@ -44,9 +52,24 @@ namespace ape {
              */
             float getRotation();
 
+            /**
+             * Gets the entity's current velocity.
+             * @return The velocity as a vector.
+             */
             Vec2f getVelocity();
 
+            /**
+             * Sets the velocity of the entity.
+             * @param velX The velocity in the x direction.
+             * @param velY The velocity in the y direction.
+             */
             void setVelocity(float velX, float velY);
+
+            /**
+             * Sets the velocity of the entity.
+             * @param newVelocity The velocity as a vector.
+             */
+            void setVelocity(Vec2f newVelocity);
 
         private:
             Vec2f position;
