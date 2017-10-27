@@ -19,6 +19,7 @@ namespace ape {
                 // Since this is set to -1 initially, increasing it will
                 // point to the first child at index 0
                 node.traversingChild++;
+                assert(node.traversingChild < 2);
                 bool endPoint = false;
 
                 if(node.traversingChild == node.getChildren().size()) {

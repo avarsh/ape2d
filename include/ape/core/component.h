@@ -40,13 +40,19 @@ namespace ape {
         //
         // Suggestions for less messy solutions are appreciated.
 
+        Component(entity_t entity) : entity(entity) {
+
+        }
+
         virtual int remove(int index) {
             // Ask the manager to remove it...
             return manager.removeComponent(index);
         }
 
-        // The parent entity
-        entity_t entity { ENTITY_INVALID };
+        entity_t getEntity() {
+            return entity;
+        }
+
         // Whether the component is enabled or not
         bool enabled {true};
 
@@ -54,6 +60,10 @@ namespace ape {
         // component.
         static ComponentManager<DerivedComponent> manager;
         static int handle;
+
+    protected:
+        // The parent entity
+        entity_t entity { ENTITY_INVALID };
     };
 
     template<class DerivedComponent>

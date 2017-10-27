@@ -102,7 +102,7 @@ namespace ape {
     void Renderer::end(Shader& shader, Texture& texture) {
         int i = 1;
         for(Sprite* sprite : spriteList) {
-            auto& transform = world::getComponent<Transform>(sprite->entity);
+            auto& transform = world::getComponent<Transform>(sprite->getEntity());
             Vec2f pos = transform.getPosition();
             Vec2f size = sprite->getSize();
 

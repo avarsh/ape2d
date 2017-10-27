@@ -24,9 +24,8 @@ namespace ape {
          * @param  entity The entity the component is attached to.
          * @return        The index of the component in the list.
          */
-        int addComponent(entity_t entity) {
-            DerivedComponent component;
-            component.entity = entity;
+        int addComponent(entity_t entity, auto... args) {
+            DerivedComponent component(entity, args...);
             componentList.push_back(component);
             return componentList.size() - 1;
         }
@@ -42,7 +41,7 @@ namespace ape {
                 std::swap(componentList[index], componentList.back());
                 componentList.pop_back();
 
-                return componentList[index].entity;
+                return componentList[index].getEntity();
             }
 
             componentList.pop_back();

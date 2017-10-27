@@ -8,6 +8,16 @@ namespace ape {
     class Transform : public Component<Transform> {
         public:
 
+            Transform(entity_t entity) : Component<Transform>(entity) { }
+            Transform(entity_t entity, float xPosition, float yPosition) :
+                Component<Transform>(entity) {
+                position = Vec2f(xPosition, yPosition);
+            }
+            Transform(entity_t entity, Vec2f initialPosition) :
+                Component<Transform>(entity) {
+                position = initialPosition;
+            }
+
             /**
              * Sets the position of the entity.
              * @param x The new x position.

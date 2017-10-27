@@ -4,7 +4,6 @@
 
 namespace ape {
 
-
     void Node::setParent(entity_t parent) {
         if(world::entityHasComponent<Node>(parent)) {
             this->parent = parent;

@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <queue>
 #include <memory>
+#include <set>
 #include <typeindex>
 #include <functional>
 #include <ape/core/defines.h>
@@ -18,6 +19,8 @@ namespace ape {
              * A custom component, used to store strings, or "tags".
              */
             struct TagComponent : public Component<TagComponent> {
+                TagComponent(entity_t entity) : Component<TagComponent>(entity) { }
+
                 std::unordered_map<int, std::string> tags;
             };
 
@@ -81,6 +84,8 @@ namespace ape {
             // Blueprint related data
             extern std::vector<std::function<void(entity_t)>> blueprints;
 
+            extern std::unordered_map<int, std::set<int>> exclusiveComponents;
+
             /*
              * Compile time assert to check if component class is of the
              * correct type.
@@ -90,6 +95,8 @@ namespace ape {
                 static_assert(std::is_base_of<ape::detail::BaseComponent, DerivedComponent>::value,
                              "Template parameter does not derive from base component class");
             }
+
+            void assertExclusive(entity_t entity, int componentHandle);
 
             /*
              * Checks whether an entity is valid.

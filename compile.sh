@@ -17,7 +17,7 @@ done
 if [ "$parsed_success" = true ]
 then
   output_name="$(basename $input_file .cpp)"
-  g++ --std=c++14 -o bin/$output_name $input_file deps/glad/glad.c \
+  g++ --std=c++17 -o bin/$output_name $input_file deps/glad/glad.c \
   src/ape/core/detail/world_detail.cpp src/ape/core/defines.cpp \
   src/ape/core/world.cpp src/ape/graphics/detail/window_detail.cpp \
   src/ape/graphics/color.cpp src/ape/graphics/graphics.cpp \

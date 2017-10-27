@@ -1,6 +1,8 @@
 #ifndef COMPONENT_DETAIL_H
 #define COMPONENT_DETAIL_H
 
+#include <ape/core/defines.h>
+
 namespace ape {
     namespace detail {
 

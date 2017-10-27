@@ -111,7 +111,7 @@ namespace ape {
             int tagKey = detail::getTagKey(tag);
             for(auto& tagComponent : getComponentList<detail::TagComponent>()) {
                 if(tagComponent.tags.find(tagKey) != tagComponent.tags.end()) {
-                    entities.push_back(tagComponent.entity);
+                    entities.push_back(tagComponent.getEntity());
                 }
             }
 

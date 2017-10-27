@@ -9,6 +9,12 @@ namespace ape {
 
     class Node : public Component<Node> {
     public:
+        Node(entity_t entity) : Component<Node>(entity) {}
+
+        Node(entity_t entity, entity_t parent) : Component<Node>(entity) {
+            setParent(parent);
+        }
+
         void setParent(entity_t parent);
         void setIndex(int index);
         int getIndex();

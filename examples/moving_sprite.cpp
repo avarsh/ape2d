@@ -10,13 +10,9 @@ int main() {
     }
 
     auto player = ape::world::createEntity();
-    auto& transform = ape::world::addComponent<ape::Transform>(player);
-    auto& sprite = ape::world::addComponent<ape::Sprite>(player);
-    auto& node = ape::world::addComponent<ape::Node>(player);
-
-    transform.setPosition(100, 100);
-    sprite.setTextureID(texture);
-    node.setParent(ape::scene::rootNode);
+    auto& transform = ape::world::addComponent<ape::Transform>(player, 100, 100);
+    auto& sprite = ape::world::addComponent<ape::Sprite>(player, texture);
+    auto& node = ape::world::addComponent<ape::Node>(player, ape::scene::rootNode);
 
     // Set up inputs
     auto& context = ape::input::ContextManager::createContext(0);

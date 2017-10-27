@@ -9,6 +9,13 @@ namespace ape {
 
     class Sprite : public Component<Sprite> {
     public:
+
+        Sprite(entity_t entity) :
+            Component<Sprite>(entity) { }
+        Sprite(entity_t entity, int textureID) :
+            Component<Sprite>(entity)
+            { setTextureID(textureID); }
+
         void setTextureID(int ID);
         int getTextureID();
 

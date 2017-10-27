@@ -4,11 +4,13 @@
 #include <unordered_map>    /* std::unordered_map */
 #include <typeinfo>         /* typeid()           */
 #include <typeindex>        /* std::type_index    */
+#include <type_traits>
 #include <memory>           /* std::unique_ptr    */
 #include <iostream>         /* std::cout          */
 #include <queue>            /* std::queue         */
 #include <functional>       /* std::function      */
 #include <cassert>          /* assert()           */
+#include <utility>
 
 #include <ape/core/defines.h>
 #include <ape/core/component.h>
@@ -29,7 +31,7 @@ namespace ape {
 
         // Forward declarations
         template<class DerivedComponent>
-        bool entityHasComponent(entity_t entity);
+        constexpr bool entityHasComponent(entity_t entity);
 
         template<class DerivedComponent>
         DerivedComponent& getComponent(entity_t entity);
@@ -111,18 +113,20 @@ namespace ape {
          * @param  entity           The entity to add the component to.
          */
         template<class DerivedComponent>
-        DerivedComponent& addComponent(entity_t entity) {
+        DerivedComponent& addComponent(entity_t entity, auto... args) {
             // TODO: Allow for the component to be initialized with variadic
             // parameters
             detail::staticAssertBase<DerivedComponent>();
             detail::assertEntity(entity);
+
+            detail::assertExclusive(entity, getComponentHandle<DerivedComponent>());
 
             if(entityHasComponent<DerivedComponent>(entity)) {
                 return getComponent<DerivedComponent>(entity);
             }
 
             // We ask the manager to add the component...
-            int index = DerivedComponent::manager.addComponent(entity);
+            int index = DerivedComponent::manager.addComponent(entity, args...);
             // Then we store the index of the component within its pool
             // in a map.
             int cHandle = getComponentHandle<DerivedComponent>();
@@ -135,7 +139,7 @@ namespace ape {
             try {
                 detail::componentInstances.at(cHandle);
             } catch (const std::out_of_range& error) {
-                detail::componentInstances[cHandle] = std::make_unique<DerivedComponent>();
+                detail::componentInstances[cHandle] = std::make_unique<DerivedComponent>(ENTITY_INVALID);
             }
 
             return getComponent<DerivedComponent>(entity);
@@ -271,7 +275,7 @@ namespace ape {
          * @return        A boolean value indicating whether the entity holds the component.
          */
         template<class DerivedComponent>
-        bool entityHasComponent(entity_t entity) {
+        constexpr bool entityHasComponent(entity_t entity) {
             detail::staticAssertBase<DerivedComponent>();
             detail::assertEntity(entity);
 
@@ -388,6 +392,26 @@ namespace ape {
 
             // The handle is the blueprint's index
             return detail::blueprints.size() - 1;
+        }
+
+        /**
+         * Configures two components to be exclusive to each other, meaning
+         * that if either one is attached to an entity then the other cannot
+         * subsequently be attached to the entity.
+         * @tparam FirstComponent The first component in the pair.
+         * @tparam SecondComponent The second component in the pair.
+         */
+        template<class FirstComponent, class SecondComponent>
+        void setExclusiveComponents() {
+            detail::staticAssertBase<FirstComponent>();
+            detail::staticAssertBase<SecondComponent>();
+
+            int firstHandle = getComponentHandle<FirstComponent>();
+            int secondHandle = getComponentHandle<SecondComponent>();
+            // Don't need to check if it already exists in the set
+            // because elements in a set are unique so the insertion fails
+            detail::exclusiveComponents[firstHandle].insert(secondHandle);
+            detail::exclusiveComponents[secondHandle].insert(firstHandle);
         }
     };
 }
