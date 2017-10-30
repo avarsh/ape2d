@@ -7,6 +7,7 @@ int main() {
     while(ape::isRunning()) {
         ape::window::clear(ape::Colors::Orange);
         ape::update();
+        window::display();
     }
 
     return 0;

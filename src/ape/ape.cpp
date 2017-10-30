@@ -10,6 +10,8 @@ namespace ape {
         });
 
         detail::currentTime = hi_res_clock::now();
+
+        world::setDefaultComponents<Transform>();
     }
 
     void update() {
@@ -38,8 +40,6 @@ namespace ape {
         graphics::begin();
         scene::render();
         graphics::end();
-
-        window::display();
     }
 
     void addSimulationCode(std::function<void(double dt)> function) {

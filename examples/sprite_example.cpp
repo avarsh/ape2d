@@ -17,7 +17,7 @@ int main() {
 
     for(int i = 0; i < 1000; i++) {
         auto entity = ape::world::createEntity();
-        auto& transform = ape::world::addComponent<ape::Transform>(entity);
+        auto& transform = ape::world::getComponent<ape::Transform>(entity);
         transform.setPosition(xDist(rng), yDist(rng));
         auto& sprite = ape::world::addComponent<ape::Sprite>(entity);
         sprite.setTextureID(texture);

@@ -9,7 +9,9 @@ namespace ape {
 
                 detail::entityData[entity - 1].alive = true;
                 detail::entityData[entity - 1].next = getNext(entity);
-                detail::initiationFunc(entity);
+                for(const auto& func : detail::initiationFuncs) {
+                    func(entity);
+                }
 
                 return entity;
             }
@@ -17,7 +19,9 @@ namespace ape {
             entity_t entity = detail::counter++;
 
             detail::entityData.push_back(detail::EntityData());
-            detail::initiationFunc(entity);
+            for(const auto& func : detail::initiationFuncs) {
+                func(entity);
+            }
             detail::entityData[entity - 1].next = getNext(entity);
 
             return entity;

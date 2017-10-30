@@ -3,6 +3,7 @@
 namespace ape {
     namespace scene {
         namespace detail {
+
             void traverse(entity_t entity) {
 
                 auto& node = world::getComponent<Node>(entity);

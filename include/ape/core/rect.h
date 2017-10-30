@@ -31,6 +31,8 @@ namespace ape {
             size = Vec2<T>(width, height);
         }
 
+        Rect(Vec2<T> origin, Vec2<T> size) : origin(origin), size(size) { }
+
         Vec2<T> origin, size;
     };
 

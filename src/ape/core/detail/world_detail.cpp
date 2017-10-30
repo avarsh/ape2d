@@ -14,7 +14,7 @@ namespace ape {
             std::unordered_map<int, std::unique_ptr<ape::detail::BaseComponent>> componentInstances;
             // std::unordered_map<std::type_index, int> componentTypeMap;
             int currentBitsize = 1;
-            std::function<void(entity_t)> initiationFunc = [](entity_t e) {};
+            std::vector<std::function<void(entity_t)>> initiationFuncs;
             std::vector<std::function<void(entity_t)>> blueprints;
 
             void assertEntity(entity_t entity) {

@@ -77,9 +77,9 @@ namespace ape {
             // Note that components cannot have a handle of 0.
             extern int currentBitsize;
 
-            // A function applied to every entity upon creation - usually used
+            // Functions applied to every entity upon creation - usually used
             // to add components by default.
-            extern std::function<void(entity_t)> initiationFunc;
+            extern std::vector<std::function<void(entity_t)>> initiationFuncs;
 
             // Blueprint related data
             extern std::vector<std::function<void(entity_t)>> blueprints;

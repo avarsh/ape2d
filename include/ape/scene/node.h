@@ -3,9 +3,16 @@
 
 #include <ape/core/component.h>
 #include <ape/core/world.h>
+#include <ape/scene/camera.h>
 #include <list>
 
 namespace ape {
+
+    // Forward declaration
+    namespace scene {
+        extern entity_t rootNode;
+        extern entity_t defaultCamera;
+    }
 
     class Node : public Component<Node> {
     public:
@@ -21,6 +28,8 @@ namespace ape {
         entity_t getParent();
         std::list<entity_t>& getChildren();
 
+        void setCamera(entity_t camera);
+
         int traversingChild {-1};
     private:
         // We're using lists here because the nodes may be moving
@@ -29,6 +38,8 @@ namespace ape {
         // Lists have constant time insertion and deletion
         std::list<entity_t> children;
         entity_t parent {ENTITY_INVALID};
+        entity_t cameraEntity {ENTITY_INVALID};
+        entity_t rootParent {ENTITY_INVALID};
         int index;
     };
 

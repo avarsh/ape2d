@@ -26,5 +26,6 @@ int main() {
     while(ape::isRunning()) {
         ape::window::clear(ape::Colors::Slate);
         ape::update();
+        ape::window::display();
     }
 }

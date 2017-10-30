@@ -12,6 +12,14 @@ namespace ape {
             // from any other class instance...
             parentNode.children.push_back(this->entity);
             index = parentNode.children.size() - 1;
+
+            if(parent != scene::rootNode) {
+                this->cameraEntity = parentNode.cameraEntity;
+                this->rootParent = parentNode.rootParent;
+            } else {
+                cameraEntity = scene::defaultCamera;
+                this->rootParent = this->entity;
+            }
         } else {
             // Warning or exception here
         }
@@ -34,7 +42,7 @@ namespace ape {
         int lastIndex = parentNode.children.size() - 1;
         if(index > lastIndex) {
             // The index is out of bounds but not to worry!
-            // Perhaps the user wanted to do this on purpose
+            // Perhaps the user wanted to do thiNodes on purpose
             // We shall simply create invalid entities and fill the list with
             // them; then, when the user adds any other node to the parent,
             // if the index is occupied by an invalid entity, then we can
@@ -88,5 +96,25 @@ namespace ape {
 
     std::list<entity_t>& Node::getChildren() {
         return children;
+    }
+
+    void Node::setCamera(entity_t camera) {
+        // TODO: log some kind of error here
+        if(parent == ENTITY_INVALID) {
+            return;
+        }
+
+        if(parent != scene::rootNode) {
+            return;
+        }
+
+        cameraEntity = camera;
+        // Recursively set camera for all children
+        for(auto& node : world::getComponentList<Node>()) {
+            if(node.rootParent == this->entity) {
+                node.cameraEntity = camera;
+            }
+        }
+
     }
 }

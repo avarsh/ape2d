@@ -11,16 +11,16 @@ int main() {
     }
 
     auto layer1 = ape::world::createEntity();
-    auto& node = ape::world::addComponent<ape::Node>(layer1);
+    auto& node = ape::world::getComponent<ape::Node>(layer1);
     node.setParent(ape::scene::rootNode);
 
     auto layer2 = ape::world::createEntity();
-    auto& node2 = ape::world::addComponent<ape::Node>(layer2);
+    auto& node2 = ape::world::getComponent<ape::Node>(layer2);
     node2.setParent(ape::scene::rootNode);
 
     auto createEntity = [&](float x, float y, ape::entity_t parentNode){
         auto entity = ape::world::createEntity();
-        auto& transform = ape::world::addComponent<ape::Transform>(entity);
+        auto& transform = ape::world::getComponent<ape::Transform>(entity);
         auto& sprite = ape::world::addComponent<ape::Sprite>(entity);
         auto& node3 = ape::world::addComponent<ape::Node>(entity);
 
@@ -45,6 +45,7 @@ int main() {
 
         ape::window::clear(ape::Colors::Slate);
         ape::update();
+        ape::window::display();
     }
 
     return 0;

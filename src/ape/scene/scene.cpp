@@ -6,7 +6,10 @@ namespace ape {
 
         void init() {
             rootNode = world::createEntity();
-            auto& node = world::addComponent<Node>(rootNode);
+            world::addComponent<Node>(rootNode);
+
+            defaultCamera = world::createEntity();
+            auto& camera = world::addComponent<Camera>(defaultCamera);
         }
 
         void render() {

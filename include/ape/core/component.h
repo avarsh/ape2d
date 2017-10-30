@@ -7,12 +7,35 @@
 
 namespace ape {
 
+    // Forward declarations for friend functions of the component class.
+    // Now that the world class is abolished in favour of a namespace,
+    // we cannot friend the entire class as it were.
+    namespace world {
+        template<class DerivedComponent>
+        DerivedComponent& addComponent(entity_t entity, auto... args);
+
+        template<class DerivedComponent>
+        void removeComponent(entity_t entity);
+
+        template<class DerivedComponent>
+        void disableComponent(entity_t entity);
+
+        template<class DerivedComponent>
+        void enableComponent(entity_t entity);
+
+        template<class DerivedComponent>
+        DerivedComponent& getComponent(entity_t entity);
+
+        template<class DerivedComponent>
+        std::vector<DerivedComponent>& getComponentList();
+    }
+
     /**
      * A derived component class, intended to be inherited by all other
      * component implementations. The remove function
      */
 
-    template<class DerivedComponent>
+    template<class Derived>
     struct Component : public detail::BaseComponent {
 
         /**
@@ -26,12 +49,12 @@ namespace ape {
         // Side note : this is needed because the world class effectively
         // stores an instance of each component type that exists, by creating
         // a vector of pointers to the base component (since this class cannot
-        // be stored in a vector, as it is templated). Since the base component
+        // be stored in a vector, as it is templated). Since template<class DerivedComponent>
         // does not have a component manager, it instead implements a virtual
         // function to remove the component. Since we're storing pointers,
         // when we call the remove on the base component, we actually call this
         // version (polymorphism!) of the function.
-        //
+        //DerivedComponent
         // The manager removes a component by swapping the component with
         // the last one in the pool. It then deletes the last component.
         // Since entities have maps to each component's index, the function
@@ -50,27 +73,48 @@ namespace ape {
         }
 
         entity_t getEntity() {
-            return entity;
+            return entity;static int handle;
         }
+
+        static int handle;
+
+    protected:
+        // The parent entity
+        entity_t entity { ENTITY_INVALID };
 
         // Whether the component is enabled or not
         bool enabled {true};
 
         // The manager for the component, shared by all instances of the
         // component.
-        static ComponentManager<DerivedComponent> manager;
-        static int handle;
+        static ComponentManager<Derived> manager;
 
-    protected:
-        // The parent entity
-        entity_t entity { ENTITY_INVALID };
+        // Now we friend some functions in the world namespace which
+        // need to invoke the component manager
+        template<class DerivedComponent>
+        friend DerivedComponent& world::addComponent(entity_t entity, auto... args);
+
+        template<class DerivedComponent>
+        friend void world::removeComponent(entity_t entity);
+
+        template<class DerivedComponent>
+        friend void world::disableComponent(entity_t entity);
+
+        template<class DerivedComponent>
+        friend void world::enableComponent(entity_t entity);
+
+        template<class DerivedComponent>
+        friend DerivedComponent& world::getComponent(entity_t entity);
+
+        template<class DerivedComponent>
+        friend std::vector<DerivedComponent>& world::getComponentList();
     };
 
-    template<class DerivedComponent>
-    ComponentManager<DerivedComponent> Component<DerivedComponent>::manager;
+    template<class Derived>
+    ComponentManager<Derived> Component<Derived>::manager;
 
-    template<class DerivedComponent>
-    int Component<DerivedComponent>::handle = 0;
+    template<class Derived>
+    int Component<Derived>::handle = 0;
 }
 
 #endif

@@ -373,9 +373,9 @@ namespace ape {
          */
         template<class ...Components>
         void setDefaultComponents() {
-            detail::initiationFunc = [](entity_t entity) {
+            detail::initiationFuncs.push_back([](entity_t entity) {
                 addComponents<Components...>(entity);
-            };
+            });
         }
 
         /**

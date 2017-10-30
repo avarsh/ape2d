@@ -12,7 +12,7 @@ namespace ape {
         void init();
         void render();
 
-        extern entity_t rootNode;
+        int createCamera();
     };
 }
 

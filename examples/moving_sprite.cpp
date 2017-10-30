@@ -10,7 +10,8 @@ int main() {
     }
 
     auto player = ape::world::createEntity();
-    auto& transform = ape::world::addComponent<ape::Transform>(player, 100, 100);
+    auto& transform = ape::world::getComponent<ape::Transform>(player);
+    transform.setPosition(0, 0);
     auto& sprite = ape::world::addComponent<ape::Sprite>(player, texture);
     auto& node = ape::world::addComponent<ape::Node>(player, ape::scene::rootNode);
 
@@ -61,6 +62,7 @@ int main() {
     while(ape::isRunning()) {
         ape::window::clear(ape::Colors::Slate);
         ape::update();
+        ape::window::display();
     }
 
     return 0;

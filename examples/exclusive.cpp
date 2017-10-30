@@ -21,12 +21,12 @@ int main() {
 
     auto entity = ape::world::createEntity();
     ape::world::addComponent<ComponentTest>(entity);
-    ape::world::addComponent<ape::Transform>(entity);
 
     // ape::world::addComponent<ExclusiveComponent>(entity); // ERROR
 
     while(ape::isRunning()) {
         ape::update();
+        ape::window::display();
     }
 
     return 0;
