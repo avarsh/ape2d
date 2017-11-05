@@ -9,6 +9,8 @@ namespace ape {
     namespace scene {
         namespace detail {
             void traverse(entity_t entity);
+
+            extern Vec2i displayArea;
         }
     }
 }

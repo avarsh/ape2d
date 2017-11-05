@@ -1,4 +1,5 @@
 #include <ape/scene/scene.h>
+#include <ape/graphics/window.h>
 
 namespace ape {
     namespace scene {
@@ -10,6 +11,10 @@ namespace ape {
 
             defaultCamera = world::createEntity();
             auto& camera = world::addComponent<Camera>(defaultCamera);
+
+            window::createdEvent.addCallback([](Vec2i dims){
+                detail::displayArea = dims;
+            });
         }
 
         void render() {

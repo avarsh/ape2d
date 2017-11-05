@@ -11,7 +11,7 @@ namespace ape {
             ape::window::createdEvent.addCallback([](Vec2i dims) {
                 detail::instancedShader.load("data/shaders/textured.vert",
                                      "data/shaders/textured.frag");
-                detail::setViewport(dims);
+                detail::setViewport(FloatRect(0, 0, dims.x, dims.y), dims);
             });
 
             textureStore::textureLoaded.addCallback([](int ID) {

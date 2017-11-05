@@ -31,6 +31,6 @@ then
   src/ape/scene/node.cpp src/ape/scene/detail/scene_detail.cpp \
   src/ape/input/context.cpp src/ape/input/context_manager.cpp \
   src/ape/input/detail/input_detail.cpp src/ape/input/input_system.cpp \
-  src/ape/detail/ape_detail.cpp \
+  src/ape/detail/ape_detail.cpp src/ape/scene/camera.cpp \
   -Ideps/  -Iinclude/ -lm -lglfw -lGL -lSOIL
 fi

@@ -11,7 +11,6 @@ namespace ape {
     // Forward declaration
     namespace scene {
         extern entity_t rootNode;
-        extern entity_t defaultCamera;
     }
 
     class Node : public Component<Node> {
@@ -29,6 +28,7 @@ namespace ape {
         std::list<entity_t>& getChildren();
 
         void setCamera(entity_t camera);
+        entity_t getCamera();
 
         int traversingChild {-1};
     private:

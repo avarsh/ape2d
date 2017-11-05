@@ -11,8 +11,6 @@ namespace ape {
 
         void init();
         void render();
-
-        int createCamera();
     };
 }
 

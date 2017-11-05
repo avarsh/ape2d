@@ -16,10 +16,11 @@ namespace ape {
                 std::cout << description << "\n";
             }
 
-            void setViewport(Vec2i newDimensions) {
-                glViewport(0, 0, newDimensions.x, newDimensions.y);
-                projectionMatrix = glm::ortho(0.f, (float)newDimensions.x,
-                    (float)newDimensions.y, 0.0f, -1.0f, 1.0f);
+            void setViewport(FloatRect viewport, Vec2i displayArea) {
+                glViewport(viewport.origin.x, viewport.origin.y,
+                    viewport.size.x * displayArea.x, viewport.size.y * displayArea.y);
+                projectionMatrix = glm::ortho(0.f, (float)(viewport.size.x * displayArea.x),
+                    (float)(viewport.size.y * displayArea.y), 0.0f, -1.0f, 1.0f);
 
                 // TODO: only set shader if it is not currently in use
                 instancedShader.use();

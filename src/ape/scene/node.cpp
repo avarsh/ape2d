@@ -117,4 +117,8 @@ namespace ape {
         }
 
     }
+
+    entity_t Node::getCamera() {
+        return cameraEntity;
+    }
 }

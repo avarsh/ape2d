@@ -19,7 +19,7 @@ namespace ape {
             // Function to display errors created by GLFW
             void errorCallbackFunc(int errorCode, const char* description);
             // Updates the view so it matches the new window dimensions
-            void setViewport(Vec2i newDimensions);
+            void setViewport(FloatRect viewport, Vec2i displayArea);
 
             extern Shader instancedShader; // Default shader, renders sprites
             extern std::vector<Sprite*> spriteList; // List of sprites to render

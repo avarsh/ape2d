@@ -4,14 +4,24 @@ namespace ape {
     namespace scene {
         namespace detail {
 
+            Vec2i displayArea;
+
             void traverse(entity_t entity) {
 
                 auto& node = world::getComponent<Node>(entity);
 
                 if(node.traversingChild == -1) {
-                    // This is the first time we have visited this node, so render it
-                    // if possible
+                    // This is the first time we have visited this node
+                    // If it is a top level node, then set the camera
+                    if(node.getParent() == rootNode) {
+                        auto& camera = world::getComponent<Camera>(node.getCamera());
+                        auto viewport = camera.getViewport();
+                        graphics::detail::setViewport(viewport, detail::displayArea);
+                    }
+
+                    // so render it if possible
                     if(world::entityHasComponent<Sprite>(entity)) {
+                        // std::cout << "Camera is " << node.getCamera() << "\n";
                         graphics::draw(&world::getComponent<Sprite>(entity));
                     }
                 }
