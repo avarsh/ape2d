@@ -12,4 +12,12 @@ namespace ape {
     FloatRect Camera::getViewport() {
         return viewport;
     }
+
+    void Camera::setZoom(float zoomLevel) {
+        zoom = zoomLevel;
+    }
+
+    float Camera::getZoom() {
+        return zoom;
+    }
 }

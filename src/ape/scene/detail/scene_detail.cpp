@@ -1,4 +1,5 @@
 #include <ape/scene/detail/scene_detail.h>
+#include <ape/core/transform.h>
 
 namespace ape {
     namespace scene {
@@ -14,14 +15,19 @@ namespace ape {
                     // This is the first time we have visited this node
                     // If it is a top level node, then set the camera
                     if(node.getParent() == rootNode) {
+                        graphics::end();
+                        graphics::begin();
+
                         auto& camera = world::getComponent<Camera>(node.getCamera());
+                        auto& transform = world::getComponent<Transform>(node.getCamera());
                         auto viewport = camera.getViewport();
                         graphics::detail::setViewport(viewport, detail::displayArea);
+                        graphics::detail::setProjection(viewport, detail::displayArea,
+                            transform.getPosition(), Vec2f(camera.getZoom(), camera.getZoom()), 0);
                     }
 
                     // so render it if possible
                     if(world::entityHasComponent<Sprite>(entity)) {
-                        // std::cout << "Camera is " << node.getCamera() << "\n";
                         graphics::draw(&world::getComponent<Sprite>(entity));
                     }
                 }
@@ -30,7 +36,6 @@ namespace ape {
                 // Since this is set to -1 initially, increasing it will
                 // point to the first child at index 0
                 node.traversingChild++;
-                assert(node.traversingChild < 2);
                 bool endPoint = false;
 
                 if(node.traversingChild == node.getChildren().size()) {

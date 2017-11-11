@@ -1,5 +1,6 @@
 #include <ape/scene/scene.h>
 #include <ape/graphics/window.h>
+#include <ape/core/transform.h>
 
 namespace ape {
     namespace scene {
@@ -11,6 +12,7 @@ namespace ape {
 
             defaultCamera = world::createEntity();
             auto& camera = world::addComponent<Camera>(defaultCamera);
+            auto& transform = world::addComponent<Transform>(defaultCamera);
 
             window::createdEvent.addCallback([](Vec2i dims){
                 detail::displayArea = dims;

@@ -11,8 +11,12 @@ namespace ape {
 
         void setViewport(FloatRect viewport);
         FloatRect getViewport();
+
+        void setZoom(float zoomLevel);
+        float getZoom();
     private:
         FloatRect viewport { FloatRect(0, 0, 1, 1) };
+        float zoom {1.0f};
     };
 
     namespace scene {

@@ -21,6 +21,9 @@ namespace ape {
             // Updates the view so it matches the new window dimensions
             void setViewport(FloatRect viewport, Vec2i displayArea);
 
+            void setProjection(FloatRect viewport, Vec2i displayArea,
+                               Vec2f translation, Vec2f scale, float rotation);
+
             extern Shader instancedShader; // Default shader, renders sprites
             extern std::vector<Sprite*> spriteList; // List of sprites to render
             extern std::set<int> renderedTextures; // Textures rendered this frame

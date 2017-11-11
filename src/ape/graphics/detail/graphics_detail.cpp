@@ -17,10 +17,28 @@ namespace ape {
             }
 
             void setViewport(FloatRect viewport, Vec2i displayArea) {
-                glViewport(viewport.origin.x, viewport.origin.y,
-                    viewport.size.x * displayArea.x, viewport.size.y * displayArea.y);
-                projectionMatrix = glm::ortho(0.f, (float)(viewport.size.x * displayArea.x),
-                    (float)(viewport.size.y * displayArea.y), 0.0f, -1.0f, 1.0f);
+
+                glViewport(
+                    viewport.origin.x * displayArea.x,
+                    viewport.origin.y * displayArea.y,
+                    viewport.size.x * displayArea.x,
+                    viewport.size.y * displayArea.y
+                );
+            }
+
+            void setProjection(FloatRect viewport, Vec2i displayArea,
+                               Vec2f translation, Vec2f scale, float rotation) {
+                projectionMatrix = glm::ortho(0.f,
+                    (float)(viewport.size.x * displayArea.x),
+                    (float)(viewport.size.y * displayArea.y),
+                    0.0f, -1.0f, 1.0f);
+
+                projectionMatrix = glm::scale(projectionMatrix,
+                    glm::vec3(scale.x, scale.y, 0)); // Scales the image
+                projectionMatrix = glm::translate(projectionMatrix,
+                    glm::vec3(translation.x, translation.y, 0)); // Translates the image
+                projectionMatrix = glm::rotate(projectionMatrix, rotation,
+                    glm::vec3(1, 0, 0)); // Rotates the image
 
                 // TODO: only set shader if it is not currently in use
                 instancedShader.use();
