@@ -15,7 +15,7 @@ int main() {
 
     auto mario = ape::textureStore::loadTexture("./examples/images/mario.png");
     auto luigi = ape::textureStore::loadTexture("./examples/images/luigi.png");
-    if(mario == -1) {
+    if(mario == -1 || luigi == -1) {
         return 1;
     }
 
@@ -28,7 +28,7 @@ int main() {
     auto player2 = ape::world::createEntity();
     ape::world::addComponent<ape::Transform>(player2, 0, 0);
     auto& sprite = ape::world::addComponent<ape::Sprite>(player2, luigi);
-    sprite.setSize(ape::Vec2f(64, 64));
+    sprite.scaleBy(0.2f);
     auto& node = ape::world::addComponent<ape::Node>(player2, ape::scene::rootNode);
     node.setCamera(secondCamera);
 

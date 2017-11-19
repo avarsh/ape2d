@@ -24,6 +24,7 @@ namespace ape {
         void setParent(entity_t parent);
         void setIndex(int index);
         int getIndex();
+        void detachFromParent();
         entity_t getParent();
         std::list<entity_t>& getChildren();
 

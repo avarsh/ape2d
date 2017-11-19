@@ -2,6 +2,9 @@
 
 namespace ape {
     namespace world {
+
+        Event<entity_t> entityDeleted;
+
         entity_t createEntity() {
             if(detail::freeList.size() > 0) {
                 entity_t entity = detail::freeList.front();
@@ -27,6 +30,10 @@ namespace ape {
             return entity;
         }
 
+        bool entityIsAlive(entity_t entity) {
+            return detail::entityData[entity - 1].alive;
+        }
+
         entity_t createEntityFromBlueprint(int blueprint) {
             assert(blueprint < detail::blueprints.size());
             entity_t newEntity = createEntity();
@@ -37,7 +44,8 @@ namespace ape {
         }
 
         void deleteEntity(entity_t entity) {
-            detail::assertEntity(entity);
+            detail::assertEntity(entity, "world::deleteComponent");
+            entityDeleted.emit(entity);
             detail::killList.push(entity);
         }
 

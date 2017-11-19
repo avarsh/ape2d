@@ -26,8 +26,9 @@ namespace ape {
         void scaleBy(Vec2f scaleFactor);
         void scaleBy(float scaleFactor);
 
-        void setSubRect(float left, float top, float width, float height);
-        FloatRect getSubRect();
+        void setSubRect(int left, int top, int width, int height);
+        void setSubRect(IntRect subRect);
+        IntRect getSubRect();
         FloatRect getNormalizedSubRect();
     private:
         int textureID;
@@ -35,7 +36,7 @@ namespace ape {
         Vec2f textureSize;
         Vec2f scaleFactor {Vec2f(1.0f, 1.0f)};
 
-        FloatRect subRect;
+        IntRect subRect;
         FloatRect normalizedRect;
     };
 }

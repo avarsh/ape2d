@@ -17,6 +17,16 @@ namespace ape {
             window::createdEvent.addCallback([](Vec2i dims){
                 detail::displayArea = dims;
             });
+
+            world::entityDeleted.addCallback([](entity_t entity){
+                // Because the entity is not actually deleted until the
+                // world is refreshed, we can still access its data
+                if(world::entityHasComponent<Node>(entity)) {
+                    // Remove it from the tree
+                    auto& node = world::getComponent<Node>(entity);
+                    node.detachFromParent();
+                }
+            });
         }
 
         void render() {

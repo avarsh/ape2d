@@ -1,4 +1,18 @@
 #include <ape/core/detail/world_detail.h>
+#include <iostream>
+
+#ifndef NDEBUG
+#define ASSERT_MSG(condition, message) \
+    do { \
+        if(!(condition)) {\
+            std::cerr << "Assertion `" #condition "` failed in ! " << __FILE__ \
+                      << " line " << __LINE__ << ": " << message << std::endl; \
+            std::terminate(); \
+        } \
+    } while(false)
+#else
+#define ASSERT_MSG(condition, message) do {} while(false)
+#endif
 
 namespace ape {
     namespace world {
@@ -17,10 +31,11 @@ namespace ape {
             std::vector<std::function<void(entity_t)>> initiationFuncs;
             std::vector<std::function<void(entity_t)>> blueprints;
 
-            void assertEntity(entity_t entity) {
-                assert(entity < counter);
-                assert(entity > ENTITY_INVALID);
-                assert(entityData[entity - 1].alive);
+            void assertEntity(entity_t entity, std::string caller) {
+                std::string msg = "(assertion called by " + caller + ")";
+                ASSERT_MSG(entity < counter, msg.c_str());
+                ASSERT_MSG(entity > ENTITY_INVALID, msg.c_str());
+                ASSERT_MSG(entityData[entity - 1].alive, msg.c_str());
             }
 
             void assertExclusive(entity_t entity, int componentHandle) {

@@ -117,7 +117,7 @@ namespace ape {
             // TODO: Allow for the component to be initialized with variadic
             // parameters
             detail::staticAssertBase<DerivedComponent>();
-            detail::assertEntity(entity);
+            detail::assertEntity(entity, "world::addComponent");
 
             detail::assertExclusive(entity, getComponentHandle<DerivedComponent>());
 
@@ -177,7 +177,7 @@ namespace ape {
         template<class DerivedComponent>
         void removeComponent(entity_t entity) {
             detail::staticAssertBase<DerivedComponent>();
-            detail::assertEntity(entity);
+            detail::assertEntity(entity, "world::removeComponent");
             assert(entityHasComponent<DerivedComponent>(entity));
 
             int handle = getComponentHandle<DerivedComponent>();
@@ -225,7 +225,7 @@ namespace ape {
         template<class DerivedComponent>
         void disableComponent(entity_t entity) {
             detail::staticAssertBase<DerivedComponent>();
-            detail::assertEntity(entity);
+            detail::assertEntity(entity, "world::disableComponent");
             assert(entityHasComponent<DerivedComponent>(entity));
 
             int handle = getComponentHandle<DerivedComponent>();
@@ -241,7 +241,7 @@ namespace ape {
         template<class DerivedComponent>
         void enableComponent(entity_t entity) {
             detail::staticAssertBase<DerivedComponent>();
-            detail::assertEntity(entity);
+            detail::assertEntity(entity, "world::enableComponent");
             assert(entityHasComponent<DerivedComponent>(entity));
 
             int handle = getComponentHandle<DerivedComponent>();
@@ -258,7 +258,7 @@ namespace ape {
         template<class DerivedComponent>
         DerivedComponent& getComponent(entity_t entity) {
             detail::staticAssertBase<DerivedComponent>();
-            detail::assertEntity(entity);
+            detail::assertEntity(entity, "world::getComponent");
             assert(entityHasComponent<DerivedComponent>(entity));
 
             // Firstly get the mask for the component
@@ -277,7 +277,7 @@ namespace ape {
         template<class DerivedComponent>
         constexpr bool entityHasComponent(entity_t entity) {
             detail::staticAssertBase<DerivedComponent>();
-            detail::assertEntity(entity);
+            detail::assertEntity(entity, "world::entityHasComponent");
 
             int cMask = getComponentHandle<DerivedComponent>();
             if((detail::entityData[entity - 1].mask&cMask) == cMask) {
@@ -413,6 +413,10 @@ namespace ape {
             detail::exclusiveComponents[firstHandle].insert(secondHandle);
             detail::exclusiveComponents[secondHandle].insert(firstHandle);
         }
+
+        bool entityIsAlive(entity_t entity);
+
+        extern Event<entity_t> entityDeleted;
     };
 }
 

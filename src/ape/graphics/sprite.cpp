@@ -12,11 +12,13 @@ namespace ape {
     }
 
     Vec2f Sprite::getSize() {
-        return subRect.size * scaleFactor;
+        return Vec2f(float(subRect.size.x) * scaleFactor.x,
+                     float(subRect.size.y) * scaleFactor.y);
     }
 
     void Sprite::setSize(Vec2f newSize) {
-        scaleFactor = newSize / subRect.size;
+        scaleFactor = Vec2f(newSize.x / float(subRect.size.x),
+                            newSize.y / float(subRect.size.y));
     }
 
     void Sprite::scaleBy(Vec2f scaleFactor) {
@@ -27,14 +29,19 @@ namespace ape {
         this->scaleFactor = this->scaleFactor * scaleFactor;
     }
 
-    void Sprite::setSubRect(float left, float top, float width, float height) {
-        subRect.origin = Vec2f(left, top);
-        subRect.size = Vec2f(width, height);
-        normalizedRect.origin = subRect.origin / textureSize;
-        normalizedRect.size = subRect.size / textureSize;
+    void Sprite::setSubRect(int left, int top, int width, int height) {
+        subRect.origin = Vec2i(left, top);
+        subRect.size = Vec2i(width, height);
+        normalizedRect.origin = Vec2f(subRect.origin.x, subRect.origin.y) / textureSize;
+        normalizedRect.size =  Vec2f(subRect.size.x, subRect.size.y) / textureSize;
     }
 
-    FloatRect Sprite::getSubRect() {
+    void Sprite::setSubRect(IntRect subRect) {
+        setSubRect(subRect.origin.x, subRect.origin.y,
+                  subRect.size.x, subRect.size.y);
+    }
+
+    IntRect Sprite::getSubRect() {
         return subRect;
     }
 

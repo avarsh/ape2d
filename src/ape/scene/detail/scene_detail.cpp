@@ -8,7 +8,6 @@ namespace ape {
             Vec2i displayArea;
 
             void traverse(entity_t entity) {
-
                 auto& node = world::getComponent<Node>(entity);
 
                 if(node.traversingChild == -1) {

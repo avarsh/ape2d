@@ -101,7 +101,7 @@ namespace ape {
             /*
              * Checks whether an entity is valid.
              */
-            void assertEntity(entity_t entity);
+            void assertEntity(entity_t entity, std::string caller);
         }
     }
 }

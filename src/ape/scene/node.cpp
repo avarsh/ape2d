@@ -42,7 +42,7 @@ namespace ape {
         int lastIndex = parentNode.children.size() - 1;
         if(index > lastIndex) {
             // The index is out of bounds but not to worry!
-            // Perhaps the user wanted to do thiNodes on purpose
+            // Perhaps the user wanted to do this on purpose
             // We shall simply create invalid entities and fill the list with
             // them; then, when the user adds any other node to the parent,
             // if the index is occupied by an invalid entity, then we can
@@ -84,6 +84,30 @@ namespace ape {
             }
             move(childIter);
         }
+    }
+
+    void Node::detachFromParent() {
+        if(parent == ENTITY_INVALID) {
+            return;
+        }
+
+        auto& parentNode = world::getComponent<Node>(parent);
+        auto iter = parentNode.children.begin();
+        std::advance(iter, index);
+        auto newIter = parentNode.children.erase(iter);
+
+        // Shift all the other nodes back
+        // TODO: make this better by starting at the current node's index
+        for(auto child : parentNode.children) {
+            if(child != ENTITY_INVALID) {
+                auto& node = world::getComponent<Node>(child);
+                if(node.index > this->index) {
+                    node.index--;
+                }
+            }
+        }
+
+        parent = ENTITY_INVALID;
     }
 
     int Node::getIndex() {
