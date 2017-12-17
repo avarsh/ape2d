@@ -6,13 +6,7 @@
 using namespace ape;
 
 enum BlockTypes {
-    L_SHAPE,
-    T_SHAPE,
-    INVERSE_L,
-    S_SHAPE,
-    STRAIGHT,
-    SQUARE,
-    INVERSE_S
+    L_SHAPE, T_SHAPE, INVERSE_L, S_SHAPE, STRAIGHT, SQUARE, INVERSE_S
 };
 
 // Can try to generate rotations using some maths tricks in the future
