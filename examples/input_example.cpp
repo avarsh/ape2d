@@ -8,7 +8,7 @@ int main() {
     auto actionData = ape::input::ActionData(
         ape::input::Device::KEYBOARD,
         ape::input::ActionType::KEY_PRESS,
-        GLFW_KEY_W);
+        ape::input::Keys::W);
 
     context.addActionCallback(actionData, [](){
         std::cout << "W key pressed!\n";
@@ -17,7 +17,7 @@ int main() {
     auto stateData = ape::input::StateData(
         ape::input::Device::KEYBOARD,
         ape::input::StateType::KEY_DOWN,
-        GLFW_KEY_W);
+        ape::input::Keys::W);
 
     context.addStateCallback(stateData, [](){
         std::cout << "W key held down!\n";

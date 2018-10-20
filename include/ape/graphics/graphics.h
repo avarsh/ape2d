@@ -1,6 +1,8 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <ape/graphics/window.h>
 #include <ape/graphics/texture_store.h>
 #include <ape/graphics/shader.h>

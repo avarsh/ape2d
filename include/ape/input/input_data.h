@@ -1,6 +1,8 @@
 #ifndef INPUT_DATA_H
 #define INPUT_DATA_H
 
+#include <ape/input/keys.h>
+
 namespace ape {
     namespace input {
         enum class Device {
@@ -16,10 +18,6 @@ namespace ape {
 
         enum class StateType {
             KEY_DOWN = 4000,
-        };
-
-        enum Keys {
-            // Use GLFW keys for now
         };
 
         struct InputData {
