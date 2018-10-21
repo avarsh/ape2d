@@ -14,7 +14,7 @@ struct ExclusiveComponent : public ape::Component<ExclusiveComponent> {
 
 int main() {
 
-    ape::init();
+    ape::engine::init();
     ape::window::create(800, 600, "Exclusive Component Test");
 
     ape::world::setExclusiveComponents<ComponentTest, ExclusiveComponent>();
@@ -24,8 +24,9 @@ int main() {
 
     // ape::world::addComponent<ExclusiveComponent>(entity); // ERROR
 
-    while(ape::isRunning()) {
-        ape::update();
+    while(ape::engine::isRunning()) {
+        ape::window::clear(ape::Colors::Red);
+        ape::engine::update();
         ape::window::display();
     }
 

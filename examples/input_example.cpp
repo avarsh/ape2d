@@ -1,7 +1,7 @@
 #include <ape/ape.h>
 
 int main() {
-    ape::init();
+    ape::engine::init();
     ape::window::create(800, 600, "Input test");
 
     auto& context = ape::input::ContextManager::createContext(10);
@@ -23,9 +23,9 @@ int main() {
         std::cout << "W key held down!\n";
     });
 
-    while(ape::isRunning()) {
+    while(ape::engine::isRunning()) {
         ape::window::clear(ape::Colors::Slate);
-        ape::update();
+        ape::engine::update();
         ape::window::display();
     }
 }

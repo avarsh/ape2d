@@ -2,7 +2,7 @@
 
 int main() {
 
-    ape::init();
+    ape::engine::init();
     ape::window::create(800, 600, "Multiple Views");
 
     auto secondCamera = ape::world::createEntity();
@@ -32,9 +32,9 @@ int main() {
     auto& node = ape::world::addComponent<ape::Node>(player2, ape::scene::rootNode);
     node.setCamera(secondCamera);
 
-    while(ape::isRunning()) {
+    while(ape::engine::isRunning()) {
         ape::window::clear(ape::Colors::Slate);
-        ape::update();
+        ape::engine::update();
         ape::window::display();
     }
 

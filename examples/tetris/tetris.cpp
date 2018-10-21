@@ -285,7 +285,7 @@ bool moveIfPossible(int dir) {
 
 int main() {
     // Initialisation
-    init();
+    engine::init();
     window::create(600, 792, "Tetris");
 
     // Initialise the board to be empty
@@ -312,7 +312,7 @@ int main() {
     auto actionData = input::ActionData(
         input::Device::KEYBOARD,
         input::ActionType::KEY_PRESS,
-        GLFW_KEY_SPACE
+        input::Keys::Space
     );
 
     context.addActionCallback(actionData, [=](){
@@ -322,24 +322,24 @@ int main() {
     auto movement = input::ActionData(
         input::Device::KEYBOARD,
         input::ActionType::KEY_PRESS,
-        GLFW_KEY_LEFT
+        input::Keys::Left
     );
 
     context.addActionCallback(movement, [&](){
         moveIfPossible(LEFT);
     });
 
-    movement.data = GLFW_KEY_RIGHT;
+    movement.data = input::Keys::Right;
     context.addActionCallback(movement, [&](){
         moveIfPossible(RIGHT);
     });
 
-    movement.data = GLFW_KEY_DOWN;
+    movement.data = input::Keys::Down;
     context.addActionCallback(movement, [&](){
         moveIfPossible(DOWN);
     });
 
-    movement.data = GLFW_KEY_ENTER;
+    movement.data = input::Keys::Enter;
     context.addActionCallback(movement, [&](){
         while(moveIfPossible(DOWN)) { }
     });
@@ -348,7 +348,7 @@ int main() {
 
     double timer = 0;
     float pause = 1.f;
-    addSimulationCode([&](double dt){
+    engine::addSimulationCode([&](double dt){
         timer += dt;
         if(timer >= pause && gameIsRunning) {
             if(!moveIfPossible(DOWN)) {
@@ -359,9 +359,9 @@ int main() {
         }
     });
 
-    while(isRunning()) {
+    while(engine::isRunning()) {
         window::clear(Colors::Slate);
-        update();
+        engine::update();
 
         // Check for loss
         for(int x = 0; x < 25; x++) {

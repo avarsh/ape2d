@@ -1,8 +1,13 @@
+/*
+Note that this example currently does not work due to the move
+to a node based system.
+*/
+
 #include <ape/ape.h>
 #include <random>
 
 int main() {
-    ape::init();
+    ape::engine::init();
     ape::window::create(800, 600, "Sprite Example");
 
     auto texture = ape::textureStore::loadTexture("examples/images/mario.png");
@@ -30,8 +35,8 @@ int main() {
     });
 
     frames.startTimer();
-    while(ape::isRunning()) {
-        ape::update();
+    while(ape::engine::isRunning()) {
+        ape::engine::update();
         frames.tick();
 
         ape::window::clear(ape::Colors::Slate);

@@ -1,7 +1,7 @@
 #include <ape/ape.h>
 
 int main() {
-    ape::init();
+    ape::engine::init();
     ape::window::create(800, 600, "Controllable Sprite");
 
     auto texture = ape::textureStore::loadTexture("./examples/images/mario.png");
@@ -18,17 +18,17 @@ int main() {
     // Set up inputs
     auto& context = ape::input::ContextManager::createContext(0);
     std::map<int, ape::Vec2f> keys = {
-        {GLFW_KEY_W, ape::Vec2f(0, -100)},
-        {GLFW_KEY_D, ape::Vec2f(100, 0)},
-        {GLFW_KEY_S, ape::Vec2f(0, 100)},
-        {GLFW_KEY_A, ape::Vec2f(-100, 0)}
+        {ape::input::Keys::W, ape::Vec2f(0, -100)},
+        {ape::input::Keys::D, ape::Vec2f(100, 0)},
+        {ape::input::Keys::S, ape::Vec2f(0, 100)},
+        {ape::input::Keys::A, ape::Vec2f(-100, 0)}
     };
 
     std::map<int, int> dirs = {
-        {GLFW_KEY_W, 1},
-        {GLFW_KEY_D, 0},
-        {GLFW_KEY_S, 1},
-        {GLFW_KEY_A, 0}
+        {ape::input::Keys::W, 1},
+        {ape::input::Keys::D, 0},
+        {ape::input::Keys::S, 1},
+        {ape::input::Keys::A, 0}
     };
 
     for(auto const& key : keys) {
@@ -59,9 +59,9 @@ int main() {
         });
     }
 
-    while(ape::isRunning()) {
+    while(ape::engine::isRunning()) {
         ape::window::clear(ape::Colors::Slate);
-        ape::update();
+        ape::engine::update();
         ape::window::display();
     }
 

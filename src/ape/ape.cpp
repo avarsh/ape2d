@@ -1,6 +1,6 @@
 #include <ape/ape.h>
 
-namespace ape {
+namespace ape::engine {
     using hi_res_clock = std::chrono::high_resolution_clock;
     void init() {
         graphics::init();

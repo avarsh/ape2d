@@ -8,7 +8,7 @@ using namespace std::chrono;
 
 int main() {
 
-    ape::init();
+    ape::engine::init();
     ape::window::create(800, 600, "Iteration speed test");
 
     for(int i = 0; i < 10000; i++) {
@@ -36,8 +36,8 @@ int main() {
 
     std::cout << timeSpan.count() << " seconds taken\n";
 
-    while(ape::isRunning()) {
-        ape::update();
+    while(ape::engine::isRunning()) {
+        ape::engine::update();
         ape::window::display();
     }
 

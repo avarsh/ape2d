@@ -2,7 +2,7 @@
 #include <random>
 
 int main() {
-    ape::init();
+    ape::engine::init();
     ape::window::create(800, 600, "Sprite Example");
 
     auto texture = ape::textureStore::loadTexture("examples/images/mario.png");
