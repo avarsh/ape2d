@@ -23,26 +23,44 @@ namespace ape {
          */
 
         // Generate the buffers and array object
+        // Generate 1 vertex array - a vertex array stores a state.
+        // When it is bound, the state is recalled and buffers which
+        // supply vertex data can be used.
+        // An attribute must be enabled by using glEnableVertexAttribArray.
         glGenVertexArrays(1, &vertexArray);
+        // Bind the vertex array before we setup the other buffers.
         glBindVertexArray(vertexArray);
 
         // Initialise buffers
         // The quad VBO
+        // A vertex buffer object is used as a source of data for each
+        // vertex - in this case it store the relative positions of the 
+        // quads.
         glGenBuffers(1, &quadVBO);
         glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices),
                     (GLvoid*)quadVertices, GL_STATIC_DRAW);
 
+        // The element buffer object avoids duplicating vertices by
+        // indexing the order in which the vertices should be drawn
+        // in order to make a quad. In this case, we use [0, 1, 2], [0, 2, 3].
         glGenBuffers(1, &quadEBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, quadEBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),
-                    (GLvoid*)indices, GL_STATIC_DRAW);
+                    (GLvoid*)indices, GL_STATIC_DRAW); 
 
+        // Bind the vertex buffer object again
         glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
 
-        // Position is at location 0
+        // Position is at location 0 in the shader
+        // Arguments: 
+        //      index of attribute, size (2 floats in this case),
+        //      type (floating point), normalised?,
+        //      stride (we take 2 floats at a time)
+        //      offset pointer (where to start)
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
                               2 * sizeof(GLfloat), (GLvoid*)0);
+        // Enable it as described before (all attributes are disabled by default)
         glEnableVertexAttribArray(0);
 
         // Instance buffers
