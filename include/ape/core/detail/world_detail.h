@@ -1,40 +1,15 @@
-#ifndef WORLD_DETAIL_H
-#define WORLD_DETAIL_H
+#ifndef APE_WORLD_DETAIL_H
+#define APE_WORLD_DETAIL_H
 
-#include <unordered_map>
 #include <queue>
-#include <memory>
-#include <set>
-#include <typeindex>
+#include <vector>
 #include <functional>
-#include <ape/core/defines.h>
-#include <ape/core/component.h>
-#include <ape/core/detail/component_detail.h>
+#include <unordered_map>
+#include <ape/core/constants.h>
 
 namespace ape {
     namespace world {
         namespace detail {
-
-            /*
-             * A custom component, used to store strings, or "tags".
-             */
-            struct TagComponent : public Component<TagComponent> {
-                TagComponent(entity_t entity) : Component<TagComponent>(entity) { }
-
-                std::unordered_map<int, std::string> tags;
-            };
-
-            // Used to keep track of tags and to look them up quickly in tag components.
-            extern std::unordered_map<std::string, int> tagKeys;
-
-            // Used to assign a unique key to each tag.
-            extern int tagCounter;
-
-            /*
-             * Gets the key value for a tag - the key value is then used
-             * to lookup the tag in the tag component.
-             */
-            int getTagKey(std::string tag);
 
             /*
              * A structure to store data about an entity, such as where its
@@ -42,49 +17,28 @@ namespace ape {
              * components it has and a boolean flag to mark it as alive.
              */
             struct EntityData {
+                // Stores component indices in respective pools
                 std::unordered_map<int, int> indices;
-                int mask {0};
+                uint32_t mask {0};
                 bool alive {true};
-
-                entity_t next { ENTITY_INVALID };
-                entity_t previous { ENTITY_INVALID };
+                uint32_t version {0};
             };
 
             // Data for each entity in the world
             extern std::vector<EntityData> entityData;
 
+            // Queue of entities which have been destroyed from the world
+            extern std::queue<entity_t> freeList;
+
+            // Queue of entities which have been deleted but not freed
+            extern std::queue<entity_t> killList;
+            
             // Used to allocate new entities - note that entities cannot
             // have a handle of 0. This is useful when checking certain
             // parameters.
-            extern entity_t counter;
+            extern entity_t entityCounter;
 
-            // The queue of entities which have recently been deleted
-            extern std::queue<entity_t> freeList;
-
-            // The queue of entities which have recently been deleted
-            extern std::queue<entity_t> killList;
-
-            // The world keeps an instance of every component which is created.
-            // This is done to access static members such as the component managers.
-            extern std::unordered_map<int, std::unique_ptr<ape::detail::BaseComponent>> componentInstances;
-
-            // We can map types to integer handles for components. This is mainly
-            // used to build bitmasks for entities
-
-            //yextern std::unordered_map<std::type_index, int> componentTypeMap;
-
-            // The current bitsize, shifted left by 1 for every component.
-            // Note that components cannot have a handle of 0.
-            extern int currentBitsize;
-
-            // Functions applied to every entity upon creation - usually used
-            // to add components by default.
-            extern std::vector<std::function<void(entity_t)>> initiationFuncs;
-
-            // Blueprint related data
             extern std::vector<std::function<void(entity_t)>> blueprints;
-
-            extern std::unordered_map<int, std::set<int>> exclusiveComponents;
 
             /*
              * Compile time assert to check if component class is of the
@@ -96,8 +50,6 @@ namespace ape {
                              "Template parameter does not derive from base component class");
             }
 
-            void assertExclusive(entity_t entity, int componentHandle);
-
             /*
              * Checks whether an entity is valid.
              */
@@ -106,4 +58,5 @@ namespace ape {
     }
 }
 
-#endif // WORLD_DETAIL_H
+
+#endif // APE_WORLD_DETAIL_H

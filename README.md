@@ -13,17 +13,5 @@ This system allows for far greater flexibility and control when compared to a tr
 where large inheritance trees can create confusion.
 
 # Current and Proposed Features
-Currently, the following features have been implemented:
 
-- 2D texture loading and sprite rendering through OpenGL
-- A sprite batch rendering system for added efficiency
-- Sprite transformation
-- Featured ECS library built in
-- A scene graph based system for rendering
-
-These features are proposed or are being worked on:
-
-- Input system using “contexts” which allow for flexibility
-- Sound playback
-- More comprehensive scene graph system, allowing for collated transformations and node removal
-- Further graphical features, such as primitives
+ The engine is currently being rewritten.
