@@ -5,7 +5,9 @@
 #include <vector>
 #include <functional>
 #include <unordered_map>
+#include <memory>
 #include <ape/core/constants.h>
+#include <ape/core/component.h>
 
 namespace ape {
     namespace world {
@@ -33,12 +35,21 @@ namespace ape {
             // Queue of entities which have been deleted but not freed
             extern std::queue<entity_t> killList;
             
-            // Used to allocate new entities - note that entities cannot
-            // have a handle of 0. This is useful when checking certain
-            // parameters.
+            /* Used to allocate new entities - note that entities cannot
+             * have a handle of 0. This is useful when checking certain
+             * parameters.
+             */
             extern entity_t entityCounter;
 
+            // The world keeps an instance of every component which is created.
+            // This is done to access static members such as the component pools.
+            extern std::unordered_map<int, std::unique_ptr<ape::detail::BaseComponent>> componentInstances;
+
             extern std::vector<std::function<void(entity_t)>> blueprints;
+
+            // The current bitsize, shifted left by 1 for every component.
+            // Note that components cannot have a handle of 0.
+            extern int currentBitsize;
 
             /*
              * Compile time assert to check if component class is of the
@@ -49,6 +60,11 @@ namespace ape {
                 static_assert(std::is_base_of<ape::detail::BaseComponent, DerivedComponent>::value,
                              "Template parameter does not derive from base component class");
             }
+
+            /*
+             * Retrieves data struct for entity.
+             */
+            EntityData& getData(entity_t entity);
 
             /*
              * Checks whether an entity is valid.

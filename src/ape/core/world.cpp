@@ -13,8 +13,8 @@ namespace ape {
 
                 assert(entity != ENTITY_INVALID);
 
-                detail::entityData[entity - 1].alive = true;
-                detail::entityData[entity - 1].version++;
+                detail::getData(entity).alive = true;
+                detail::getData(entity).version++;
             } else {
                 entity = detail::entityCounter++;
                 detail::entityData.push_back(detail::EntityData());
@@ -31,6 +31,40 @@ namespace ape {
             entity_t entity = createEntity();
 
             //detail::blueprints[blueprint]
+            /* TODO: Rest of this function */
+
+            return entity;
+        }
+
+        void deleteEntity(entity_t entity) {
+            detail::assertEntity(entity, "world::deleteComponent");
+            /* TODO: Emit deleted event */
+            detail::killList.push(entity);
+        }
+
+        void refresh() {
+            while (detail::killList.size() > 0) {
+                auto entity = detail::killList.front();
+
+                detail::getData(entity).alive = false;
+
+                // Iterate over every component type
+                for (int i = 1; i < detail::currentBitsize; i++){
+                    // Check that the entity has that component
+                    if ((detail::getData(entity).mask & i) == i) {
+                        int index = detail::getData(entity).indices[i];
+                        entity_t toUpdate = detail::componentInstances[i]->detach(index);
+
+                        if (toUpdate != ENTITY_INVALID) {
+                            detail::getData(toUpdate).indices[i] = index;
+                        }
+                    }
+                }
+
+                detail::getData(entity).mask = 0;
+                detail::freeList.push(entity);
+                detail::killList.pop();
+            }
         }
 
         entity_t getNext(entity_t current) {

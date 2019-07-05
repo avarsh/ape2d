@@ -8,8 +8,14 @@ namespace ape {
 
             std::queue<entity_t> freeList;
             std::queue<entity_t> killList;
+            std::unordered_map<int, std::unique_ptr<ape::detail::BaseComponent>> componentInstances;
 
             entity_t entityCounter = 1;
+            int currentBitsize = 1;
+
+            EntityData& getData(entity_t entity) {
+                return entityData[entity - 1];
+            }
 
             void assertEntity(entity_t entity, std::string caller) {
                 std::string msg = "(assertion called by " + caller + ")";

@@ -1,6 +1,8 @@
 #ifndef APE_DEBUG_H
 #define APE_DEBUG_H
 
+#include <iostream>
+
 #ifndef NDEBUG
 #define ASSERT_MSG(condition, message) \
     do { \
