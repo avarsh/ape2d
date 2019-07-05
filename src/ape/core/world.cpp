@@ -84,6 +84,15 @@ namespace ape {
 
             return next;
         }
+
+        entity_t getFirstEntity() {
+            entity_t first = 0;
+            while (first == ENTITY_INVALID) {
+                first = getNext(first);
+            }
+
+            return first;
+        }
     }
     
 }

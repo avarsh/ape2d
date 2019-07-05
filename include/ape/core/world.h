@@ -59,6 +59,12 @@ namespace ape {
         entity_t getNext(entity_t current);
 
         /**
+         * Get the first alive entity in the world.
+         * @return               The handle of the first alive entity.
+         */
+        entity_t getFirstEntity();
+
+        /**
          * Updates the world so that deleted entities can be cleaned up.
          */
         void refresh();
