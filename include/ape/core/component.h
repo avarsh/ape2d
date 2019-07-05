@@ -68,4 +68,4 @@ namespace ape {
     int Component<Derived>::handle = 0;
 }
 
-#endif 
+#endif

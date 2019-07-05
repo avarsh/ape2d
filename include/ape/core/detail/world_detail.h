@@ -75,4 +75,4 @@ namespace ape {
 }
 
 
-#endif // APE_WORLD_DETAIL_H
+#endif

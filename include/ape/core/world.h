@@ -302,4 +302,4 @@ namespace ape {
     }
 }
 
-#endif // APE_WORLD_H
+#endif
