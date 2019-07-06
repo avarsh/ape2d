@@ -1,5 +1,8 @@
 #include <ape/graphics/window.h>
 #include <ape/graphics/detail/window_detail.h>
+#include <iostream>
+
+#include <SDL2/SDL_image.h>
 
 namespace ape {
     namespace window {
@@ -12,10 +15,43 @@ namespace ape {
             if (detail::window == nullptr) {
                 std::cout << "Window could not be created. SDL_Error: " 
                           << SDL_GetError() << std::endl;
+                /* TODO: Upon failure, abort and clean up all resources */
             } else {
-                detail::surface = SDL_GetWindowSurface(detail::window);
+                detail::renderer = SDL_CreateRenderer(detail::window, -1, SDL_RENDERER_ACCELERATED);
+                if (detail::renderer == nullptr) {
+                    std::cout << "Renderer could not be created. SDL_Error: "
+                              << SDL_GetError() << std::endl;
+                    
+                    /* TODO: Upon failure, abort and clean up all resources */
+                } else {
+                    SDL_SetRenderDrawColor(detail::renderer, 0xFF, 0xFF, 0xFF, 0xFF ); 
+
+                    /* TODO: Allow more image types */
+                    int flags = IMG_INIT_PNG;
+                    if (!(IMG_Init(flags) & flags)) {
+                        std::cout << "PNG loading could not be initialized. SDL_Error: "
+                                  << SDL_GetError() << std::endl;
+                        /* TODO: Upon failure, abort and clean up all resources */
+                    }
+                }
 
                 /* TODO: window creation event */
+            }
+        }
+
+        void clear(Color color) {
+            SDL_SetRenderDrawColor(detail::renderer, color.red, color.green, color.blue, color.alpha);
+            SDL_RenderClear(detail::renderer);
+        }
+
+        void display() {
+            SDL_RenderPresent(detail::renderer);
+        }
+
+        void destroy() {
+            if (detail::window != nullptr) {
+                SDL_DestroyWindow(detail::window);
+                detail::window = nullptr;
             }
         }
     }
