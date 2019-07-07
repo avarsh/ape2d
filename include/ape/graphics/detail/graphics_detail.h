@@ -21,7 +21,7 @@ namespace ape {
             /**
              * Retrieves the renderer color from stack.
              */
-            void popRendererColor(SDL_Renderer *renderer)
+            void popRendererColor(SDL_Renderer *renderer);
 
             /**
              *  Cleans up resources used by the graphics system.
