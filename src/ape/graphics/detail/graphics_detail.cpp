@@ -1,6 +1,7 @@
 #include <ape/graphics/detail/graphics_detail.h>
 #include <ape/graphics/window.h>
 #include <iostream>
+#include <SDL2/SDL_hints.h>
 
 namespace ape {
     namespace graphics {
@@ -10,6 +11,11 @@ namespace ape {
                     std::cout << "SDL could not be initialized! SDL_Error: " 
                               << SDL_GetError() << std::endl;
                 }
+
+                /* TODO: Remember that if the user wants to have custom
+                   OpenGL calls then they need to call SDL_RenderFlush. We
+                   should expose this call somehow. */
+                SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
             }
 
             void pushRendererColor(SDL_Renderer *renderer) {

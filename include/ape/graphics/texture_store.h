@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <memory>
-#include <list>
+#include <vector>
 #include <SDL2/SDL.h>
 
 namespace ape {
@@ -25,10 +25,9 @@ namespace ape {
         static texture_id_t loadTexture(const std::string& source);
 
         /**
-         * Deletes a texture given an id.
-         * @param id The id for the texture.
+         * Frees all textures.
          */
-        static void deleteTexture(texture_id_t id);
+        static void freeTextures();
 
         /**
          * Retrieves a pointer to a texture given an id.
@@ -37,7 +36,7 @@ namespace ape {
          */
         static std::unique_ptr<SDL_Texture>& getTexture(texture_id_t id);
     private:
-        static std::list<std::unique_ptr<SDL_Texture>> textures;
+        static std::vector<std::unique_ptr<SDL_Texture>> textures;
     };
 }
 

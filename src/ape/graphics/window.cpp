@@ -44,15 +44,23 @@ namespace ape {
             SDL_RenderClear(detail::renderer);
         }
 
+        void draw(Sprite& sprite) {
+            
+        }
+
         void display() {
             SDL_RenderPresent(detail::renderer);
         }
 
         void destroy() {
             if (detail::window != nullptr) {
+                SDL_DestroyRenderer(detail::renderer);
+                detail::renderer = nullptr;
                 SDL_DestroyWindow(detail::window);
                 detail::window = nullptr;
             }
+
+            IMG_Quit();
         }
     }
 }

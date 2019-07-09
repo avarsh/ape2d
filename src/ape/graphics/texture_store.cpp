@@ -25,6 +25,7 @@ namespace ape {
             }
 
             textures.push_back(texturePtr);
+            /* TODO: Texture load event */
             return textures.size();
         }
 
@@ -33,14 +34,14 @@ namespace ape {
 
     std::unique_ptr<SDL_Texture>& TextureStore::getTexture(texture_id_t id) {
         assert(id > 0 && id <= textures.size());
-        return *std::next(textures.begin(), id - 1);
+        return textures[id - 1];
     }
 
-    void TextureStore::deleteTexture(texture_id_t id) {
-        assert(id > 0 && id <= textures.size());
-        
-        auto iter = std::next(textures.begin(), id - 1);
-        SDL_DestroyTexture((*iter).get());
-        textures.erase(iter);
+    void TextureStore::freeTextures() {
+        for (auto& texturePtr : textures) {
+            SDL_DestroyTexture(texturePtr.get());
+        }
     }
+
+    
 }

@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <ape/graphics/color.h>
+#include <ape/graphics/sprite.h>
 
 namespace ape {
     namespace window {
@@ -20,6 +21,12 @@ namespace ape {
          * @param color The colour to set the background to.
          */
         void clear(Color color = Color(0, 0, 0));
+
+        /**
+         * Renders a sprite to the screen.
+         * @param sprite The sprite component to render.
+         */
+        void draw(Sprite& sprite);
 
         /**
          * Displays any rendered entities in the window.
