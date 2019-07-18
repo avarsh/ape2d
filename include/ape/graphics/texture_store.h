@@ -9,7 +9,7 @@
 
 namespace ape {
 
-    using texture_id_t = uint32_t;
+    using texture_id_t = int32_t;
     extern texture_id_t TEXTURE_INVALID;
 
     /**

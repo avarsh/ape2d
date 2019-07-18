@@ -76,7 +76,7 @@ namespace ape {
          * @param  entity           The entity to add the component to.
          */
         template<class DerivedComponent>
-        DerivedComponent& addComponent(entity_t entity, auto... args) {
+        DerivedComponent& addComponent(entity_t entity) {
             /* TODO: Allow component initialisation with variadic parameters */
             detail::staticAssertBase<DerivedComponent>();
             detail::assertEntity(entity, "world::addComponent");
@@ -85,7 +85,7 @@ namespace ape {
 
             if(!entityHasComponent<DerivedComponent>(entity)) {
                 // Create component and store it in it's pool
-                DerivedComponent component(entity, args...);
+                DerivedComponent component(entity);
                 DerivedComponent::getPool().push_back(component);
                 int index = DerivedComponent::getPool().size() - 1;
 

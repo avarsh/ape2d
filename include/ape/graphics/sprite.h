@@ -15,7 +15,7 @@ namespace ape {
     public:
         Sprite(entity_t entity);
 
-        texture_id_t id;
+        texture_id_t textureId;
         IntRect textureRect;
     };
 }

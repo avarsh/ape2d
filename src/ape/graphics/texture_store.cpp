@@ -6,7 +6,7 @@
 
 namespace ape {
 
-    texture_id_t TEXTURE_INVALID = 0;
+    texture_id_t TEXTURE_INVALID = -1;
 
     texture_id_t TextureStore::loadTexture(const std::string& source) {
         SDL_Surface *surface = IMG_Load(source.c_str());
@@ -24,17 +24,18 @@ namespace ape {
                 return TEXTURE_INVALID;
             }
 
+            texture_id_t id = textures.size();
             textures.push_back(texturePtr);
             /* TODO: Texture load event */
-            return textures.size();
+            return id;
         }
 
         return TEXTURE_INVALID;
     }
 
     std::unique_ptr<SDL_Texture>& TextureStore::getTexture(texture_id_t id) {
-        assert(id > 0 && id <= textures.size());
-        return textures[id - 1];
+        assert(id >= 0 && id < textures.size());
+        return textures[id];
     }
 
     void TextureStore::freeTextures() {
