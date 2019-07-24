@@ -6,6 +6,7 @@
 #include <functional>
 #include <unordered_map>
 #include <memory>
+#include <cassert>
 #include <ape/core/constants.h>
 #include <ape/core/component.h>
 

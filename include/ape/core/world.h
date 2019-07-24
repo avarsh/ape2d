@@ -4,6 +4,9 @@
 #include <ape/core/constants.h>
 #include <ape/core/detail/world_detail.h>
 #include <ape/core/component.h>
+#include <ape/core/event.h>
+
+#include <cassert>
 
 namespace ape {
 
@@ -299,6 +302,8 @@ namespace ape {
             // The handle is the blueprint's index
             return detail::blueprints.size() - 1;
         }
+
+        extern Event<entity_t> entityDeleted;
     }
 }
 

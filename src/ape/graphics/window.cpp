@@ -7,6 +7,9 @@
 
 namespace ape {
     namespace window {
+        Event<Vec2i> windowCreated;
+        Event<Vec2i> windowResized;
+
         void create(int width, int height, std::string title) {
             detail::dims = Vec2i(width, height);
             /* TODO: Allow flags to be changed? */
@@ -36,7 +39,7 @@ namespace ape {
                     }
                 }
 
-                /* TODO: window creation event */
+                windowCreated.emit(detail::dims);
             }
         }
 
@@ -46,11 +49,12 @@ namespace ape {
         }
 
         void draw(Sprite& sprite) {
-            auto& texturePtr = TextureStore::getTexture(sprite.textureId);
+            auto texturePtr = TextureStore::getTexture(sprite.textureId);
             // TODO: SDL_RenderCopyEx
             SDL_Rect dstRect; // TODO: Calculate from scaling
-            SDL_RenderCopy(detail::renderer, texturePtr.get(), 
-                           &ape::detail::convertRect(sprite.textureRect), NULL);
+            SDL_Rect rect = ape::detail::convertRect(sprite.textureRect);
+            SDL_RenderCopy(detail::renderer, texturePtr, 
+                           &rect, NULL);
                      //0, // TODO:angle
                      //const SDL_Point*       center,
                      //const SDL_RendererFlip flip);

@@ -45,6 +45,10 @@ namespace ape {
         are iterated over and those outside the area are marked as excluded.
    */
 
+   /**
+    * Camera component. Can be attached to entities to make them into
+    * cameras for the scene. Holds information about the viewport and zoom.
+    */
    struct Camera : public Component<Camera> {
        Camera(entity_t entity) : Component<Camera>(entity) {}  
 

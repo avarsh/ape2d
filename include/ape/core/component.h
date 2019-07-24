@@ -3,6 +3,8 @@
 
 #include <ape/core/constants.h>
 #include <ape/core/detail/component_detail.h>
+#include <vector>
+#include <algorithm>
 
 namespace ape {
 

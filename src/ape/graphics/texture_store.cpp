@@ -15,8 +15,7 @@ namespace ape {
                       << " - SDL_Error: " << IMG_GetError() << std::endl;
             return TEXTURE_INVALID;
         } else {
-            std::unique_ptr<SDL_Texture> texturePtr = std::make_unique<SDL_Texture>(
-                SDL_CreateTextureFromSurface(window::detail::renderer, surface));
+            SDL_Texture *texturePtr = SDL_CreateTextureFromSurface(window::detail::renderer, surface);
             if (!texturePtr) {
                 std::cout << "Unable to create texture from source: " << source 
                           << " - SDL_Error: " << SDL_GetError() << std::endl;
@@ -26,21 +25,21 @@ namespace ape {
 
             texture_id_t id = textures.size();
             textures.push_back(texturePtr);
-            /* TODO: Texture load event */
+            textureLoaded.emit(id);
             return id;
         }
 
         return TEXTURE_INVALID;
     }
 
-    std::unique_ptr<SDL_Texture>& TextureStore::getTexture(texture_id_t id) {
+    SDL_Texture* TextureStore::getTexture(texture_id_t id) {
         assert(id >= 0 && id < textures.size());
         return textures[id];
     }
 
     void TextureStore::freeTextures() {
-        for (auto& texturePtr : textures) {
-            SDL_DestroyTexture(texturePtr.get());
+        for (SDL_Texture* texturePtr : textures) {
+            SDL_DestroyTexture(texturePtr);
         }
     }
 

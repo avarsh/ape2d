@@ -5,6 +5,7 @@
 #include <string>
 #include <ape/graphics/color.h>
 #include <ape/graphics/sprite.h>
+#include <ape/core/event.h>
 
 namespace ape {
     namespace window {
@@ -37,6 +38,16 @@ namespace ape {
          * Destroys the window.
          */
         void destroy();
+
+        /**
+         * Event which is emitted when the window is first created.
+         */
+        extern Event<Vec2i> windowCreated;
+
+        /**
+         * Event which is emitted when the window is resized.
+         */
+        extern Event<Vec2i> windowResized;
     }
 }
 

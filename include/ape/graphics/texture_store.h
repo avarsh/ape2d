@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include <SDL2/SDL.h>
+#include <ape/core/event.h>
 
 namespace ape {
 
@@ -34,9 +35,11 @@ namespace ape {
          * @param id The id of the texture
          * @return A smart pointer to the texture.
          */
-        static std::unique_ptr<SDL_Texture>& getTexture(texture_id_t id);
+        static SDL_Texture* getTexture(texture_id_t id);
+
+        static Event<texture_id_t> textureLoaded;
     private:
-        static std::vector<std::unique_ptr<SDL_Texture>> textures;
+        static std::vector<SDL_Texture*> textures;
     };
 }
 

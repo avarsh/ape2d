@@ -4,6 +4,8 @@
 namespace ape {
     namespace world {
         
+        Event<entity_t> entityDeleted;
+
         entity_t createEntity() {
             entity_t entity;
 
@@ -38,7 +40,7 @@ namespace ape {
 
         void deleteEntity(entity_t entity) {
             detail::assertEntity(entity, "world::deleteComponent");
-            /* TODO: Emit deleted event */
+            entityDeleted.emit(entity);
             detail::killList.push(entity);
         }
 

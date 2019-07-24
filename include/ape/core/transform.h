@@ -11,7 +11,7 @@ namespace ape {
         Vec2f position;
         Vec2f velocity;
         float rotation {0.f};
-    }
+    };
 }
 
 #endif 

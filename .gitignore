@@ -4,3 +4,4 @@ debug_out/
 .vscode/
 obj/
 bin/
+lib/
