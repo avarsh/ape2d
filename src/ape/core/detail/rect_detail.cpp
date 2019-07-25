@@ -2,7 +2,7 @@
 
 namespace ape {
     namespace detail {
-        SDL_Rect convertRect(IntRect rect) {
+        SDL_Rect convertRect(IntRect& rect) {
             SDL_Rect converted;
             converted.x = rect.origin.x;
             converted.y = rect.origin.y;

@@ -28,6 +28,7 @@ namespace ape {
         func_id_t addCallback(FuncType function) {
             func_id_t id = idCounter++;
             callbackFunctions.push_back(std::make_pair(id, function));
+            return id;
         }
 
         /**

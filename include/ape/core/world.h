@@ -28,9 +28,6 @@ namespace ape {
         template<class Component>
         int getComponentHandle();
 
-        template<class DerivedComponent>
-        std::vector<DerivedComponent>& getComponentList();
-
         /**
          * @brief Creates a new entity, or reassigns one which has been 
          * previously deleted.
@@ -286,6 +283,18 @@ namespace ape {
             return DerivedComponent::getPool();
         }
 
+        /**
+         * Allows a number of components to be added by default to any
+         * entity.
+         *
+         * @tparam Components The component types to be added.
+         */
+        template<class ...Components>
+        void setDefaultComponents() {
+            detail::initiationFuncs.push_back([](entity_t entity) {
+                addComponents<Components...>(entity);
+            });
+        }
 
         /**
          * Registers a new blueprint with the world. Blueprints can be used

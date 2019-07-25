@@ -9,6 +9,7 @@ namespace ape {
             std::queue<entity_t> freeList;
             std::queue<entity_t> killList;
             std::vector<std::function<void(entity_t)>> blueprints;
+            std::vector<std::function<void(entity_t)>> initiationFuncs;
             std::unordered_map<int, std::unique_ptr<ape::detail::BaseComponent>> componentInstances;
 
             entity_t entityCounter = 1;

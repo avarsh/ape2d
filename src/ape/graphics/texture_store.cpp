@@ -1,5 +1,6 @@
 #include <ape/graphics/texture_store.h>
 #include <ape/graphics/detail/window_detail.h>
+#include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <cassert>
@@ -32,6 +33,13 @@ namespace ape {
         return TEXTURE_INVALID;
     }
 
+    Vec2i TextureStore::getTextureSize(texture_id_t id) {
+        assert(id >= 0 && id < textures.size());
+        Vec2i dims;
+        SDL_QueryTexture(textures[id], NULL, NULL, &dims.x, &dims.y);
+        return dims;
+    }
+
     SDL_Texture* TextureStore::getTexture(texture_id_t id) {
         assert(id >= 0 && id < textures.size());
         return textures[id];
@@ -43,5 +51,7 @@ namespace ape {
         }
     }
 
+    Event<texture_id_t> TextureStore::textureLoaded;
+    std::vector<SDL_Texture*> TextureStore::textures;
     
 }

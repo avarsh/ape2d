@@ -22,7 +22,9 @@ namespace ape {
                 detail::entityData.push_back(detail::EntityData());
             }
 
-            /* TODO: Initialisation functions */
+            for (const auto& func : detail::initiationFuncs) {
+                func(entity);
+            }
 
             return entity;            
         }

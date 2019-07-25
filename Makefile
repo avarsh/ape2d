@@ -4,14 +4,15 @@ SHAREDFLAGS := -fPIC
 HEADER := include
 DEPS := deps
 SRC := src/ape
+INCLUDE := include/ape
 TEST := tests/
 BIN := bin
 OBJ := obj
 LIB := lib
-LINKER_FLAGS := -lSDL2
+LINKER_FLAGS := -lSDL2 -lSDL2_image
 
 core.o: $(wildcard $(SRC)/core/*.cpp) $(wildcard $(SRC)/core/detail/*.cpp) \
-	 $(wildcard $(INCLUDE)/ape/core/*.h) $(wildcard $(INCLUDE)/ape/core/detail/*.h)
+	 $(wildcard $(INCLUDE)/core/*.h) $(wildcard $(INCLUDE)/core/detail/*.h)
 	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/core/*.cpp) $(wildcard $(SRC)/core/detail/*.cpp)
 	mv *.o ./$(OBJ)/core/
 
@@ -24,21 +25,27 @@ ecs_test: core.o ecs_test.o
 
 graphics.o: $(wildcard $(SRC)/graphics/*.cpp) $(wildcard $(INCLUDE)/graphics/*.h) \
 			$(wildcard $(SRC)/graphics/detail/*.cpp) $(wildcard $(INCLUDE)/graphics/detail/*.h)
-	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/graphics/*.cpp) $(wildcard $(TEST)/graphics/detail/*.cpp) $(LINKER_FLAGS)
+	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/graphics/*.cpp) $(wildcard $(SRC)/graphics/detail/*.cpp)
 	mv *.o ./$(OBJ)/graphics/
 
 scene.o: $(wildcard $(SRC)/scene/*.cpp) $(wildcard $(INCLUDE)/scene/*.h) \
 			$(wildcard $(SRC)/scene/detail/*.cpp) $(wildcard $(INCLUDE)/scene/detail/*.h)
-	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/scene/*.cpp) $(wildcard $(SRC)/scene/detail/*.cpp) $(LINKER_FLAGS)
+	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/scene/*.cpp) $(wildcard $(SRC)/scene/detail/*.cpp)
 	mv *.o ./$(OBJ)/scene/
 
 ape.o: $(wildcard $(SRC)/*.cpp) $(wildcard $(INCLUDE)/*.h) \
 			$(wildcard $(SRC)/detail/*.cpp) $(wildcard $(INCLUDE)/detail/*.h)
-	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/*.cpp) $(wildcard $(SRC)/detail/*.cpp) $(LINKER_FLAGS)
+	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/*.cpp) $(wildcard $(SRC)/detail/*.cpp)
 	mv *.o ./$(OBJ)/
 
 ape_shared: core.o graphics.o scene.o ape.o
-	$(CC) -shared -o $(LIB)/shared/libape2d.so $(wildcard $(OBJ)/*.o) $(wildcard $(OBJ)/core/*.o) $(wildcard $(OBJ)/graphics/*.o) $(wildcard $(OBJ)/scene/*.o)
+	$(CC) -shared -o $(LIB)/shared/libape2d.so $(wildcard $(OBJ)/*.o) $(wildcard $(OBJ)/core/*.o) $(wildcard $(OBJ)/graphics/*.o) $(wildcard $(OBJ)/scene/*.o) $(LINKER_FLAGS)
+
+platformer: examples/platformer.cpp
+	$(CC) -I$(HEADER) -L./lib/shared $(CFLAGS) -o $(BIN)/platformer examples/platformer.cpp -lSDL2 -lape2d 
+
+install:
+	sudo cp ./lib/shared/libape2d.so /usr/lib/libape2d.so
 
 # TODO: Static library for use in game deployment. We don't 
 # need the position independent code, so must get rid of 

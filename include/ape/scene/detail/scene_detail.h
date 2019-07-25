@@ -10,7 +10,7 @@ namespace ape {
         namespace detail {
             void init();
             void render();
-            void traverse(const entity_t entity, Transform transform);
+            void traverse(const entity_t entity);
         }
     }
 }

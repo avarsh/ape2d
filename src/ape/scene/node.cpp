@@ -7,7 +7,8 @@ namespace ape {
         entity_t ROOT_NODE = ENTITY_INVALID;
     }
 
-    Node::Node(entity_t entity) : Component<Node>(entity) {}
+    Node::Node(entity_t entity) : Component<Node>(entity), 
+        globalTransform(ENTITY_INVALID) { }
 
     void Node::addChild(entity_t child) {
         children.push_back(child);
@@ -22,11 +23,11 @@ namespace ape {
         camera = ENTITY_INVALID;
     }
 
-    entity_t Node::getParent() {
+    const entity_t Node::getParent() const {
         return parent;
     }
 
-    entity_t Node::getCamera() {
+    const entity_t Node::getCamera() const {
         return camera;
     }
 
@@ -57,4 +58,7 @@ namespace ape {
         return this->children;
     };
     
+    Transform& Node::getGlobalTransform() {
+        return globalTransform;
+    }
 }

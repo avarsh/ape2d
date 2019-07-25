@@ -47,6 +47,7 @@ namespace ape {
             extern std::unordered_map<int, std::unique_ptr<ape::detail::BaseComponent>> componentInstances;
 
             extern std::vector<std::function<void(entity_t)>> blueprints;
+            extern std::vector<std::function<void(entity_t)>> initiationFuncs;
 
             // The current bitsize, shifted left by 1 for every component.
             // Note that components cannot have a handle of 0.

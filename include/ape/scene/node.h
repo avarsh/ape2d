@@ -28,13 +28,13 @@ namespace ape {
          * Retrieves the parent entity.
          * @return The parent entity.
          */
-        entity_t getParent();
+        const entity_t getParent() const;
 
         /**
          * Retrieves the associated camera for this entity.
          * @return The camera entity.
          */
-        entity_t getCamera();
+        const entity_t getCamera() const;
 
         /**
          * Sets a camera entity to be associated with this node.
@@ -46,7 +46,10 @@ namespace ape {
          */
         const std::list<entity_t>& getChildren() const;
 
-        
+        /**
+         * Retrieves the global transformation of the node.
+         */
+        Transform& getGlobalTransform();
     private:
         entity_t parent;
         /* TODO: If no camera is set, use the default camera */
@@ -54,6 +57,7 @@ namespace ape {
         std::list<entity_t> children;
 
         void propogateCamera(entity_t camera);
+        Transform globalTransform;
     };
 
     namespace scene {

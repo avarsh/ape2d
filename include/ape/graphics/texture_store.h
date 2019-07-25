@@ -7,6 +7,7 @@
 #include <vector>
 #include <SDL2/SDL.h>
 #include <ape/core/event.h>
+#include <ape/core/vec2.h>
 
 namespace ape {
 
@@ -24,6 +25,13 @@ namespace ape {
          * @return An id for the texture.
          */
         static texture_id_t loadTexture(const std::string& source);
+
+        /**
+         * Retrieves the dimensions of a texture.
+         * @param id The texture identifier.
+         * @return A vector containing the dimensions.
+         */
+        static Vec2i getTextureSize(const texture_id_t id);
 
         /**
          * Frees all textures.

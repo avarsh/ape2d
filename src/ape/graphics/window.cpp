@@ -52,13 +52,15 @@ namespace ape {
         void draw(Sprite& sprite, Transform& transform) {
             auto texturePtr = TextureStore::getTexture(sprite.textureId);
             // TODO: SDL_RenderCopyEx
-            SDL_Rect dstRect; // TODO: Calculate from scaling, transformation etc.
+            SDL_Rect dstRect;
+            dstRect.x = transform.position.x; /* TODO: Subtract camera position */
+            dstRect.y = transform.position.y;
+            dstRect.w = sprite.textureRect.size.x; /* TODO: Viewport scaling, transform scale */
+            dstRect.h = sprite.textureRect.size.y;
             SDL_Rect rect = ape::detail::convertRect(sprite.textureRect);
-            SDL_RenderCopy(detail::renderer, texturePtr, 
-                           &rect, NULL);
-                     //0, // TODO:angle
-                     //const SDL_Point*       center,
-                     //const SDL_RendererFlip flip);
+            SDL_RenderCopyEx(detail::renderer, texturePtr, 
+                           &rect, &dstRect,0, NULL, /* TODO: Center of sprite */ 
+                     SDL_FLIP_NONE); /* TODO: Flip */
 
         }
 
