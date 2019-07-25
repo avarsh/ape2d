@@ -21,16 +21,11 @@ namespace ape {
       - In the scene-graph, a node has a setCamera function which 
         means it will be rendered under that camera and the 
         corresponding viewport. The camera setting cascades down 
-        to all child nodes. A camera cannot be linked to a child 
-        node if the parent has a camera linked. This will mean that 
-        only top level nodes (nodes which are direct children of the 
-        root node) can have a camera attached. As a result, the 
-        setCamera function should fail if the node is not a child 
-        of the root node.
+        to all child nodes. Only nodes which are direct children of the 
+        root node can have cameras attached.
       - Further to this, if a node is removed ("orphaned") then the 
-        camera setting should be cleared until it is reattached. 
-        Conversely, upon reattachement, the node should inherit the 
-        camera setting of its parent.
+        camera setting is cleared. Upon reattachement, the node
+        inherits the camera setting of its parent.
       - The setCamera function should take as a parameter an action 
         to execute if the camera entity is deleted. These actions 
         could include DELETE_ALL_CHILDREN (e.g. useful for 

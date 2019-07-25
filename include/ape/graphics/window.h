@@ -6,6 +6,7 @@
 #include <ape/graphics/color.h>
 #include <ape/graphics/sprite.h>
 #include <ape/core/event.h>
+#include <ape/core/transform.h>
 
 namespace ape {
     namespace window {
@@ -27,7 +28,7 @@ namespace ape {
          * Renders a sprite to the screen.
          * @param sprite The sprite component to render.
          */
-        void draw(Sprite& sprite);
+        void draw(Sprite& sprite, Transform& transform);
 
         /**
          * Displays any rendered entities in the window.

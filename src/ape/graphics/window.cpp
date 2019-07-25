@@ -2,6 +2,7 @@
 #include <ape/graphics/detail/window_detail.h>
 #include <iostream>
 #include <ape/core/detail/rect_detail.h>
+#include <ape/core/transform.h>
 
 #include <SDL2/SDL_image.h>
 
@@ -48,10 +49,10 @@ namespace ape {
             SDL_RenderClear(detail::renderer);
         }
 
-        void draw(Sprite& sprite) {
+        void draw(Sprite& sprite, Transform& transform) {
             auto texturePtr = TextureStore::getTexture(sprite.textureId);
             // TODO: SDL_RenderCopyEx
-            SDL_Rect dstRect; // TODO: Calculate from scaling
+            SDL_Rect dstRect; // TODO: Calculate from scaling, transformation etc.
             SDL_Rect rect = ape::detail::convertRect(sprite.textureRect);
             SDL_RenderCopy(detail::renderer, texturePtr, 
                            &rect, NULL);

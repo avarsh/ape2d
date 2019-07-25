@@ -8,9 +8,27 @@ namespace ape {
     struct Transform : Component<Transform> {
         Transform(entity_t entity) : Component<Transform>(entity) {}
 
+        Transform(const Transform& other) : Component<Transform>(other.entity) { 
+            position = other.position;
+            velocity = other.velocity;
+            rotation = other.rotation;
+            scale = other.scale;
+        }
+
+        Transform& operator=(const Transform& other) {
+            entity = other.entity;
+            position = other.position;
+            velocity = other.velocity;
+            rotation = other.rotation;
+            scale = other.scale;
+
+            return *this;
+        };
+
         Vec2f position;
         Vec2f velocity;
         float rotation {0.f};
+        float scale {1.0f};
     };
 }
 
