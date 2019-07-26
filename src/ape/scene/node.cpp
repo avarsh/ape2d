@@ -13,6 +13,7 @@ namespace ape {
     void Node::addChild(entity_t child) {
         children.push_back(child);
         auto& childNode = world::getComponent<Node>(child);
+        std::cout << "Child " << child << " added to node: " << entity << std::endl;
         childNode.parent = entity;
         childNode.propogateCamera(this->camera);
     }

@@ -13,7 +13,7 @@ namespace ape {
         SDL_Surface *surface = IMG_Load(source.c_str());
         if (surface == NULL) {
             std::cout << "Cannot load image from source: " << source
-                      << " - SDL_Error: " << IMG_GetError() << std::endl;
+                      << " - IMG_Error: " << IMG_GetError() << std::endl;
             return TEXTURE_INVALID;
         } else {
             SDL_Texture *texturePtr = SDL_CreateTextureFromSurface(window::detail::renderer, surface);

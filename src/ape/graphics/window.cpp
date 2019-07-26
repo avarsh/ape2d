@@ -33,7 +33,8 @@ namespace ape {
 
                     /* TODO: Allow more image types */
                     int flags = IMG_INIT_PNG;
-                    if (!(IMG_Init(flags) & flags)) {
+                    int res = IMG_Init(flags);
+                    if (!(res & flags)) {
                         std::cout << "PNG loading could not be initialized. SDL_Error: "
                                   << SDL_GetError() << std::endl;
                         /* TODO: Upon failure, abort and clean up all resources */

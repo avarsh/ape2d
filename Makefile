@@ -64,3 +64,11 @@ structure:
 	mkdir $(OBJ)/graphics
 	mkdir $(OBJ)/scene 
 	mkdir $(LIB)/shared
+
+rebuild:
+	make clean 
+	make structure
+	make ape_shared 
+	sudo make install 
+	make platformer
+	./bin/platformer

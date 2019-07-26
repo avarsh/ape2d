@@ -4,6 +4,7 @@
 int main() {
     // Initialise the engine
     ape::init();
+    ape::window::create(800, 600, "Platformer");
 
     // Load a character
     ape::texture_id_t playerTexture = ape::TextureStore::loadTexture("./assets/Player/p1_stand.png");

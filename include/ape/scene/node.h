@@ -51,7 +51,7 @@ namespace ape {
          */
         Transform& getGlobalTransform();
     private:
-        entity_t parent;
+        entity_t parent {ENTITY_INVALID};
         /* TODO: If no camera is set, use the default camera */
         entity_t camera {ENTITY_INVALID};
         std::list<entity_t> children;

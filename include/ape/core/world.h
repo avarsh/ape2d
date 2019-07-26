@@ -7,6 +7,7 @@
 #include <ape/core/event.h>
 
 #include <cassert>
+#include <iostream>
 
 namespace ape {
 

@@ -5,6 +5,8 @@ namespace ape {
     using hi_res_clock = std::chrono::high_resolution_clock;
 
     void init() {
+        world::setDefaultComponents<Transform>();
+
         graphics::detail::init();
         scene::detail::init();
         window::windowCreated.addCallback([&](Vec2i size){
@@ -12,7 +14,7 @@ namespace ape {
         });
 
         detail::currentTime = hi_res_clock::now();
-        world::setDefaultComponents<Transform>();
+        detail::running = true;
     }
 
     bool isRunning() {
