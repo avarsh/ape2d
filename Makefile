@@ -33,6 +33,14 @@ scene.o: $(wildcard $(SRC)/scene/*.cpp) $(wildcard $(INCLUDE)/scene/*.h) \
 	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/scene/*.cpp) $(wildcard $(SRC)/scene/detail/*.cpp)
 	mv *.o ./$(OBJ)/scene/
 
+input.o: $(wildcard $(SRC)/input/*.cpp) $(wildcard $(INCLUDE)/input/*.h)
+	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/input/*.cpp)
+	mv *.o ./$(OBJ)/input/
+
+file.o: $(wildcard $(SRC)/file/*.cpp) $(wildcard $(INCLUDE)/file/*.h)
+	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/file/*.cpp)
+	mv *.o ./$(OBJ)/file/
+
 ape.o: $(wildcard $(SRC)/*.cpp) $(wildcard $(INCLUDE)/*.h) \
 			$(wildcard $(SRC)/detail/*.cpp) $(wildcard $(INCLUDE)/detail/*.h)
 	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/*.cpp) $(wildcard $(SRC)/detail/*.cpp)
@@ -63,6 +71,8 @@ structure:
 	mkdir $(OBJ)/core
 	mkdir $(OBJ)/graphics
 	mkdir $(OBJ)/scene 
+	mkdir $(OBJ)/file 
+	mkdir $(OBJ)/input
 	mkdir $(LIB)/shared
 
 rebuild:

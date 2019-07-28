@@ -2,6 +2,7 @@
 #define APE_CONSTANTS_H
 
 #include <cstdint>
+#include <string>
 
 namespace ape {
     using entity_t      = uint32_t;

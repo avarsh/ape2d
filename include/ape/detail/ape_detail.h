@@ -4,6 +4,8 @@
 #include <chrono>
 #include <vector>
 #include <functional>
+#include <SDL2/SDL.h>
+#include <queue>
 
 namespace ape {
     namespace detail {

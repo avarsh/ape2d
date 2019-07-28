@@ -46,9 +46,14 @@ namespace ape {
         extern Event<Vec2i> windowCreated;
 
         /**
-         * Event which is emitted when the window is resized.
+         * Event which is queued when the window is resized.
          */
         extern Event<Vec2i> windowResized;
+
+        /**
+         * Event which is queued when the window is closed.
+         */
+        extern Event<> windowClosed;
     }
 }
 

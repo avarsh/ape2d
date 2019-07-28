@@ -50,6 +50,19 @@ namespace ape {
          * Retrieves the global transformation of the node.
          */
         Transform& getGlobalTransform();
+
+        /**
+         * Sets the node to be positioned relative to the window
+         * instead of its parent. Useful for UI elements.
+         * @param setting Whether the node is positioned relative to the window.
+         */
+        void setRelativeToWindow(bool setting);
+
+        /**
+         * Retrieves whether the node is positioned relative to the window.
+         * @return Whether the node is relative to the window.
+         */
+        bool getRelativeToWindow();
     private:
         entity_t parent {ENTITY_INVALID};
         /* TODO: If no camera is set, use the default camera */
@@ -58,6 +71,7 @@ namespace ape {
 
         void propogateCamera(entity_t camera);
         Transform globalTransform;
+        bool relativeToWindow;
     };
 
     namespace scene {

@@ -55,7 +55,6 @@ namespace ape {
                 func.second(arguments...);
             }
         }
-
     private:
         using FuncTypePair = std::pair<int, FuncType>;
         std::vector<FuncTypePair> callbackFunctions;

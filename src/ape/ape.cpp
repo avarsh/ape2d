@@ -34,33 +34,34 @@ namespace ape {
         while(SDL_PollEvent(&event) > 0) {
             switch(event.type) {
                 case SDL_QUIT:
+                    window::windowClosed.emit();
                     detail::running = false;
                     break;
             }
+        }
 
-            while (detail::accumulator >= detail::dt) {
-                for (const auto& func : detail::simulationCode) {
-                    func(detail::dt);
-                }
-
-                for (auto& transform : Transform::getPool()) {
-                    Vec2f velocity;
-                    if (world::entityHasComponent<Node>(transform.getEntity())) {
-                        velocity = world::getComponent<Node>(transform.getEntity()).getGlobalTransform().velocity;
-                    } else {
-                        velocity = transform.velocity;
-                    }
-
-                    transform.position += transform.velocity * detail::dt;
-                }
-
-                detail::accumulator -= detail::dt;
+        while (detail::accumulator >= detail::dt) {
+            for (const auto& func : detail::simulationCode) {
+                func(detail::dt);
             }
 
-            window::clear();
-            scene::detail::render();
-            window::display();
+            for (auto& transform : Transform::getPool()) {
+                Vec2f velocity;
+                if (world::entityHasComponent<Node>(transform.getEntity())) {
+                    velocity = world::getComponent<Node>(transform.getEntity()).getGlobalTransform().velocity;
+                } else {
+                    velocity = transform.velocity;
+                }
+
+                transform.position += transform.velocity * detail::dt;
+            }
+
+            detail::accumulator -= detail::dt;
         }
+
+        window::clear();
+        scene::detail::render();
+        window::display();
     }
 
     void addSimulationCode(std::function<void(double dt)> function) {
