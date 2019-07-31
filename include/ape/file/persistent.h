@@ -12,16 +12,37 @@ namespace ape {
     /* TODO: Have the game folder as a constant configured
        on initialisation */
 
+    /**
+     * Class for persistent on-disk storage of game data in JSON format.
+     */
     class Persistent {
         public:
+            /**
+             * Constructs class instance from path to file.
+             * @param path String representing on disk path to file.
+             */
             Persistent(const std::string& path);
 
+            /**
+             * Loads data from file.
+             */
             void load();
-            void save();
 
-            virtual void toJson() = 0;
-            virtual void fromJson() = 0;
+            /**
+             * Saves class data into file.
+             */
+            void save();
         protected:
+            /**
+             * Virtual method to allow derived classes to convert class data into JSON format.
+             */
+            virtual void toJson() = 0;
+
+            /**
+             * Virtual method to allow derived classes to parse data from JSON format.
+             */
+            virtual void fromJson() = 0;
+
             std::string path;
             json jsonObj;
             std::fstream fileStream;

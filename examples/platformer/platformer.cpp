@@ -20,6 +20,8 @@ int main() {
     auto& root = ape::world::getComponent<ape::Node>(ape::scene::ROOT_NODE);
     root.addChild(player);
 
+    // Set up keybinds
+
     while (ape::isRunning()) {
         ape::update();
     }
