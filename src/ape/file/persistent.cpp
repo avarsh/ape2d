@@ -14,7 +14,7 @@ namespace ape {
             fileStream >> jsonObj;
             this->fromJson();
         } catch (const std::fstream::failure& err) {
-            std::cout << "Error opening file: " << err.what << std::endl;
+            std::cout << "Error opening file: " << err.what() << std::endl;
         }
 
         fileStream.close();
@@ -26,7 +26,7 @@ namespace ape {
             fileStream << jsonObj;
             this->toJson();
         } catch (const std::fstream::failure& err) {
-            std::cout << "Error opening file: " << err.what << std::endl;
+            std::cout << "Error opening file: " << err.what() << std::endl;
         }
 
         fileStream.close();

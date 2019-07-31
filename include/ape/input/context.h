@@ -67,15 +67,15 @@ namespace ape {
              * @return True if c1 has lower priority than c2, false otherwise.
              */
             static bool compare(Context& c1, Context& c2);
+
+        protected:
+            virtual void toJson();
+            virtual void fromJson();
         private:
             std::unordered_map<std::string, std::function<bool(InputEventInfo)>> callbacks;
             std::unordered_map<InputEventInfo, std::string, InputEventInfoHasher, InputEventInfoEquality> keymaps;
             int priority;
             bool active;
-            
-        protected:
-            void toJSON();
-            void fromJSON();
         };
 
         extern std::priority_queue<Context, std::vector<Context>, std::function<bool(Context&, Context&)>> globalContextChain;

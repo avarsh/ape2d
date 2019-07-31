@@ -46,10 +46,10 @@ ape.o: $(wildcard $(SRC)/*.cpp) $(wildcard $(INCLUDE)/*.h) \
 	$(CC) -I$(HEADER) -I$(DEPS) $(CFLAGS) $(SHAREDFLAGS) -c $(wildcard $(SRC)/*.cpp) $(wildcard $(SRC)/detail/*.cpp)
 	mv *.o ./$(OBJ)/
 
-ape_shared: core.o graphics.o scene.o ape.o
-	$(CC) -shared -o $(LIB)/shared/libape2d.so $(wildcard $(OBJ)/*.o) $(wildcard $(OBJ)/core/*.o) $(wildcard $(OBJ)/graphics/*.o) $(wildcard $(OBJ)/scene/*.o) $(LINKER_FLAGS)
+ape_shared: core.o graphics.o scene.o ape.o file.o input.o
+	$(CC) -shared -o $(LIB)/shared/libape2d.so $(wildcard $(OBJ)/*.o) $(wildcard $(OBJ)/core/*.o) $(wildcard $(OBJ)/graphics/*.o) $(wildcard $(OBJ)/scene/*.o) $(wildcard $(OBJ)/file/*.o) $(wildcard $(OBJ)/input/*.o) $(LINKER_FLAGS)
 
-platformer: examples/platformer.cpp
+platformer: examples/platformer/platformer.cpp
 	$(CC) -I$(HEADER) -L./lib/shared $(CFLAGS) -o $(BIN)/platformer examples/platformer/platformer.cpp -lSDL2 -lape2d 
 
 install:

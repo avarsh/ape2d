@@ -13,9 +13,9 @@ namespace ape {
         };
 
         enum MouseButton {
-            LEFT,
-            MIDDLE,
-            RIGHT
+            BTN_LEFT,
+            BTN_MIDDLE,
+            BTN_RIGHT
         };
 
         enum class EventType {

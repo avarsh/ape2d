@@ -35,7 +35,7 @@ namespace ape {
             return callbacks[keymaps[info]](info);
         }
 
-        void Context::toJSON() {
+        void Context::toJson() {
             this->jsonObj.clear();
             for (const auto& pair : keymaps) {
                 std::string inputType;
@@ -78,77 +78,77 @@ namespace ape {
         }
 
         /* TODO: Input validity checks & parsing errors */
-        void Context::fromJSON() {
+        void Context::fromJson() {
             keymaps.clear();
             /* TODO: Clean this up, reduce repetition */
             for (const auto& pair : jsonObj.items()) {
                 InputEventInfo info;
                 bool error = false;
-                if (pair.key == "actions") {
+                if (pair.key() == "actions") {
                     info.inputType = InputType::ACTION;
-                    for (const auto& actionPair : jsonObj[pair.key].items()) {
-                        if (actionPair.key == "keydown") {
+                    for (const auto& actionPair : jsonObj[pair.key()].items()) {
+                        if (actionPair.key() == "keydown") {
                             info.eventType = EventType::KEY_DOWN;
-                            for (const auto& values : jsonObj[pair.key][actionPair.key].items()) {
-                                info.info.keyCode = std::stoi(values.key);
-                                keymaps[info] = values.value;
+                            for (const auto& values : jsonObj[pair.key()][actionPair.key()].items()) {
+                                info.info.keyCode = static_cast<KeyCode>(std::stoi(values.key()));
+                                keymaps[info] = values.value();
                             }
-                        } else if (actionPair.key == "keyup") {
+                        } else if (actionPair.key() == "keyup") {
                             info.eventType = EventType::KEY_UP;
-                            for (const auto& values : jsonObj[pair.key][actionPair.key].items()) {
-                                info.info.keyCode = std::stoi(values.key);
-                                keymaps[info] = values.value;
+                            for (const auto& values : jsonObj[pair.key()][actionPair.key()].items()) {
+                                info.info.keyCode = static_cast<KeyCode>(std::stoi(values.key()));
+                                keymaps[info] = values.value();
                             }
-                        } else if (actionPair.key == "mousedown") {
+                        } else if (actionPair.key() == "mousedown") {
                             info.eventType = EventType::MOUSE_DOWN;
-                            for (const auto& values : jsonObj[pair.key][actionPair.key].items()) {
-                                info.info.mouseButton = std::stoi(values.key);
-                                keymaps[info] = values.value;
+                            for (const auto& values : jsonObj[pair.key()][actionPair.key()].items()) {
+                                info.info.mouseButton = static_cast<MouseButton>(std::stoi(values.key()));
+                                keymaps[info] = values.value();
                             }
-                        } else if (actionPair.key == "mouseup") {
+                        } else if (actionPair.key() == "mouseup") {
                             info.eventType = EventType::MOUSE_UP;
-                            for (const auto& values : jsonObj[pair.key][actionPair.key].items()) {
-                                info.info.mouseButton = std::stoi(values.key);
-                                keymaps[info] = values.value;
+                            for (const auto& values : jsonObj[pair.key()][actionPair.key()].items()) {
+                                info.info.mouseButton = static_cast<MouseButton>(std::stoi(values.key()));
+                                keymaps[info] = values.value();
                             }
                         } else {
-                            std::cout << "Context load error: Action event " << actionPair.key << " not supported.\n";
+                            std::cout << "Context load error: Action event " << actionPair.key() << " not supported.\n";
                             error = true;
                         }
                     }
-                } else if (pair.key == "states") {
+                } else if (pair.key() == "states") {
                     info.inputType = InputType::STATE;
-                    for (const auto& statePair : jsonObj[pair.key].items()) {
-                        if (statePair.key == "keypressed") {
+                    for (const auto& statePair : jsonObj[pair.key()].items()) {
+                        if (statePair.key() == "keypressed") {
                             info.eventType = EventType::KEY_PRESS;
-                            for (const auto& values : jsonObj[pair.key][statePair.key].items()) {
-                                info.info.keyCode = std::stoi(values.key);
-                                keymaps[info] = values.value;
+                            for (const auto& values : jsonObj[pair.key()][statePair.key()].items()) {
+                                info.info.keyCode = static_cast<KeyCode>(std::stoi(values.key()));
+                                keymaps[info] = values.value();
                             }
-                        } else if (statePair.key == "mousedown") {
+                        } else if (statePair.key() == "mousedown") {
                             info.eventType = EventType::MOUSE_DOWN;
-                            for (const auto& values : jsonObj[pair.key][statePair.key].items()) {
-                                info.info.mouseButton = std::stoi(values.key);
-                                keymaps[info] = values.value;
+                            for (const auto& values : jsonObj[pair.key()][statePair.key()].items()) {
+                                info.info.mouseButton = static_cast<MouseButton>(std::stoi(values.key()));
+                                keymaps[info] = values.value();
                             }
-                        } else if (statePair.key == "mouseup") {
+                        } else if (statePair.key() == "mouseup") {
                             info.eventType = EventType::MOUSE_UP;
-                            for (const auto& values : jsonObj[pair.key][statePair.key].items()) {
-                                info.info.mouseButton = std::stoi(values.key);
-                                keymaps[info] = values.value;
+                            for (const auto& values : jsonObj[pair.key()][statePair.key()].items()) {
+                                info.info.mouseButton = static_cast<MouseButton>(std::stoi(values.key()));
+                                keymaps[info] = values.value();
                             }
                         } else {
-                            std::cout << "Context load error: State event " << statePair.key << " not supported.\n";
+                            std::cout << "Context load error: State event " << statePair.key() << " not supported.\n";
                             error = true;
                         }
                     }
-                } else if (pair.key == "ranges") {
+                } else if (pair.key() == "ranges") {
                     info.inputType = InputType::RANGE;
-                    for (const auto& rangePair : jsonObj[pair.key].items()) {
+                    for (const auto& rangePair : jsonObj[pair.key()].items()) {
                         std::cout << "Context load error: Ranges not supported yet.\n";
                     }
                 } else {
-                    std::cout << "Context load error: Input type " << pair.key << " not supported.\n";
+                    std::cout << "Context load error: Input type " << pair.key() << " not supported.\n";
                     error = true;
                 }
             }

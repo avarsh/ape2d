@@ -7,6 +7,7 @@
 #include <ape/graphics/texture_store.h>
 #include <ape/graphics/window.h>
 #include <ape/core/world.h>
+#include <ape/input/context.h>
 
 namespace ape {
     /**

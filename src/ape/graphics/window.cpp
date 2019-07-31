@@ -10,6 +10,7 @@ namespace ape {
     namespace window {
         Event<Vec2i> windowCreated;
         Event<Vec2i> windowResized;
+        Event<> windowClosed;
 
         void create(int width, int height, std::string title) {
             detail::dims = Vec2i(width, height);
