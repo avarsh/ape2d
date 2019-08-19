@@ -1,24 +1,39 @@
 #ifndef APE_H
 #define APE_H
 
-#include <ape/core/world.h>
-#include <ape/graphics/graphics.h>
-#include <ape/graphics/window.h>
-#include <ape/core/transform.h>
-#include <ape/scene/scene.h>
-#include <ape/utils/frame_counter.h>
-#include <ape/input/input_system.h>
 #include <ape/detail/ape_detail.h>
-
-#include <chrono>
+#include <ape/graphics/graphics.h>
+#include <ape/scene/detail/scene_detail.h>
+#include <ape/graphics/texture_store.h>
+#include <ape/graphics/window.h>
+#include <ape/core/world.h>
+#include <ape/input/context.h>
 
 namespace ape {
-    namespace engine {
-        void init();
-        void update();
-        void addSimulationCode(std::function<void(double dt)> function);
-        bool isRunning();
-    }
+    /**
+     * Initializes the engine.
+     */
+    void init();
+
+    /**
+     * Whether the game is running.
+     */
+    bool isRunning();
+
+    /**
+     * Updates the game.
+     */
+    void update();
+
+    /**
+     * Adds code to be executed during the physics simulation.
+     */
+    void addSimulationCode(std::function<void(double dt)> function);
+
+    /**
+     * Cleans up all systems and resources
+     */
+    void destroy();
 }
 
-#endif // APE_H
+#endif 

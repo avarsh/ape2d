@@ -1,18 +1,17 @@
-#ifndef WINDOW_DETAIL_H
-#define WINDOW_DETAIL_H
+#ifndef APE_WINDOW_DETAIL_H
+#define APE_WINDOW_DETAIL_H
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
+#include <SDL2/SDL.h>
 #include <ape/core/vec2.h>
 
 namespace ape {
     namespace window {
         namespace detail {
-            extern GLFWwindow* window; // The actual window instance
-            extern Vec2i dimensions; // Window dimensions
+            extern SDL_Window *window;
+            extern SDL_Renderer *renderer;
+            extern Vec2i dims;
         }
     }
 }
 
-#endif // WINDOW_DETAIL_H
+#endif

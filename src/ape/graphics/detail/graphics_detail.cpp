@@ -1,50 +1,41 @@
 #include <ape/graphics/detail/graphics_detail.h>
+#include <ape/graphics/window.h>
+#include <iostream>
+#include <SDL2/SDL_hints.h>
 
 namespace ape {
     namespace graphics {
         namespace detail {
+            void init() {
+                if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+                    std::cout << "SDL could not be initialized! SDL_Error: " 
+                              << SDL_GetError() << std::endl;
+                }
 
-            Shader instancedShader;
-            std::vector<Sprite*> spriteList;
-            std::set<int> renderedTextures;
-            glm::mat4 projectionMatrix;
-            std::vector<std::shared_ptr<Renderer>> rendererStore;
-
-            void errorCallbackFunc(int errorCode, const char* description) {
-                std::cout << "\n[ERROR] [" << errorCode << "] [GLFW]\n";
-                std::cout << "======================================\n";
-                std::cout << description << "\n";
+                /* TODO: Remember that if the user wants to have custom
+                   OpenGL calls then they need to call SDL_RenderFlush. We
+                   should expose this call somehow. */
+                SDL_SetHint(SDL_HINT_RENDER_BATCHING, "1");
             }
 
-            void setViewport(FloatRect viewport, Vec2i displayArea) {
-
-                glViewport(
-                    viewport.origin.x * displayArea.x,
-                    viewport.origin.y * displayArea.y,
-                    viewport.size.x * displayArea.x,
-                    viewport.size.y * displayArea.y
-                );
+            void pushRendererColor(SDL_Renderer *renderer) {
+                Color color;
+                SDL_GetRenderDrawColor(renderer, &color.red, &color.green, &color.blue,  &color.alpha);
+                rendererColStack.push_front(color);
             }
 
-            void setProjection(FloatRect viewport, Vec2i displayArea,
-                               Vec2f translation, Vec2f scale, float rotation) {
-                projectionMatrix = glm::ortho(0.f,
-                    (float)(viewport.size.x * displayArea.x),
-                    (float)(viewport.size.y * displayArea.y),
-                    0.0f, -1.0f, 1.0f);
-
-                projectionMatrix = glm::scale(projectionMatrix,
-                    glm::vec3(scale.x, scale.y, 0)); // Scales the image
-                projectionMatrix = glm::translate(projectionMatrix,
-                    glm::vec3(translation.x, translation.y, 0)); // Translates the image
-                projectionMatrix = glm::rotate(projectionMatrix, rotation,
-                    glm::vec3(1, 0, 0)); // Rotates the image
-
-                // TODO: only set shader if it is not currently in use
-                instancedShader.use();
-                GLint projection = instancedShader.getUniformLocation("projection");
-                glUniformMatrix4fv(projection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+            void popRendererColor(SDL_Renderer *renderer) {
+                Color color = rendererColStack.front();
+                SDL_SetRenderDrawColor(renderer, color.red, color.green, color.blue, color.alpha);
+                rendererColStack.pop_front();
             }
+
+            void destroy() {
+                window::destroy();
+                SDL_Quit();
+            }
+
+            std::deque<Color> rendererColStack;
         }
     }
 }

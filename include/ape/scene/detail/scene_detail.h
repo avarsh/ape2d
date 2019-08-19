@@ -1,18 +1,18 @@
-#ifndef SCENE_DETAIL_H
-#define SCENE_DETAIL_H
+#ifndef APE_SCENE_DETAIL_H
+#define APE_SCENE_DETAIL_H
 
-#include <ape/core/world.h>
+#include <ape/core/constants.h>
 #include <ape/scene/node.h>
-#include <ape/graphics/graphics.h>
+
 
 namespace ape {
     namespace scene {
         namespace detail {
-            void traverse(entity_t entity);
-
-            extern Vec2i displayArea;
+            void init();
+            void render();
+            void traverse(const entity_t entity);
         }
     }
 }
 
-#endif // SCENE_DETAIL_H
+#endif

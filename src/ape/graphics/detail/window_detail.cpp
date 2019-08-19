@@ -3,8 +3,9 @@
 namespace ape {
     namespace window {
         namespace detail {
-            GLFWwindow* window = nullptr;
-            Vec2i dimensions;
+            SDL_Window *window = nullptr;
+            SDL_Renderer *renderer = nullptr;
+            Vec2i dims;
         }
     }
 }

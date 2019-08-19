@@ -1,5 +1,5 @@
-#ifndef VEC2_H
-#define VEC2_H
+#ifndef APE_VEC2_H
+#define APE_VEC2_H
 
 #include <type_traits>
 
@@ -105,4 +105,4 @@ namespace ape {
     using Vec2u = Vec2<unsigned int>;
 }
 
-#endif // VEC2_H
+#endif

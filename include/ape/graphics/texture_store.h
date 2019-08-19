@@ -1,22 +1,54 @@
-#ifndef TEXTURE_STORE_H
-#define TEXTURE_STORE_H
+#ifndef APE_TEXTURE_STORE_H
+#define APE_TEXTURE_STORE_H
 
+#include <cstdint>
 #include <string>
-#include <ape/graphics/texture.h>
-#include <ape/core/event.h>
-#include <ape/graphics/detail/texture_store_detail.h>
-#include <SOIL2.h>
 #include <memory>
 #include <vector>
+#include <SDL2/SDL.h>
+#include <ape/core/event.h>
+#include <ape/core/vec2.h>
 
 namespace ape {
-    namespace textureStore {
-        int loadTexture(const std::string& source);
-        void deleteTexture(int ID);
-        std::shared_ptr<Texture> getTexture(int ID);
 
-        extern Event<int> textureLoaded;
-    }
+    using texture_id_t = int32_t;
+    extern texture_id_t TEXTURE_INVALID;
+
+    /**
+     * Loads and stores textures.
+     */
+    class TextureStore {
+    public:
+        /**
+         * Loads a texture at a given path.
+         * @param source The string file path.
+         * @return An id for the texture.
+         */
+        static texture_id_t loadTexture(const std::string& source);
+
+        /**
+         * Retrieves the dimensions of a texture.
+         * @param id The texture identifier.
+         * @return A vector containing the dimensions.
+         */
+        static Vec2i getTextureSize(const texture_id_t id);
+
+        /**
+         * Frees all textures.
+         */
+        static void freeTextures();
+
+        /**
+         * Retrieves a pointer to a texture given an id.
+         * @param id The id of the texture
+         * @return A smart pointer to the texture.
+         */
+        static SDL_Texture* getTexture(texture_id_t id);
+
+        static Event<texture_id_t> textureLoaded;
+    private:
+        static std::vector<SDL_Texture*> textures;
+    };
 }
 
-#endif // TEXTURE_STORE_H
+#endif

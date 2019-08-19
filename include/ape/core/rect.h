@@ -1,5 +1,5 @@
-#ifndef RECT_H
-#define RECT_H
+#ifndef APE_RECT_H
+#define APE_RECT_H
 
 #include <ape/core/vec2.h>
 
@@ -18,6 +18,8 @@ namespace ape {
             origin = Vec2<T>();
             size = Vec2<T>();
         }
+
+        /* TODO: Copy constructors */
 
         /**
          * Creates a rect with specified position and size.
@@ -40,4 +42,4 @@ namespace ape {
     using FloatRect = Rect<float>;
 }
 
-#endif // RECT_H
+#endif

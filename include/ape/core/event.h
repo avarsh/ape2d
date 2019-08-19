@@ -1,33 +1,50 @@
-#ifndef EVENT_H
-#define EVENT_H
+#ifndef APE_EVENT_H
+#define APE_EVENT_H
 
 #include <functional>
-#include <vector>
+#include <utility>
+#include <cstdint>
 
 namespace ape {
+    using func_id_t = uint32_t;
 
     /**
      * A simple base class for a generic event type.
      * An event supports any number of arguments. Callbacks
      * can be added to it, which will be executed upon
-     * emit
+     * emitting. Callbacks do not receive any priority.
      */
     template <typename... Args>
     class Event {
     public:
-        typedef std::function<void(Args...)> FuncType;
+        using FuncType = std::function<void(Args...)>;
 
         /**
          * Allows subscribers to add a function to be executed
          * when the event is emitted.
          * @param function A std::function that matches the event's signature.
+         * @return An identifier for the callback function.
          */
-        void addCallback(FuncType function) {
-            callbackFunctions.push_back(function);
+        func_id_t addCallback(FuncType function) {
+            func_id_t id = idCounter++;
+            callbackFunctions.push_back(std::make_pair(id, function));
+            return id;
         }
 
-        // TODO
-        // removeCallback();
+        /**
+         * Removes a callback function from the event, effectively 
+         * unsubscribing from the event.
+         * @param id The identifier for the callback function.
+         */
+        void removeCallback(func_id_t id) {
+            for (int i = 0; i < callbackFunctions.size(); i++) {
+                if (callbackFunctions[i].first == id) {
+                    std::swap(callbackFunctions[i], callbackFunctions.back());
+                    callbackFunctions.pop_back();
+                    return; 
+                }
+            }
+        }
 
         /**
          * Allows the event publisher to emit the event.
@@ -35,58 +52,17 @@ namespace ape {
          */
         void emit(Args... arguments) {
             for(auto func : callbackFunctions) {
-                func(arguments...);
+                func.second(arguments...);
             }
         }
-
     private:
-        std::vector<FuncType> callbackFunctions;
+        using FuncTypePair = std::pair<int, FuncType>;
+        std::vector<FuncTypePair> callbackFunctions;
+        static func_id_t idCounter;
     };
 
-    /*
-     * This is a prototype for a queue based event system
-     * Similarly to how components work, each event holds a queue of
-     * its own event instances. Events can be pushed directly to this queue.
-     * However, to make sure events are polled in order, the event manager
-     * class is used. The main idea is that the actual event queue just holds
-     * the eventId, so a system can do something like:
-     *
-     *      void receiveEvent(int eventId) {
-     *          if(eventId == InterestingEvent::Id) {
-     *              InterestingEvent event = InterestingEvent::Queue.front();
-     *              // Do interesting things
-     *          }
-     *      }
-     *
-     * Things which need to actually be thought about:
-     *  -> What pattern to use - publisher/subscriber, and how to actually notify
-     *     systems of events, and how systems can subscribe to events
-     *  -> Encapsulating pushing the event on to the event's queue AND the event
-     *     Id queue.
-     *  -> The use case - I intended this for applications where no immediate
-     *     response is required (i.e. the state of the world is allowed to
-     *     change). One case could be polling input and window events.
-     *
-     * Update: An early input system has been implemented, but for cases
-     * such as continuous states, this sort of system could be used, e.g.
-     * to keep the key in a state until a released event is seen.
-     */
-
-    /*
-    template<class DerivedEvent>
-    class QueuedEvent {
-    public:
-        static int Id;
-        static std::queue<DerivedEvent> Queue;
-    };
-
-    class EventManager {
-    public:
-        void pushEvent(int eventId);
-    private:
-        std::queue<int> eventQueue;
-    };
-    */
+    template <typename... Args>
+    func_id_t Event<Args...>::idCounter = 0;
 }
 
-#endif // EVENT_H
+#endif 

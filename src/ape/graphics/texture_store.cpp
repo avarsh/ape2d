@@ -1,69 +1,57 @@
 #include <ape/graphics/texture_store.h>
+#include <ape/graphics/detail/window_detail.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
 #include <cassert>
 
-
 namespace ape {
-    namespace textureStore {
-        Event<int> textureLoaded;
 
-        int loadTexture(const std::string& source) {
-            GLuint textureID;
+    texture_id_t TEXTURE_INVALID = -1;
 
-            glActiveTexture(GL_TEXTURE0); // Set active texture to texture 0
-            glGenTextures(1, &textureID); // Generate texture id
-
-            glBindTexture(GL_TEXTURE_2D, textureID); // Bind the texture
-
-            Vec2i textureSize;
-            // Load image from path
-            unsigned char* image = SOIL_load_image(source.c_str(), &textureSize.x,
-                                                   &textureSize.y, 0, SOIL_LOAD_RGBA);
-
-            // TODO: Move this into a logger class
-            if(image == NULL) {
-                std::cout << "\n[ERROR] [SOIL2]\n";
-                std::cout << "===============\n";
-                std::cout << "  Error when loading image from file: " << source << "\n";
-                std::cout << "  " << SOIL_last_result() << "\n";
-
-                return -1;
+    texture_id_t TextureStore::loadTexture(const std::string& source) {
+        SDL_Surface *surface = IMG_Load(source.c_str());
+        if (surface == NULL) {
+            std::cout << "Cannot load image from source: " << source
+                      << " - IMG_Error: " << IMG_GetError() << std::endl;
+            return TEXTURE_INVALID;
+        } else {
+            SDL_Texture *texturePtr = SDL_CreateTextureFromSurface(window::detail::renderer, surface);
+            if (!texturePtr) {
+                std::cout << "Unable to create texture from source: " << source 
+                          << " - SDL_Error: " << SDL_GetError() << std::endl;
+                SDL_FreeSurface(surface);
+                return TEXTURE_INVALID;
             }
 
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureSize.x, textureSize.y, 0,
-                         GL_RGBA, GL_UNSIGNED_BYTE, image);
-
-            // TODO: Move this into a setSmooth() function
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-            glGenerateMipmap(GL_TEXTURE_2D);
-
-            SOIL_free_image_data(image);
-
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-            glBindTexture(GL_TEXTURE_2D, 0); // Unbind
-
-            Vec2f fTextureSize(textureSize.x, textureSize.y);
-            auto texture = std::make_shared<Texture>(textureID, fTextureSize);
-            detail::textureList.push_back(texture);
-
-            int ID = detail::textureList.size() - 1;
-            textureLoaded.emit(ID);
-
-            return ID;
+            texture_id_t id = textures.size();
+            textures.push_back(texturePtr);
+            textureLoaded.emit(id);
+            return id;
         }
 
-        std::shared_ptr<Texture> getTexture(int ID) {
-            assert(ID >= 0 && ID < detail::textureList.size());
+        return TEXTURE_INVALID;
+    }
 
-            return detail::textureList[ID];
-        }
+    Vec2i TextureStore::getTextureSize(texture_id_t id) {
+        assert(id >= 0 && id < textures.size());
+        Vec2i dims;
+        SDL_QueryTexture(textures[id], NULL, NULL, &dims.x, &dims.y);
+        return dims;
+    }
 
-        void deleteTexture(int ID) {
+    SDL_Texture* TextureStore::getTexture(texture_id_t id) {
+        assert(id >= 0 && id < textures.size());
+        return textures[id];
+    }
 
+    void TextureStore::freeTextures() {
+        for (SDL_Texture* texturePtr : textures) {
+            SDL_DestroyTexture(texturePtr);
         }
     }
+
+    Event<texture_id_t> TextureStore::textureLoaded;
+    std::vector<SDL_Texture*> TextureStore::textures;
+    
 }

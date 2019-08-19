@@ -1,148 +1,72 @@
 #include <ape/scene/node.h>
-#include <iterator>
-#include <algorithm>
+#include <ape/core/world.h>
+#include <ape/core/debug.h>
 
 namespace ape {
-
-    void Node::setParent(entity_t parent) {
-        if(world::entityHasComponent<Node>(parent)) {
-            this->parent = parent;
-            auto& parentNode = world::getComponent<Node>(parent);
-            // Class instances are allowed to access private data
-            // from any other class instance...
-            parentNode.children.push_back(this->entity);
-            index = parentNode.children.size() - 1;
-
-            if(parent != scene::rootNode) {
-                this->cameraEntity = parentNode.cameraEntity;
-                this->rootParent = parentNode.rootParent;
-            } else {
-                cameraEntity = scene::defaultCamera;
-                this->rootParent = this->entity;
-            }
-        } else {
-            // Warning or exception here
-        }
+    namespace scene {
+        entity_t ROOT_NODE = ENTITY_INVALID;
     }
 
-    void Node::setIndex(int index) {
-        if(this->index == index) {
-            return;
-        }
+    Node::Node(entity_t entity) : Component<Node>(entity), 
+        globalTransform(ENTITY_INVALID) { }
 
+    void Node::addChild(entity_t child) {
+        children.push_back(child);
+        auto& childNode = world::getComponent<Node>(child);
+        childNode.parent = entity;
+        childNode.propogateCamera(this->camera);
+    }
+
+    void Node::detach() {
         auto& parentNode = world::getComponent<Node>(parent);
-        int oldIndex = this->index;
-        this->index = index;
-
-        auto iter = parentNode.children.begin();
-        // Lists have bidirectional iterators so we can only
-        // increment them.
-        std::advance(iter, oldIndex);
-
-        int lastIndex = parentNode.children.size() - 1;
-        if(index > lastIndex) {
-            // The index is out of bounds but not to worry!
-            // Perhaps the user wanted to do this on purpose
-            // We shall simply create invalid entities and fill the list with
-            // them; then, when the user adds any other node to the parent,
-            // if the index is occupied by an invalid entity, then we can
-            // replace it with the appropriate node
-            for(int i = 0; i < (index - lastIndex); i++) {
-                parentNode.children.push_back(ENTITY_INVALID);
-            }
-
-            // Now we can erase the node at the old index
-            parentNode.children.erase(iter);
-            // and add it to the end
-            parentNode.children.push_back(this->entity);
-        } else {
-            parentNode.children.erase(iter);
-            auto newIter = parentNode.children.begin();
-            std::advance(newIter, index);
-            parentNode.children.insert(newIter, this->entity);
-        }
-
-        // If the node is shifted to a lower index, then we need to add one to
-        // the index of all nodes from (index + 1) -> oldIndex (since
-        // index < oldIndex) If the node is shifted to a higher index, then we
-        // need to subtract one from the index of all nodes from
-        // oldIndex -> (index - 1) (since index > oldIndex).
-
-        auto childIter = parentNode.children.begin();
-
-        int start = index < oldIndex ? index + 1 : oldIndex;
-        int end = index < oldIndex ? oldIndex : index - 1;
-        auto move = [index, oldIndex](auto val) {
-            if(index < oldIndex) val++;
-            else val--;
-        };
-
-        std::advance(childIter, start);
-        for(int i = start; i <= end; i++) {
-            if(*childIter != ENTITY_INVALID) {
-                move(world::getComponent<Node>(*childIter).index);
-            }
-            move(childIter);
-        }
+        parentNode.children.remove(entity);
+        camera = ENTITY_INVALID;
     }
 
-    void Node::detachFromParent() {
-        if(parent == ENTITY_INVALID) {
-            return;
-        }
-
-        auto& parentNode = world::getComponent<Node>(parent);
-        auto iter = parentNode.children.begin();
-        std::advance(iter, index);
-        auto newIter = parentNode.children.erase(iter);
-
-        // Shift all the other nodes back
-        // TODO: make this better by starting at the current node's index
-        for(auto child : parentNode.children) {
-            if(child != ENTITY_INVALID) {
-                auto& node = world::getComponent<Node>(child);
-                if(node.index > this->index) {
-                    node.index--;
-                }
-            }
-        }
-
-        parent = ENTITY_INVALID;
-    }
-
-    int Node::getIndex() {
-        return index;
-    }
-
-    entity_t Node::getParent() {
+    const entity_t Node::getParent() const {
         return parent;
     }
 
-    std::list<entity_t>& Node::getChildren() {
-        return children;
+    const entity_t Node::getCamera() const {
+        return camera;
     }
 
     void Node::setCamera(entity_t camera) {
-        // TODO: log some kind of error here
-        if(parent == ENTITY_INVALID) {
-            return;
-        }
+        ASSERT_MSG (parent == scene::ROOT_NODE, "Node is not direct child of root.");
+        propogateCamera(camera);
+        /* TODO: Allow some kind of configuration if the camera is deleted.
+           Right now we just set it to invalid, aka default camera.
+         */
 
-        if(parent != scene::rootNode) {
-            return;
-        }
-
-        cameraEntity = camera;
-        // Recursively set camera for all children
-        for(auto& node : world::getComponentList<Node>()) {
-            if(node.rootParent == this->entity) {
-                node.cameraEntity = camera;
+        /* TODO: Consider some kind of entity storage class which handles
+            entity deletion safely. */
+        world::entityDeleted.addCallback([camera, this](entity_t entity){
+            if (entity == camera) {
+                this->setCamera(ENTITY_INVALID);
             }
-        }
-
+        });
     }
 
-    entity_t Node::getCamera() {
-        return cameraEntity;
+    void Node::propogateCamera(entity_t camera) {
+        this->camera = camera;
+        for (const auto& child : children) {
+            world::getComponent<Node>(child).propogateCamera(camera);
+        }
+    }
+
+    const std::list<entity_t>& Node::getChildren() const {
+        return this->children;
+    };
+    
+    Transform& Node::getGlobalTransform() {
+        return globalTransform;
+    }
+
+    void Node::setRelativeToWindow(bool setting) {
+        relativeToWindow = setting;
+    }
+
+    bool Node::getRelativeToWindow() {
+        return relativeToWindow;
     }
 }

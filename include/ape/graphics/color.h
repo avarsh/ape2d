@@ -1,7 +1,7 @@
-#ifndef COLOR_H
-#define COLOR_H
+#ifndef APE_COLOR_H
+#define APE_COLOR_H
 
-#include <glad/glad.h>
+#include <cstdint>
 
 namespace ape {
 
@@ -10,25 +10,16 @@ namespace ape {
      * a colour and stores them in a normalized format (between 0 and 1). Only
      * supports opaque colours.
      */
-
-    // This may not be the best option for storing the colours; maybe have
-    // functions to get the actual colour and the normalized colour and store
-    // both?
     struct Color {
         Color() { }
 
-        Color(int red, int green, int blue) {
-            this->red = red * divisor;
-            this->green = green * divisor;
-            this->blue = blue * divisor;
-        }
+        Color(int red, int green, int blue, int alpha=255) : 
+            red(red), green(green), blue(blue), alpha(alpha) { }
 
-        GLfloat red {1.f};
-        GLfloat green {1.f};
-        GLfloat blue {1.f};
-
-    private:
-        GLfloat divisor {1.f / 255.f};
+        uint8_t red {255};
+        uint8_t green {255};
+        uint8_t blue {255};
+        uint8_t alpha {255};
     };
 
     /**
@@ -47,4 +38,4 @@ namespace ape {
     };
 }
 
-#endif // COLOR_H
+#endif

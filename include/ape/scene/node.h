@@ -1,49 +1,82 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef APE_NODE_H
+#define APE_NODE_H
 
 #include <ape/core/component.h>
-#include <ape/core/world.h>
-#include <ape/scene/camera.h>
+#include <ape/core/transform.h>
 #include <list>
 
 namespace ape {
+    /**
+     * Node component for use in the scene graph. Holds the parent,
+     * a camera to be associated with, children and the type of node. 
+     */
+    struct Node : public Component<Node> {
+        Node(entity_t entity);
 
-    // Forward declaration
-    namespace scene {
-        extern entity_t rootNode;
-    }
+        /**
+         * Add an entity as a child of the entity which holds this node.
+         * @param child The entity to add as a child.
+         */
+        void addChild(entity_t child);
 
-    class Node : public Component<Node> {
-    public:
-        Node(entity_t entity) : Component<Node>(entity) {}
+        /**
+         * Detaches this entity from its parent.
+         */
+        void detach();
 
-        Node(entity_t entity, entity_t parent) : Component<Node>(entity) {
-            setParent(parent);
-        }
+        /**
+         * Retrieves the parent entity.
+         * @return The parent entity.
+         */
+        const entity_t getParent() const;
 
-        void setParent(entity_t parent);
-        void setIndex(int index);
-        int getIndex();
-        void detachFromParent();
-        entity_t getParent();
-        std::list<entity_t>& getChildren();
+        /**
+         * Retrieves the associated camera for this entity.
+         * @return The camera entity.
+         */
+        const entity_t getCamera() const;
 
+        /**
+         * Sets a camera entity to be associated with this node.
+         */
         void setCamera(entity_t camera);
-        entity_t getCamera();
 
-        int traversingChild {-1};
+        /**
+         * Retrieves a read-only reference to the children.
+         */
+        const std::list<entity_t>& getChildren() const;
+
+        /**
+         * Retrieves the global transformation of the node.
+         */
+        Transform& getGlobalTransform();
+
+        /**
+         * Sets the node to be positioned relative to the window
+         * instead of its parent. Useful for UI elements.
+         * @param setting Whether the node is positioned relative to the window.
+         */
+        void setRelativeToWindow(bool setting);
+
+        /**
+         * Retrieves whether the node is positioned relative to the window.
+         * @return Whether the node is relative to the window.
+         */
+        bool getRelativeToWindow();
     private:
-        // We're using lists here because the nodes may be moving
-        // around within the scene quite a lot - for example, when
-        // moving layers around, destroying items etc.
-        // Lists have constant time insertion and deletion
-        std::list<entity_t> children;
         entity_t parent {ENTITY_INVALID};
-        entity_t cameraEntity {ENTITY_INVALID};
-        entity_t rootParent {ENTITY_INVALID};
-        int index;
+        /* TODO: If no camera is set, use the default camera */
+        entity_t camera {ENTITY_INVALID};
+        std::list<entity_t> children;
+
+        void propogateCamera(entity_t camera);
+        Transform globalTransform;
+        bool relativeToWindow;
     };
 
+    namespace scene {
+        extern entity_t ROOT_NODE;
+    }
 }
 
-#endif // NODE_H
+#endif 

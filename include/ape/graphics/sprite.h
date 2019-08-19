@@ -1,44 +1,23 @@
-#ifndef SPRITE_H
-#define SPRITE_H
+#ifndef APE_SPRITE_H
+#define APE_SPRITE_H
 
-#include <ape/core/world.h>
+#include <ape/core/component.h>
+#include <SDL2/SDL.h>
 #include <ape/graphics/texture_store.h>
 #include <ape/core/rect.h>
 
 namespace ape {
-
+    /**
+     * Sprite component for sprites. Holds a texture id and information
+     * on how to process the texture.
+     */
     class Sprite : public Component<Sprite> {
     public:
+        Sprite(entity_t entity);
 
-        Sprite(entity_t entity) :
-            Component<Sprite>(entity) { }
-        Sprite(entity_t entity, int textureID) :
-            Component<Sprite>(entity)
-            { setTextureID(textureID); }
-
-        void setTextureID(int ID);
-        int getTextureID();
-
-        Vec2f getSize();
-
-        void setSize(Vec2f newSize);
-
-        void scaleBy(Vec2f scaleFactor);
-        void scaleBy(float scaleFactor);
-
-        void setSubRect(int left, int top, int width, int height);
-        void setSubRect(IntRect subRect);
-        IntRect getSubRect();
-        FloatRect getNormalizedSubRect();
-    private:
-        int textureID;
-        //Vec2f size;
-        Vec2f textureSize;
-        Vec2f scaleFactor {Vec2f(1.0f, 1.0f)};
-
-        IntRect subRect;
-        FloatRect normalizedRect;
+        texture_id_t textureId;
+        IntRect textureRect;
     };
 }
 
-#endif // SPRITE_H
+#endif 

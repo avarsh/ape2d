@@ -1,46 +1,43 @@
 #include <ape/core/world.h>
+#include <cassert>
 
 namespace ape {
     namespace world {
-
+        
         Event<entity_t> entityDeleted;
 
         entity_t createEntity() {
-            if(detail::freeList.size() > 0) {
-                entity_t entity = detail::freeList.front();
+            entity_t entity;
+
+            if (detail::freeList.size() > 0) {
+                entity = detail::freeList.front();
                 detail::freeList.pop();
 
-                detail::entityData[entity - 1].alive = true;
-                detail::entityData[entity - 1].next = getNext(entity);
-                for(const auto& func : detail::initiationFuncs) {
-                    func(entity);
-                }
+                assert(entity != ENTITY_INVALID);
 
-                return entity;
+                detail::getData(entity).alive = true;
+                detail::getData(entity).version++;
+            } else {
+                entity = detail::entityCounter++;
+                detail::entityData.push_back(detail::EntityData());
             }
 
-            entity_t entity = detail::counter++;
-
-            detail::entityData.push_back(detail::EntityData());
-            for(const auto& func : detail::initiationFuncs) {
+            for (const auto& func : detail::initiationFuncs) {
                 func(entity);
             }
-            detail::entityData[entity - 1].next = getNext(entity);
+
+            return entity;            
+        }
+
+        entity_t createEntityFromBlueprint(blueprint_t blueprint) {
+            assert(blueprint < detail::blueprints.size());
+            
+            entity_t entity = createEntity();
+
+            //detail::blueprints[blueprint]
+            /* TODO: Rest of this function */
 
             return entity;
-        }
-
-        bool entityIsAlive(entity_t entity) {
-            return detail::entityData[entity - 1].alive;
-        }
-
-        entity_t createEntityFromBlueprint(int blueprint) {
-            assert(blueprint < detail::blueprints.size());
-            entity_t newEntity = createEntity();
-
-            detail::blueprints[blueprint](newEntity);
-
-            return newEntity;
         }
 
         void deleteEntity(entity_t entity) {
@@ -50,99 +47,56 @@ namespace ape {
         }
 
         void refresh() {
-            while(detail::killList.size() > 0) {
+            while (detail::killList.size() > 0) {
                 auto entity = detail::killList.front();
 
-                detail::entityData[entity - 1].alive = false;
-
-                entity_t prev = detail::entityData[entity - 1].previous;
-                entity_t next = detail::entityData[entity - 1].next;
-
-                if(prev != ENTITY_INVALID) {
-                    detail::entityData[prev - 1].next = next;
-                }
-
-                if(next != ENTITY_INVALID) {
-                    detail::entityData[next - 1].previous = prev;
-                }
+                detail::getData(entity).alive = false;
 
                 // Iterate over every component type
-                for(int i = 1; i < detail::currentBitsize; i = i << 1) {
-                    // Check if the entity has that component type
-                    if((detail::entityData[entity - 1].mask&i) == i) {
-                        // If it does, find out where it is located
-                        int index = detail::entityData[entity - 1].indices[i];
-                        entity_t entityToUpdate = detail::componentInstances[i]->remove(index);
+                for (int i = 1; i < detail::currentBitsize; i++){
+                    // Check that the entity has that component
+                    if ((detail::getData(entity).mask & i) == i) {
+                        int index = detail::getData(entity).indices[i];
+                        entity_t toUpdate = detail::componentInstances[i]->detach(index);
 
-                        if(entityToUpdate != ENTITY_INVALID) {
-                            detail::entityData[entityToUpdate - 1].indices[i] = index;
+                        if (toUpdate != ENTITY_INVALID) {
+                            detail::getData(toUpdate).indices[i] = index;
                         }
                     }
                 }
 
-                detail::entityData[entity - 1].mask = 0;
+                detail::getData(entity).mask = 0;
                 detail::freeList.push(entity);
-
                 detail::killList.pop();
             }
         }
 
-        entity_t getFirstEntity() {
-            return getNext(ENTITY_INVALID);
-        }
-
-        entity_t getNext(entity_t currentEntity) {
+        entity_t getNext(entity_t current) {
             bool nextIsAlive = false;
-            entity_t nextAlive = ENTITY_INVALID;
+            entity_t next = ENTITY_INVALID;
             while(!nextIsAlive) {
-                if(currentEntity == detail::entityData.size()) {
+                if (current == detail::entityData.size()) {
                     nextIsAlive = true;
                 } else {
-                    currentEntity++;
-                    if(detail::entityData[currentEntity - 1].alive) {
-                        nextAlive = currentEntity;
+                    current++;
+                    if (detail::entityData[current - 1].alive) {
+                        next = current;
                         nextIsAlive = true;
                     }
                 }
             }
 
-            return nextAlive;
+            return next;
         }
 
-        void addTag(entity_t entity, std::string tag) {
-            if(!entityHasComponent<detail::TagComponent>(entity)) {
-                addComponent<detail::TagComponent>(entity);
+        entity_t getFirstEntity() {
+            entity_t first = 0;
+            while (first == ENTITY_INVALID) {
+                first = getNext(first);
             }
 
-            int tagKey = detail::getTagKey(tag);
-            getComponent<detail::TagComponent>(entity).tags[tagKey] = tag;
+            return first;
         }
-
-        std::vector<entity_t> getTaggedEntities(std::string tag) {
-            std::vector<entity_t> entities;
-            int tagKey = detail::getTagKey(tag);
-            for(auto& tagComponent : getComponentList<detail::TagComponent>()) {
-                if(tagComponent.tags.find(tagKey) != tagComponent.tags.end()) {
-                    entities.push_back(tagComponent.getEntity());
-                }
-            }
-
-            return entities;
-        }
-
-        bool entityHasTag(entity_t entity, std::string tag) {
-            if(!entityHasComponent<detail::TagComponent>(entity)) {
-                return false;
-            }
-
-            int tagKey = detail::getTagKey(tag);
-            auto& tagComponent = getComponent<detail::TagComponent>(entity);
-            if(tagComponent.tags.find(tagKey) == tagComponent.tags.end()) {
-                return false;
-            }
-
-            return true;
-        }
-
     }
+    
 }

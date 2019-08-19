@@ -1,66 +1,84 @@
 #include <ape/graphics/window.h>
+#include <ape/graphics/detail/window_detail.h>
+#include <iostream>
+#include <ape/core/detail/rect_detail.h>
+#include <ape/core/transform.h>
+
+#include <SDL2/SDL_image.h>
 
 namespace ape {
     namespace window {
-
-        Event<Vec2i> createdEvent;
+        Event<Vec2i> windowCreated;
+        Event<Vec2i> windowResized;
+        Event<> windowClosed;
 
         void create(int width, int height, std::string title) {
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-            // TODO: allow for window creation hints
-            //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+            detail::dims = Vec2i(width, height);
+            /* TODO: Allow flags to be changed? */
+            detail::window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, 
+                                              SDL_WINDOWPOS_CENTERED, detail::dims.x, 
+                                              detail::dims.y, SDL_WINDOW_SHOWN);
+            if (detail::window == nullptr) {
+                std::cout << "Window could not be created. SDL_Error: " 
+                          << SDL_GetError() << std::endl;
+                /* TODO: Upon failure, abort and clean up all resources */
+            } else {
+                detail::renderer = SDL_CreateRenderer(detail::window, -1, SDL_RENDERER_ACCELERATED);
+                if (detail::renderer == nullptr) {
+                    std::cout << "Renderer could not be created. SDL_Error: "
+                              << SDL_GetError() << std::endl;
+                    
+                    /* TODO: Upon failure, abort and clean up all resources */
+                } else {
+                    SDL_SetRenderDrawColor(detail::renderer, 0xFF, 0xFF, 0xFF, 0xFF ); 
 
-            detail::dimensions = Vec2i(width, height);
+                    /* TODO: Allow more image types */
+                    int flags = IMG_INIT_PNG;
+                    int res = IMG_Init(flags);
+                    if (!(res & flags)) {
+                        std::cout << "PNG loading could not be initialized. SDL_Error: "
+                                  << SDL_GetError() << std::endl;
+                        /* TODO: Upon failure, abort and clean up all resources */
+                    }
+                }
 
-            // Create the window
-            detail::window = glfwCreateWindow(detail::dimensions.x,
-                                      detail::dimensions.y, title.c_str(),
-                                      nullptr, nullptr);
-
-            glfwMakeContextCurrent(detail::window);
-            gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-
-            glfwSwapInterval(0); // Turn off vsync by default
-
-            // Set the viewport to be the same size as the window initially
-            int viewWidth, viewHeight;
-            glfwGetFramebufferSize(detail::window, &viewWidth, &viewHeight);
-
-            createdEvent.emit(Vec2i(viewWidth, viewHeight));
+                windowCreated.emit(detail::dims);
+            }
         }
 
-        // TODO: capture an attempt at the window closing in an event, by using
-        // glfwSetWindowCloseCallback
-        bool isOpen() {
-            return !glfwWindowShouldClose(detail::window);
+        void clear(Color color) {
+            SDL_SetRenderDrawColor(detail::renderer, color.red, color.green, color.blue, color.alpha);
+            SDL_RenderClear(detail::renderer);
         }
 
-        void setTitle(const std::string& title) {
-            glfwSetWindowTitle(detail::window, title.c_str());
-        }
+        void draw(Sprite& sprite, Transform& transform) {
+            auto texturePtr = TextureStore::getTexture(sprite.textureId);
+            // TODO: SDL_RenderCopyEx
+            SDL_Rect dstRect;
+            dstRect.x = transform.position.x; /* TODO: Subtract camera position */
+            dstRect.y = transform.position.y;
+            dstRect.w = sprite.textureRect.size.x; /* TODO: Viewport scaling, transform scale */
+            dstRect.h = sprite.textureRect.size.y;
+            SDL_Rect rect = ape::detail::convertRect(sprite.textureRect);
+            SDL_RenderCopyEx(detail::renderer, texturePtr, 
+                           &rect, &dstRect,0, NULL, /* TODO: Center of sprite */ 
+                     SDL_FLIP_NONE); /* TODO: Flip */
 
-        void setVerticalSync(bool setting) {
-            int interval = setting ? 1 : 0;
-            glfwSwapInterval(interval);
-        }
-
-        void clear(Color backgroundColor) {
-            glClearColor(backgroundColor.red, backgroundColor.green,
-                         backgroundColor.blue, 1.f);
-            glClear(GL_COLOR_BUFFER_BIT);
         }
 
         void display() {
-            glfwSwapBuffers(detail::window);
+            SDL_RenderPresent(detail::renderer);
         }
 
         void destroy() {
-            if(detail::window != nullptr) {
-                glfwDestroyWindow(detail::window);
+            if (detail::window != nullptr) {
+                SDL_DestroyRenderer(detail::renderer);
+                detail::renderer = nullptr;
+                SDL_DestroyWindow(detail::window);
+                detail::window = nullptr;
             }
+
+            IMG_Quit();
         }
     }
 }

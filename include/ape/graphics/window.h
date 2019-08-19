@@ -1,15 +1,12 @@
-#ifndef WINDOW_H
-#define WINDOW_H
+#ifndef APE_WINDOW_H
+#define APE_WINDOW_H
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
-#include <ape/graphics/detail/window_detail.h>
-
+#include <SDL2/SDL.h>
 #include <string>
-#include <ape/core/event.h>
 #include <ape/graphics/color.h>
-#include <ape/core/vec2.h>
+#include <ape/graphics/sprite.h>
+#include <ape/core/event.h>
+#include <ape/core/transform.h>
 
 namespace ape {
     namespace window {
@@ -20,33 +17,21 @@ namespace ape {
          * @param title  The string which will be the title of the window.
          */
         void create(int width, int height, std::string title);
-
-        /**
-         * Checks whether the window is still open.
-         * @return A boolean value indicating if the window is open.
-         */
-        bool isOpen();
-
-        /**
-         * Sets the title of the window.
-         * @param title The string to be set as the title.
-         */
-        void setTitle(const std::string& title);
-
-        /**
-         * Enables or disables vertical sync, also known as v-sync.
-         * @param setting Boolean dictating if it is on or off.
-         */
-        void setVerticalSync(bool setting);
-
+        
         /**
          * Clears the window background colour.
-         * @param backgroundColor The colour to set the background to.
+         * @param color The colour to set the background to.
          */
-        void clear(Color backgroundColor = Color(0, 0, 0));
+        void clear(Color color = Color(0, 0, 0));
 
         /**
-         * Swaps the buffers so that any rendered entities are displayed.
+         * Renders a sprite to the screen.
+         * @param sprite The sprite component to render.
+         */
+        void draw(Sprite& sprite, Transform& transform);
+
+        /**
+         * Displays any rendered entities in the window.
          */
         void display();
 
@@ -56,15 +41,20 @@ namespace ape {
         void destroy();
 
         /**
-         * Event emitted when the window is resized.
+         * Event which is emitted when the window is first created.
          */
-        extern Event<Vec2i> resizedEvent;
+        extern Event<Vec2i> windowCreated;
 
         /**
-         * Event emitted when the window is first created.
+         * Event which is queued when the window is resized.
          */
-        extern Event<Vec2i> createdEvent;
+        extern Event<Vec2i> windowResized;
+
+        /**
+         * Event which is queued when the window is closed.
+         */
+        extern Event<> windowClosed;
     }
 }
 
-#endif // WINDOW_H
+#endif 
