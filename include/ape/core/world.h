@@ -66,6 +66,20 @@ namespace ape {
         entity_t getFirstEntity();
 
         /**
+         * Tags an entity with the given tag for easy retrieval.
+         * @param entity         The entity to tag.
+         * @param tag            The tag to use.
+         */
+        void tagEntity(entity_t entity, int tag);
+
+        /**
+         * Retrieves all entities with a specific tag.
+         * @param tag            The tag to match with.
+         * @return               A vector of entities with the tag.
+         */
+        const std::set<entity_t>& getEntitiesWithTag(int tag);
+
+        /**
          * Updates the world so that deleted entities can be cleaned up.
          */
         void refresh();

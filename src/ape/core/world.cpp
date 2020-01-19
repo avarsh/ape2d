@@ -49,21 +49,32 @@ namespace ape {
         void refresh() {
             while (detail::killList.size() > 0) {
                 auto entity = detail::killList.front();
+                auto& data = detail::getData(entity);
 
-                detail::getData(entity).alive = false;
+                data.alive = false;
 
                 // Iterate over every component type
                 for (int i = 1; i < detail::currentBitsize; i++){
                     // Check that the entity has that component
-                    if ((detail::getData(entity).mask & i) == i) {
-                        int index = detail::getData(entity).indices[i];
+                    if ((data.mask & i) == i) {
+                        int index = data.indices[i];
                         entity_t toUpdate = detail::componentInstances[i]->detach(index);
 
                         if (toUpdate != ENTITY_INVALID) {
-                            detail::getData(toUpdate).indices[i] = index;
+                            data.indices[i] = index;
                         }
                     }
                 }
+
+                // Remove the entity from all tags
+                for (int tag : data.tags) {
+                    // Find the tag mapping and remove the entity
+                    if (detail::tagMapping.find(tag) != detail::tagMapping.end()) { 
+                        detail::tagMapping[tag].erase(entity);
+                    }
+                }
+
+                data.tags.clear();
 
                 detail::getData(entity).mask = 0;
                 detail::freeList.push(entity);
@@ -96,6 +107,15 @@ namespace ape {
             }
 
             return first;
+        }
+
+        void tagEntity(entity_t entity, int tag) {
+            detail::tagMapping[tag].insert(entity);
+            detail::getData(entity).tags.insert(tag);
+        }
+
+        const std::set<entity_t>& getEntitiesWithTag(int tag) {
+            return detail::tagMapping[tag];
         }
     }
     

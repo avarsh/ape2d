@@ -11,6 +11,7 @@ namespace ape {
             std::vector<std::function<void(entity_t)>> blueprints;
             std::vector<std::function<void(entity_t)>> initiationFuncs;
             std::unordered_map<int, std::unique_ptr<ape::detail::BaseComponent>> componentInstances;
+            std::unordered_map<int, std::set<entity_t>> tagMapping;
 
             entity_t entityCounter = 1;
             int currentBitsize = 1;

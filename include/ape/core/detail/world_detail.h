@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 #include <unordered_map>
+#include <set>
 #include <memory>
 #include <cassert>
 #include <ape/core/constants.h>
@@ -25,6 +26,7 @@ namespace ape {
                 uint32_t mask {0};
                 bool alive {true};
                 uint32_t version {0};
+                std::set<int> tags;
             };
 
             // Data for each entity in the world
@@ -48,6 +50,8 @@ namespace ape {
 
             extern std::vector<std::function<void(entity_t)>> blueprints;
             extern std::vector<std::function<void(entity_t)>> initiationFuncs;
+
+            extern std::unordered_map<int, std::set<entity_t>> tagMapping;
 
             // The current bitsize, shifted left by 1 for every component.
             // Note that components cannot have a handle of 0.
