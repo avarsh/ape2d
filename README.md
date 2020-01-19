@@ -12,6 +12,17 @@ the entity-component-system (ECS) architecture. In practice this works in the fo
 This system allows for far greater flexibility and control when compared to a traditional OOP approach in which game entities are classes with properties, and
 where large inheritance trees can create confusion.
 
+# Building and Installation
+
+Ensure that you have `meson` installed, as well as the `SDL2` and `SDL2_image` dependencies. Then, run:
+
+```
+meson setup build
+cd build
+ninja
+ninja install
+```
+
 # Current and Proposed Features
 
  The engine is currently being rewritten with an SDL2 based renderer and a more advanced input and scene system.

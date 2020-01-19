@@ -1,5 +1,5 @@
 #define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+#include <deps/catch.hpp>
 #include <ape/core/world.h>
 
 using namespace ape;
