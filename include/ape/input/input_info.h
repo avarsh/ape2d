@@ -72,6 +72,7 @@ namespace ape {
                     inputTypeId = 5 << 20;
                 }
 
+                // Debugging information
                 std::cout << "Input ID: " << inputTypeId << ", Event ID: " 
                     << eventTypeId << ", Info: " << info.info.raw << "\n";
 
