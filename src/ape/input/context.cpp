@@ -6,19 +6,20 @@ namespace ape {
 
         context_t createContext(uint32_t priority) {
             context_t handle = detail::contextCounter++;
+            detail::Context context;
+            context.handle = handle;
+            context.priority = priority;
+            context.active = true;
+            std::list<detail::Context>::iterator itemPosition = detail::contextChain.end();
 
             for (auto iter = detail::contextChain.begin(); iter != detail::contextChain.end(); iter++) {
-                if (iter->priority < priority) {
-                    detail::Context context;
-                    context.handle = handle;
-                    context.priority = priority;
-                    context.active = true;
-                    auto itemIter = detail::contextChain.insert(iter, context);
-                    detail::contextMap[handle] = itemIter;
+                if (iter->priority < priority) {        
+                    itemPosition = iter;
                     break;
                 }
             }
 
+            detail::contextMap[handle] = detail::contextChain.insert(itemPosition, context);
             return handle;
         }
         

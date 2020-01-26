@@ -43,6 +43,8 @@ namespace ape {
             }
         }
 
+        input::detail::dispatch();
+
         while (detail::accumulator >= detail::dt) {
             for (const auto& func : detail::simulationCode) {
                 func(detail::dt);

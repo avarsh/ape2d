@@ -25,7 +25,7 @@ namespace ape {
                 uint32_t priority;
                 context_t handle;
                 input_map_t inputMap;
-                bool active;
+                bool active {true};
             };
 
             /* A counter to generate handles */
