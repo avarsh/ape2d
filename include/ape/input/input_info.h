@@ -29,6 +29,7 @@ namespace ape {
         struct InputEventInfo {
             InputType inputType;
             EventType eventType;
+            bool consumed {false};
 
             union {
                 KeyCode keyCode;

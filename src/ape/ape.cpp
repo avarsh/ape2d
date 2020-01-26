@@ -1,5 +1,6 @@
 #include <ape/ape.h>
 
+
 namespace ape {
 
     using hi_res_clock = std::chrono::high_resolution_clock;
@@ -18,7 +19,6 @@ namespace ape {
     }
 
     bool isRunning() {
-        /* TODO: Stop running when window closes */
         return detail::running;
     }
 
@@ -36,6 +36,9 @@ namespace ape {
                 case SDL_QUIT:
                     window::windowClosed.emit();
                     detail::running = false;
+                    break;
+                default:
+                    input::detail::handle(event);
                     break;
             }
         }

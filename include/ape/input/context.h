@@ -8,11 +8,9 @@
 #include <ape/input/key_codes.h>
 #include <ape/input/input_info.h>
 #include <ape/file/persistent.h>
+#include <ape/input/detail/context_detail.h>
 
 namespace ape {
-
-    using context_t = uint32_t;
-
     namespace input {
 
         /* @brief Creates a context and returns a handle to it. 

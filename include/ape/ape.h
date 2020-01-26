@@ -8,6 +8,7 @@
 #include <ape/graphics/window.h>
 #include <ape/core/world.h>
 #include <ape/input/context.h>
+#include <ape/input/detail/input_detail.h>
 
 namespace ape {
     /**

@@ -21,26 +21,26 @@ int main() {
     root.addChild(player);
 
     // Set up keybinds
-    ape::input::Context mainContext = ape::input::Context(1, "./examples/platformer/contexts/main.json");
-    mainContext.load();
-
-    mainContext.addCallback("jump", [](ape::input::InputEventInfo info){
-        std::cout << "Jump!\n";
-
-        return false;
-    });
-
-    mainContext.addCallback("move_left", [](ape::input::InputEventInfo info){
-        std::cout << "Left!\n";
-
-        return false;
-    });
-
-    mainContext.addCallback("move_right", [](ape::input::InputEventInfo info){
-        std::cout << "Right!\n";
-
-        return false;
-    });
+//    ape::input::Context mainContext = ape::input::Context(1, "./examples/platformer/contexts/main.json");
+//    mainContext.load();
+//
+//    mainContext.addCallback("jump", [](ape::input::InputEventInfo info){
+//        std::cout << "Jump!\n";
+//
+//        return false;
+//    });
+//
+//    mainContext.addCallback("move_left", [](ape::input::InputEventInfo info){
+//        std::cout << "Left!\n";
+//
+//        return false;
+//    });
+//
+//    mainContext.addCallback("move_right", [](ape::input::InputEventInfo info){
+//        std::cout << "Right!\n";
+//
+//        return false;
+//    });
 
     while (ape::isRunning()) {
         ape::update();
