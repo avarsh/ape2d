@@ -31,6 +31,7 @@ namespace ape::input::detail {
             auto event = eventQueue.front();
 
             for (auto& context : contextChain) {
+                InputEventInfoHasher hasher;
                 if (context.active && 
                         context.inputMap.count(event) == 1) {
                     auto& response = context.inputMap[event];

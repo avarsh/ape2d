@@ -30,11 +30,12 @@ int main() {
     info.info.keyCode = KeyCode::W;
     ape::input::addCallback(mainContext, info, 
         [](ape::input::InputEventInfo info) {
-            std::cout << (int)info.eventType << std::endl;
+            std::cout << "Hello!" << std::endl;
 
             return false;
         }
     );
+    
 //    ape::input::Context mainContext = ape::input::Context(1, "./examples/platformer/contexts/main.json");
 //    mainContext.load();
 //

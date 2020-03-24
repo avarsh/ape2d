@@ -30,7 +30,7 @@ namespace ape {
              * there is no removal functionality.
              */
             ASSERT_MSG(context >= 0 && context < detail::contextCounter, "Invalid context provided.");
-            detail::contextMap[context]->inputMap.insert({info, std::move(callback)});
+            detail::contextMap[context]->inputMap[info] = std::move(callback);
         }
 
         void setActive(context_t context, bool setting) {

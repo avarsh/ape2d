@@ -16,8 +16,7 @@ namespace ape {
             using input_map_t = std::unordered_map<
                                     InputEventInfo, 
                                     std::function<bool(InputEventInfo)>,
-                                    InputEventInfoHasher, 
-                                    InputEventInfoEquality
+                                    InputEventInfoHasher
                                 >;
 
 

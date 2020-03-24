@@ -4,6 +4,12 @@
 #include <ape/input/key_codes.h>
 #include <iostream>
 
+// Note that as a result of this the 
+// engine is restricted to 64 bit systems
+#define HASH_SIZE 64
+#define INPUT_T_POS 59
+#define EVENT_T_POS 51
+
 namespace ape {
     namespace input {
         enum class InputType {
@@ -36,6 +42,12 @@ namespace ape {
                 MouseButton mouseButton;
                 int32_t raw;
             } info;
+
+            bool operator==(const InputEventInfo& other) const {
+                return (inputType == other.inputType) &&
+                       (eventType == other.eventType) &&
+                       (info.raw  == other.info.raw);
+            }
         };
 
         struct InputEventInfoHasher {
@@ -46,48 +58,40 @@ namespace ape {
                    [31]     ->   ->   ->  ->   ->   ->   [0]
                     1000 0000 0000 0000 0000 0000 0000 0000
 
-                    - Bits 31 - 28 identify the input type.
-                    - Bits 27 - 20 identifies the event type.
-                    - Bits 19 - 0 represent the event information.
+                    - Bits 63 - 60 identify the input type.
+                    - Bits 59 - 52 identifies the event type.
+                    - Bits 51 - 0 represent the event information.
                 */
             
-                int32_t inputTypeId;
+                int64_t inputTypeId;
+                int64_t val;
                 if (info.inputType == InputType::ACTION) {
-                    inputTypeId = 1 << 28;
+                    val = 1UL;
                 } else if (info.inputType == InputType::STATE) {
-                    inputTypeId = 2 << 28;
+                    val = 2UL;
                 } else if (info.inputType == InputType::RANGE) {
-                    inputTypeId = 3 << 28;
+                    val = 3UL;
                 }
 
-                int32_t eventTypeId;
+                inputTypeId = val << INPUT_T_POS;
+
+                int64_t eventTypeId;
                 if (info.eventType == EventType::KEY_DOWN) {
-                    inputTypeId = 1 << 20;
+                    val = 1UL;
                 } else if (info.eventType == EventType::KEY_UP) {
-                    inputTypeId = 2 << 20;
+                    val = 2UL;
                 } else if (info.eventType == EventType::KEY_PRESS) {
-                    inputTypeId = 3 << 20;
+                    val = 3UL;
                 } else if (info.eventType == EventType::MOUSE_DOWN) {
-                    inputTypeId = 4 << 20;
+                     val = 4UL;
                 } else if (info.eventType == EventType::MOUSE_UP) {
-                    inputTypeId = 5 << 20;
+                    val = 5UL;
                 }
 
-                // Debugging information
-                std::cout << "Input ID: " << inputTypeId << ", Event ID: " 
-                    << eventTypeId << ", Info: " << info.info.raw << "\n";
+                eventTypeId = val << EVENT_T_POS;
 
                 std::size_t hash = (inputTypeId ^ eventTypeId) ^ info.info.raw;
-                std::cout << "Hash: " << hash << "\n";
                 return hash;
-            }
-        };
-
-        struct InputEventInfoEquality {
-            std::size_t operator()(const InputEventInfo& info1, const InputEventInfo& info2) const {
-                return (info1.inputType == info2.inputType) &&
-                       (info1.eventType == info2.eventType) &&
-                       (info1.info.raw == info2.info.raw);
             }
         };
     }
