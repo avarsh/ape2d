@@ -4,91 +4,96 @@
 #include <ape/input/key_codes.h>
 #include <iostream>
 
-namespace ape {
-    namespace input {
-        enum class InputType {
-            ACTION,
-            STATE,
-            RANGE
-        };
+// Note that as a result of this the 
+// engine is restricted to 64 bit systems
+#define HASH_SIZE 64
+#define INPUT_T_POS 59
+#define EVENT_T_POS 51
 
-        enum MouseButton {
-            BTN_LEFT,
-            BTN_MIDDLE,
-            BTN_RIGHT
-        };
+namespace ape::input {
+    enum class InputType {
+        ACTION,
+        STATE,
+        RANGE
+    };
 
-        enum class EventType {
-            KEY_DOWN,
-            KEY_UP,
-            KEY_PRESS,
-            MOUSE_DOWN,
-            MOUSE_UP
-        };
+    enum MouseButton {
+        BTN_LEFT,
+        BTN_MIDDLE,
+        BTN_RIGHT
+    };
 
-        struct InputEventInfo {
-            InputType inputType;
-            EventType eventType;
+    enum class EventType {
+        KEY_DOWN,
+        KEY_UP,
+        KEY_PRESS,
+        MOUSE_DOWN,
+        MOUSE_UP
+    };
 
-            union {
-                KeyCode keyCode;
-                MouseButton mouseButton;
-                int32_t raw;
-            } info;
-        };
+    struct InputEventInfo {
+        InputType inputType;
+        EventType eventType;
+        bool consumed {false};
 
-        struct InputEventInfoHasher {
-            std::size_t operator()(const InputEventInfo& info) const {
-                /*
-                    Here's how the hashing works. We return a 32 bit integer, e.g.
-                    
-                   [31]     ->   ->   ->  ->   ->   ->   [0]
-                    1000 0000 0000 0000 0000 0000 0000 0000
+        union {
+            KeyCode keyCode;
+            MouseButton mouseButton;
+            int32_t raw;
+        } info;
 
-                    - Bits 31 - 28 identify the input type.
-                    - Bits 27 - 20 identifies the event type.
-                    - Bits 19 - 0 represent the event information.
-                */
-            
-                int32_t inputTypeId;
-                if (info.inputType == InputType::ACTION) {
-                    inputTypeId = 1 << 28;
-                } else if (info.inputType == InputType::STATE) {
-                    inputTypeId = 2 << 28;
-                } else if (info.inputType == InputType::RANGE) {
-                    inputTypeId = 3 << 28;
-                }
+        bool operator==(const InputEventInfo& other) const {
+            return (inputType == other.inputType) &&
+                    (eventType == other.eventType) &&
+                    (info.raw  == other.info.raw);
+        }
 
-                int32_t eventTypeId;
-                if (info.eventType == EventType::KEY_DOWN) {
-                    inputTypeId = 1 << 20;
-                } else if (info.eventType == EventType::KEY_UP) {
-                    inputTypeId = 2 << 20;
-                } else if (info.eventType == EventType::KEY_PRESS) {
-                    inputTypeId = 3 << 20;
-                } else if (info.eventType == EventType::MOUSE_DOWN) {
-                    inputTypeId = 4 << 20;
-                } else if (info.eventType == EventType::MOUSE_UP) {
-                    inputTypeId = 5 << 20;
-                }
+        InputEventInfo(const InputEventInfo& other);
+        InputEventInfo() = default;
+        static InputEventInfo keyDown(KeyCode key);
+    };
 
-                std::cout << "Input ID: " << inputTypeId << ", Event ID: " 
-                    << eventTypeId << ", Info: " << info.info.raw << "\n";
+    struct InputEventInfoHasher {
+        std::size_t operator()(const InputEventInfo& info) const {
+            /*
+                Here's how the hashing works. We return a 64 bit integer
 
-                std::size_t hash = (inputTypeId ^ eventTypeId) ^ info.info.raw;
-                std::cout << "Hash: " << hash << "\n";
-                return hash;
+                - Bits 63 - 60 identify the input type.
+                - Bits 59 - 52 identifies the event type.
+                - Bits 51 - 0 represent the event information.
+            */
+        
+            int64_t inputTypeId;
+            int64_t val;
+            if (info.inputType == InputType::ACTION) {
+                val = 1UL;
+            } else if (info.inputType == InputType::STATE) {
+                val = 2UL;
+            } else if (info.inputType == InputType::RANGE) {
+                val = 3UL;
             }
-        };
 
-        struct InputEventInfoEquality {
-            std::size_t operator()(const InputEventInfo& info1, const InputEventInfo& info2) const {
-                return (info1.inputType == info2.inputType) &&
-                       (info1.eventType == info2.eventType) &&
-                       (info1.info.raw == info2.info.raw);
+            inputTypeId = val << INPUT_T_POS;
+
+            int64_t eventTypeId;
+            if (info.eventType == EventType::KEY_DOWN) {
+                val = 1UL;
+            } else if (info.eventType == EventType::KEY_UP) {
+                val = 2UL;
+            } else if (info.eventType == EventType::KEY_PRESS) {
+                val = 3UL;
+            } else if (info.eventType == EventType::MOUSE_DOWN) {
+                    val = 4UL;
+            } else if (info.eventType == EventType::MOUSE_UP) {
+                val = 5UL;
             }
-        };
-    }
+
+            eventTypeId = val << EVENT_T_POS;
+
+            std::size_t hash = (inputTypeId ^ eventTypeId) ^ info.info.raw;
+            return hash;
+        }
+    };
 }
 
 #endif 

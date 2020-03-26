@@ -7,7 +7,7 @@ int main() {
     ape::window::create(800, 600, "Platformer");
 
     // Load a character
-    ape::texture_id_t playerTexture = ape::TextureStore::loadTexture("./assets/Player/p1_stand.png");
+    ape::texture_id_t playerTexture = ape::TextureStore::loadTexture("./examples/p1_stand.png");
 
     // Create main character
     ape::entity_t player = ape::world::createEntity();
@@ -21,30 +21,30 @@ int main() {
     root.addChild(player);
 
     // Set up keybinds
-    ape::input::Context mainContext = ape::input::Context(1, "./examples/platformer/contexts/main.json");
-    mainContext.load();
+    ape::context_t mainContext = ape::input::createContext(10);
+    ape::input::InputEventInfo info = ape::input::InputEventInfo::keyDown(ape::input::KeyCode::RIGHT);
+    ape::input::addCallback(mainContext, info, [player](ape::input::InputEventInfo info) {
+            ape::world::getComponent<ape::Transform>(player).velocity.x = 200.f;
+            return false;
+        }
+    );
 
-    mainContext.addCallback("jump", [](ape::input::InputEventInfo info){
-        std::cout << "Jump!\n";
-
-        return false;
+    info.eventType = ape::input::EventType::KEY_UP;
+    ape::input::addCallback(mainContext, info, [player](ape::input::InputEventInfo info) {
+            ape::world::getComponent<ape::Transform>(player).velocity.x = 0;
+            return false;
+        }
+    );
+    
+    ape::addSimulationCode([player](double dt) {
+        ape::Transform& playerTransform = ape::world::getComponent<ape::Transform>(player);
+        playerTransform.velocity.y += 400.f * dt;
+        if (playerTransform.position.y >= 200) {
+            playerTransform.velocity.y = 0;
+        }
     });
 
-    mainContext.addCallback("move_left", [](ape::input::InputEventInfo info){
-        std::cout << "Left!\n";
-
-        return false;
-    });
-
-    mainContext.addCallback("move_right", [](ape::input::InputEventInfo info){
-        std::cout << "Right!\n";
-
-        return false;
-    });
-
-    while (ape::isRunning()) {
-        ape::update();
-    }
+    ape::run(ape::Colors::Slate);
 
     ape::destroy();
     return 0;

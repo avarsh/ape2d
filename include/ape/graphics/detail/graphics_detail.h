@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_DETAIL_H
-#define GRAPHICS_DETAIL_H
+#ifndef APE_GRAPHICS_DETAIL_H
+#define APE_GRAPHICS_DETAIL_H
 
 #include <SDL2/SDL.h>
 #include <deque>
