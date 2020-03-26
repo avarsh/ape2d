@@ -22,51 +22,53 @@ namespace ape {
         return detail::running;
     }
 
-    void update() {
-        world::refresh();
-        SDL_Event event;
+    void run(Color clearCol) {
+        while(detail::running) {
+            world::refresh();
+            SDL_Event event;
 
-        auto newTime = hi_res_clock::now();
-        double elapsed = detail::getTimeFromPoints(detail::currentTime, newTime);
-        detail::currentTime = newTime;
-        detail::accumulator += elapsed;
+            auto newTime = hi_res_clock::now();
+            double elapsed = detail::getTimeFromPoints(detail::currentTime, newTime);
+            detail::currentTime = newTime;
+            detail::accumulator += elapsed;
 
-        while(SDL_PollEvent(&event) > 0) {
-            switch(event.type) {
-                case SDL_QUIT:
-                    window::windowClosed.emit();
-                    detail::running = false;
-                    break;
-                default:
-                    input::detail::handle(event);
-                    break;
-            }
-        }
-
-        input::detail::dispatch();
-
-        while (detail::accumulator >= detail::dt) {
-            for (const auto& func : detail::simulationCode) {
-                func(detail::dt);
+            while(SDL_PollEvent(&event) > 0) {
+                switch(event.type) {
+                    case SDL_QUIT:
+                        window::windowClosed.emit();
+                        detail::running = false;
+                        break;
+                    default:
+                        input::detail::handle(event);
+                        break;
+                }
             }
 
-            for (auto& transform : Transform::getPool()) {
-                Vec2f velocity;
-                if (world::entityHasComponent<Node>(transform.getEntity())) {
-                    velocity = world::getComponent<Node>(transform.getEntity()).getGlobalTransform().velocity;
-                } else {
-                    velocity = transform.velocity;
+            input::detail::dispatch();
+
+            while (detail::accumulator >= detail::dt) {
+                for (const auto& func : detail::simulationCode) {
+                    func(detail::dt);
                 }
 
-                transform.position += transform.velocity * detail::dt;
+                for (auto& transform : Transform::getPool()) {
+                    Vec2f velocity;
+                    if (world::entityHasComponent<Node>(transform.getEntity())) {
+                        velocity = world::getComponent<Node>(transform.getEntity()).getGlobalTransform().velocity;
+                    } else {
+                        velocity = transform.velocity;
+                    }
+
+                    transform.position += transform.velocity * detail::dt;
+                }
+
+                detail::accumulator -= detail::dt;
             }
 
-            detail::accumulator -= detail::dt;
+            window::clear(clearCol);
+            scene::detail::render();
+            window::display();
         }
-
-        window::clear();
-        scene::detail::render();
-        window::display();
     }
 
     void addSimulationCode(std::function<void(double dt)> function) {

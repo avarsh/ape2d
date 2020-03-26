@@ -17,14 +17,9 @@ namespace ape {
     void init();
 
     /**
-     * Whether the game is running.
+     * Runs the update loop.
      */
-    bool isRunning();
-
-    /**
-     * Updates the game.
-     */
-    void update();
+    void run(Color clearCol = Color(0, 0, 0));
 
     /**
      * Adds code to be executed during the physics simulation.

@@ -13,15 +13,17 @@ namespace ape::input::detail {
                 eventInfo.inputType = InputType::ACTION;
                 eventInfo.eventType = EventType::KEY_DOWN;
                 eventInfo.info.keyCode = (KeyCode)event.key.keysym.sym;
-                eventQueue.push(eventInfo);
                 break;
             case SDL_KEYUP:
                 eventInfo.inputType = InputType::ACTION;
                 eventInfo.eventType = EventType::KEY_UP;
                 eventInfo.info.keyCode = (KeyCode)event.key.keysym.sym;
-                eventQueue.push(eventInfo);
                 break; 
+            default:
+                return;
         };
+
+        eventQueue.push(eventInfo);
     }
 
     void dispatch() {
@@ -31,9 +33,7 @@ namespace ape::input::detail {
             auto event = eventQueue.front();
 
             for (auto& context : contextChain) {
-                InputEventInfoHasher hasher;
-                if (context.active && 
-                        context.inputMap.count(event) == 1) {
+                if (context.active && context.inputMap.count(event) == 1) {
                     auto& response = context.inputMap[event];
                     bool consumed = response(event);
                     if (consumed) break;
