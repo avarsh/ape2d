@@ -3,7 +3,9 @@
 
 #include <SDL2/SDL.h>
 #include <queue>
+#include <unordered_set>
 #include <ape/input/input_info.h>
+#include <ape/input/key_codes.h>
 
 namespace ape::input::detail {
     
@@ -23,6 +25,7 @@ namespace ape::input::detail {
     void dispatch();
 
     extern std::queue<InputEventInfo> eventQueue;
+    extern std::unordered_set<KeyCode> activeKeys;
 }
 
 #endif

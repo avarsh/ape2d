@@ -13,11 +13,13 @@ namespace ape::input::detail {
                 eventInfo.inputType = InputType::ACTION;
                 eventInfo.eventType = EventType::KEY_DOWN;
                 eventInfo.info.keyCode = (KeyCode)event.key.keysym.sym;
+                activeKeys.insert(eventInfo.info.keyCode);
                 break;
             case SDL_KEYUP:
                 eventInfo.inputType = InputType::ACTION;
                 eventInfo.eventType = EventType::KEY_UP;
                 eventInfo.info.keyCode = (KeyCode)event.key.keysym.sym;
+                activeKeys.erase(eventInfo.info.keyCode);
                 break; 
             default:
                 return;
@@ -27,6 +29,15 @@ namespace ape::input::detail {
     }
 
     void dispatch() {
+        // For each active key, add an event
+        for (auto key : activeKeys) {
+            InputEventInfo eventInfo;
+            eventInfo.inputType = InputType::STATE;
+            eventInfo.eventType = EventType::KEY_PRESS;
+            eventInfo.info.keyCode = key;
+            eventQueue.push(eventInfo);
+        }
+
         // We take each event in turn and propagate it through 
         // the chain of contexts.
         while (!eventQueue.empty()) {
@@ -45,4 +56,5 @@ namespace ape::input::detail {
     }
 
     std::queue<InputEventInfo> eventQueue;
+    std::unordered_set<KeyCode> activeKeys;
 }

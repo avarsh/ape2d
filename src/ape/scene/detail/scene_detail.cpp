@@ -46,6 +46,7 @@ namespace ape {
                     // Update the global transformation of the node
                     global.position = parent.position + local.position;
                     global.velocity = parent.velocity + local.velocity;
+                    global.accel    = parent.accel + local.accel;
                     global.rotation = parent.rotation + local.rotation;
                     global.scale    = parent.scale + local.scale;
 

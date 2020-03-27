@@ -22,13 +22,18 @@ int main() {
 
     // Set up keybinds
     ape::context_t mainContext = ape::input::createContext(10);
-    ape::input::InputEventInfo info = ape::input::InputEventInfo::keyDown(ape::input::KeyCode::RIGHT);
+    ape::input::InputEventInfo info;
+    info.inputType = ape::input::InputType::STATE;
+    info.eventType = ape::input::EventType::KEY_PRESS;
+    info.info.keyCode = ape::input::KeyCode::RIGHT;
     ape::input::addCallback(mainContext, info, [player](ape::input::InputEventInfo info) {
-            ape::world::getComponent<ape::Transform>(player).velocity.x = 200.f;
+            auto& transform = ape::world::getComponent<ape::Transform>(player);
+            transform.velocity.x += transform.velocity.x > 200 ? 0 : 10.f;
             return false;
         }
     );
 
+    info.inputType = ape::input::InputType::ACTION;
     info.eventType = ape::input::EventType::KEY_UP;
     ape::input::addCallback(mainContext, info, [player](ape::input::InputEventInfo info) {
             ape::world::getComponent<ape::Transform>(player).velocity.x = 0;
