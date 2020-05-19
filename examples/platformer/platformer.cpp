@@ -1,13 +1,29 @@
 #include <ape/ape.h>
 #include <iostream>
 
+class Friction : public ape::Component<Friction> {
+
+    public:
+        Friction(ape::entity_t entity) : ape::Component<Friction>(entity) { }
+        float mu;
+
+};
+
+void frictionSystem() {
+    for (auto& frictionComp : ape::world::getComponentPool<Friction>()) {
+        auto& transform = ape::world::getComponent<ape::Transform>(frictionComp.getEntity());
+        int sign = transform.velocity.x < 0 ? 1 : -1;
+        transform.velocity.x -= transform.velocity.x * frictionComp.mu;
+    }
+}
+
 int main() {
     // Initialise the engine
     ape::init();
     ape::window::create(800, 600, "Platformer");
 
     // Load a character
-    ape::texture_id_t playerTexture = ape::TextureStore::loadTexture("./examples/p1_stand.png");
+    ape::texture_id_t playerTexture = ape::TextureStore::loadTexture("./examples/platformer/p1_stand.png");
 
     // Create main character
     ape::entity_t player = ape::world::createEntity();
@@ -19,6 +35,9 @@ int main() {
     auto& node = ape::world::addComponent<ape::Node>(player);
     auto& root = ape::world::getComponent<ape::Node>(ape::scene::ROOT_NODE);
     root.addChild(player);
+
+    auto& friction = ape::world::addComponent<Friction>(player);
+    friction.mu = 0.05;
 
     // Set up keybinds
     ape::context_t mainContext = ape::input::createContext(10);
@@ -33,10 +52,10 @@ int main() {
         }
     );
 
-    info.inputType = ape::input::InputType::ACTION;
-    info.eventType = ape::input::EventType::KEY_UP;
+    info.info.keyCode = ape::input::KeyCode::LEFT;
     ape::input::addCallback(mainContext, info, [player](ape::input::InputEventInfo info) {
-            ape::world::getComponent<ape::Transform>(player).velocity.x = 0;
+            auto& transform = ape::world::getComponent<ape::Transform>(player);
+            transform.velocity.x -= transform.velocity.x < -200 ? 0 : 10.f;
             return false;
         }
     );
@@ -47,6 +66,8 @@ int main() {
         if (playerTransform.position.y >= 200) {
             playerTransform.velocity.y = 0;
         }
+
+        frictionSystem();
     });
 
     ape::run(ape::Colors::Slate);

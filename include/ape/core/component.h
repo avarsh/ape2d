@@ -54,7 +54,7 @@ namespace ape {
             return ENTITY_INVALID;
         }
 
-        static int handle;
+        static uint64_t handle;
     protected:
         static std::vector<Derived> pool;
 
@@ -67,7 +67,7 @@ namespace ape {
     std::vector<Derived> Component<Derived>::pool;
 
     template<class Derived>
-    int Component<Derived>::handle = 0;
+    uint64_t Component<Derived>::handle = 0;
 }
 
 #endif

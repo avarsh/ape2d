@@ -27,7 +27,7 @@ namespace ape {
         DerivedComponent& getComponent(entity_t entity);
 
         template<class Component>
-        int getComponentHandle();
+        uint64_t getComponentHandle();
 
         /**
          * @brief Creates a new entity, or reassigns one which has been 
@@ -257,12 +257,14 @@ namespace ape {
             return entityHasComponent<FirstComponent>(entity);
         }
 
-        /*
+        /**
          * Gets the component handle for a given component. The handle is
          * a unique series of bits assigned to every component.
+         * @tparam Component The component to retrieve the handle for.
+         * @return           The 64 bit handle for the component.
          */
         template<class Component>
-        int getComponentHandle() {
+        uint64_t getComponentHandle() {
             /*
              * If the handle is not 0 (component handles cannot be 0),
              * it can be returned. The expression will evaluate to true
