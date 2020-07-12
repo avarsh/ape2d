@@ -34,7 +34,7 @@ namespace ape {
             AUDIO_PREV           = SDLK_AUDIOPREV,
             AUDIO_STOP           = SDLK_AUDIOSTOP,
             B                    = SDLK_b,
-            BACKSLASH            = SDLK_BACKSLASH, /* Check what this refers to in SDL_Keycode docs */
+            BACKSLASH            = SDLK_BACKSLASH,
             BACKSPACE            = SDLK_BACKSPACE,
             BRIGHTNESS_DOWN      = SDLK_BRIGHTNESSDOWN,
             BRIGHTNESS_UP        = SDLK_BRIGHTNESSUP,

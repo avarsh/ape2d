@@ -307,7 +307,7 @@ namespace ape {
          * @tparam Components The component types to be added.
          */
         template<class ...Components>
-        void setDefaultComponents() {
+        void addDefaultComponents() {
             detail::initiationFuncs.push_back([](entity_t entity) {
                 addComponents<Components...>(entity);
             });

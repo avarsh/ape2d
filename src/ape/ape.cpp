@@ -6,7 +6,7 @@ namespace ape {
     using hi_res_clock = std::chrono::high_resolution_clock;
 
     void init() {
-        world::setDefaultComponents<Transform>();
+        world::addDefaultComponents<Transform>();
 
         graphics::detail::init();
         scene::detail::init();
@@ -66,6 +66,7 @@ namespace ape {
             }
 
             window::clear(clearCol);
+            // TODO: Allow adding of post-render and pre-render functions
             scene::detail::render();
             window::display();
         }
