@@ -1,5 +1,5 @@
 project('ape2d', 'cpp',
-    version : '0.0.2',
+    version : '2.0.0',
     license: 'MIT',
     default_options : ['cpp_std=c++17'])
 
@@ -17,7 +17,7 @@ subdir('examples')
 
 pkg_mod = import('pkgconfig')
 pkg_mod.generate(libraries : libape2d,
-                  version : '0.0.2',
+                  version : '2.0.0',
                   name : 'libape2d',
                   filebase : 'ape2d',
                   description : 'A library for developing 2d games.')

@@ -1,9 +1,2 @@
-bin/
-debug_out/
-.gcc-flags.json
-.vscode/
-obj/
-bin/
-lib/
-assets/
 build/
+.vscode/
